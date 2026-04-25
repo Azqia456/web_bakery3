@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-green: #A8DADC;
-            --light-green: #E8F4F8;
+            --primary-brown: #8B6F47;
+            --light-brown: #F5EFE7;
             --cream: #F7F3E9;
             --white: #FFFFFF;
             --light-gray: #F8F9FA;
@@ -46,7 +46,7 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
             color: var(--white);
             position: fixed;
             height: 100vh;
@@ -161,7 +161,7 @@
 
         .search-bar input:focus {
             outline: none;
-            border-color: var(--primary-green);
+            border-color: var(--primary-brown);
             background: var(--white);
             box-shadow: 0 0 0 3px rgba(168, 218, 220, 0.1);
         }
@@ -223,7 +223,7 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
             color: white;
             display: flex;
             align-items: center;
@@ -263,7 +263,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary-green), #81C784);
+            background: linear-gradient(90deg, var(--primary-brown), #D4A574);
         }
 
         .summary-card:hover {
@@ -355,7 +355,7 @@
 
         .chart-title i {
             margin-right: 8px;
-            color: var(--primary-green);
+            color: var(--primary-brown);
         }
 
         .chart-content {
@@ -389,7 +389,7 @@
 
         .customers-title i {
             margin-right: 8px;
-            color: var(--primary-green);
+            color: var(--primary-brown);
         }
 
         .customers-list {
@@ -417,7 +417,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
             color: var(--white);
             display: flex;
             align-items: center;
@@ -498,7 +498,7 @@
 
         .deposits-title i {
             margin-right: 8px;
-            color: var(--primary-green);
+            color: var(--primary-brown);
         }
 
         .deposits-list {
@@ -583,7 +583,7 @@
 
         .statistics-title i {
             margin-right: 8px;
-            color: var(--primary-green);
+            color: var(--primary-brown);
         }
 
         .statistics-grid {
@@ -596,7 +596,7 @@
         .statistic-item {
             text-align: center;
             padding: 20px;
-            background: var(--light-green);
+            background: var(--light-brown);
             border-radius: var(--border-radius);
             transition: var(--transition);
         }
@@ -680,9 +680,9 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(168, 218, 220, 0.3);
+            border: 3px solid rgba(139, 111, 71, 0.3);
             border-radius: 50%;
-            border-top-color: var(--primary-green);
+            border-top-color: var(--primary-brown);
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -725,7 +725,7 @@
                     </a>
                 </div>
                 <div class="sidebar-menu-item">
-                    <a href="/orders">
+                    <a href="/pesanan">
                         <i class="fas fa-shopping-cart"></i>
                         Pesanan
                     </a>

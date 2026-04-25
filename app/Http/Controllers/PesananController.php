@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class PesananController extends Controller
 {
+    public function view()
+    {
+        return view('pesanan');
+    }
+
     public function index()
     {
         return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'pembayarans'])->get();

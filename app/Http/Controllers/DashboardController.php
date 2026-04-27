@@ -11,6 +11,11 @@ class DashboardController extends Controller
         return view('dashboard');
     }
 
+    public function pelanggan()
+    {
+        return view('dashboard.pelanggan');
+    }
+
     public function getStats()
     {
         return response()->json([
@@ -149,6 +154,98 @@ class DashboardController extends Controller
                     'value' => 284,
                     'icon' => 'fas fa-calendar-day',
                     'color' => 'orange'
+                ]
+            ]
+        ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    public function getPelangganStats()
+    {
+        return response()->json([
+            'summary_cards' => [
+                [
+                    'title' => 'Pesanan Aktif Saya',
+                    'value' => 3,
+                    'change' => '+1 pesanan baru',
+                    'change_type' => 'positive',
+                    'icon' => 'fas fa-box-open',
+                    'color' => 'blue'
+                ],
+                [
+                    'title' => 'Status Pembayaran',
+                    'value' => '1 Belum Lunas',
+                    'change' => 'Perlu ditindaklanjuti',
+                    'change_type' => 'negative',
+                    'icon' => 'fas fa-wallet',
+                    'color' => 'orange'
+                ],
+                [
+                    'title' => 'Total Belanja Bulan Ini',
+                    'value' => 'Rp 1.250.000',
+                    'change' => '+12% dari bulan lalu',
+                    'change_type' => 'positive',
+                    'icon' => 'fas fa-shopping-bag',
+                    'color' => 'green'
+                ],
+                [
+                    'title' => 'Estimasi Pengiriman',
+                    'value' => '2 Hari',
+                    'change' => 'Rata-rata lebih cepat',
+                    'change_type' => 'positive',
+                    'icon' => 'fas fa-truck',
+                    'color' => 'purple'
+                ]
+            ],
+            'orders_chart' => [
+                'labels' => ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                'data' => [1, 2, 1, 3, 2, 4, 3]
+            ],
+            'orders_list' => [
+                [
+                    'kode' => 'ORD-260401',
+                    'tanggal' => '2026-04-24',
+                    'produk' => 'Roti Coklat Premium',
+                    'total' => 'Rp 350.000',
+                    'status_pesanan' => 'Diproses',
+                    'status_bayar' => 'Lunas'
+                ],
+                [
+                    'kode' => 'ORD-260395',
+                    'tanggal' => '2026-04-22',
+                    'produk' => 'Cake Ulang Tahun',
+                    'total' => 'Rp 650.000',
+                    'status_pesanan' => 'Dikirim',
+                    'status_bayar' => 'Lunas'
+                ],
+                [
+                    'kode' => 'ORD-260388',
+                    'tanggal' => '2026-04-20',
+                    'produk' => 'Pastry Box',
+                    'total' => 'Rp 250.000',
+                    'status_pesanan' => 'Menunggu Konfirmasi',
+                    'status_bayar' => 'Belum Lunas'
+                ]
+            ],
+            'status_ringkasan' => [
+                [
+                    'label' => 'Diproses',
+                    'value' => 1,
+                    'class' => 'warning'
+                ],
+                [
+                    'label' => 'Dikirim',
+                    'value' => 1,
+                    'class' => 'info'
+                ],
+                [
+                    'label' => 'Belum Lunas',
+                    'value' => 1,
+                    'class' => 'warning'
+                ],
+                [
+                    'label' => 'Lunas',
+                    'value' => 2,
+                    'class' => 'success'
                 ]
             ]
         ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');

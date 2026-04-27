@@ -21,5 +21,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
 Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats']);
+Route::get('/dashboard/pelanggan', [DashboardController::class, 'pelanggan']);
+Route::get('/api/dashboard/pelanggan/stats', [DashboardController::class, 'getPelangganStats']);
+Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView']);
 
 Route::get('/pesanan', [PesananController::class, 'view']);

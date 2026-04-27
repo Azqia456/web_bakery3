@@ -12,6 +12,11 @@ class PesananController extends Controller
         return view('pesanan');
     }
 
+    public function pelangganView()
+    {
+        return view('dashboard.pesanan-pelanggan');
+    }
+
     public function index()
     {
         return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'pembayarans'])->get();

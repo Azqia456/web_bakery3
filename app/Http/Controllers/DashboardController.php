@@ -13,7 +13,7 @@ class DashboardController extends Controller
 
     public function pelanggan()
     {
-        return view('dashboard.pelanggan');
+        return view('pelanggan.dashboard_pelanggan');
     }
 
     public function getStats()

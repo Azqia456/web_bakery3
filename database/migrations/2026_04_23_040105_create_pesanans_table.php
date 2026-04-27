@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('id_pelanggan')->constrained('pelanggans', 'id_pelanggan')->cascadeOnDelete();
             $table->foreignId('id_karyawan')->constrained('karyawans', 'id_karyawan')->cascadeOnDelete();
             $table->dateTime('tgl_pesan');
+            $table->enum('sumber_pesanan', ['offline', 'online']);
             $table->enum('status_bayar', ['belum_lunas', 'lunas'])->default('belum_lunas');
             $table->decimal('total_bayar', 15, 2);
             $table->timestamps();

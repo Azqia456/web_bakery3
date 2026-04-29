@@ -647,7 +647,7 @@
 
                     <div class="form-group">
                         <label for="login">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required value="{{ old('login') }}">
+                        <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required value="{{ old('email') }}">
                         @error('email')
                             <span style="color: #C69C6D; font-size: 0.85rem; margin-top: 5px; display: block;">{{ $message }}</span>
                         @enderror
@@ -690,7 +690,7 @@
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', function (e) {
-                 // PREVENT default submission to check data first
+                e.preventDefault();
                 
                 const loginInput = document.getElementById('email').value;
                 const passwordInput = document.getElementById('password').value;

@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->intended('dashboard');
+            return redirect()->route('dashboard');
         }
         return view('login');
     }
@@ -37,9 +37,9 @@ class AuthController extends Controller
             // Redirect based on user role
             $user = Auth::user();
             if ($user->role === 'owner') {
-                return redirect()->intended('/dashboard');
+                return redirect()->route('dashboard');
             } else {
-                return redirect()->intended('/pelanggan/dashboard_pelanggan');
+                return redirect()->route('pelanggan.dashboard');
             }
         }
 
@@ -54,7 +54,7 @@ class AuthController extends Controller
     public function showRegister()
     {
         if (Auth::check()) {
-            return redirect()->intended('dashboard');
+            return redirect()->route('dashboard');
         }
         return view('register');
     }
@@ -83,9 +83,9 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         if ($user->role === 'owner') {
-            return redirect('/dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
+            return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
         } else {
-            return redirect('/pelanggan/dashboard_pelanggan')->with('success', 'Registrasi berhasil! Selamat datang.');
+            return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
         }
     }
 

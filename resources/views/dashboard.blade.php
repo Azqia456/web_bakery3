@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-green: #A8DADC;
-            --light-green: #E8F4F8;
+            --primary-green: #8B6F47;
+            --primary-brown: #8B6F47;
+            --light-green: #D4A574;
+            --light-brown: #D4A574;
             --cream: #F7F3E9;
             --white: #FFFFFF;
             --light-gray: #F8F9FA;
@@ -46,7 +48,7 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
+            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
             color: var(--white);
             position: fixed;
             height: 100vh;
@@ -646,8 +648,10 @@
         .statistic-item {
             text-align: center;
             padding: 20px;
-            background: var(--light-green);
+            background: var(--white);
             border-radius: var(--border-radius);
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow-sm);
             transition: var(--transition);
         }
 

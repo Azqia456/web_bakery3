@@ -9,13 +9,20 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    private function redirectForRole(string $role)
+    {
+        return $role === 'owner'
+            ? redirect()->route('dashboard')
+            : redirect()->route('pelanggan.dashboard');
+    }
+
     /**
      * Show login form
      */
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return $this->redirectForRole(Auth::user()->role);
         }
         return view('login');
     }
@@ -33,14 +40,8 @@ class AuthController extends Controller
         // Try to authenticate
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            
-            // Redirect based on user role
-            $user = Auth::user();
-            if ($user->role === 'owner') {
-                return redirect()->route('dashboard');
-            } else {
-                return redirect()->route('pelanggan.dashboard');
-            }
+
+            return $this->redirectForRole(Auth::user()->role);
         }
 
         return back()->withErrors([
@@ -54,7 +55,7 @@ class AuthController extends Controller
     public function showRegister()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return $this->redirectForRole(Auth::user()->role);
         }
         return view('register');
     }
@@ -82,11 +83,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        if ($user->role === 'owner') {
-            return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
-        } else {
-            return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang.');
-        }
+        return $this->redirectForRole($user->role)->with('success', 'Registrasi berhasil! Selamat datang.');
     }
 
     /**

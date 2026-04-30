@@ -131,6 +131,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 32px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .page-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .page-title {
@@ -156,6 +165,27 @@
         }
 
         .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-logout:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -987,10 +1017,19 @@
                 <!-- HEADER -->
                 <div class="page-header">
                     <h1 class="page-title">Pesanan</h1>
-                    <button class="btn-add" onclick="openAddModal()">
-                        <i class="fas fa-plus"></i>
-                        Tambah Pesanan
-                    </button>
+                    <div class="page-header-actions">
+                        <button class="btn-add" onclick="openAddModal()">
+                            <i class="fas fa-plus"></i>
+                            Tambah Pesanan
+                        </button>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-logout">
+                                <i class="fas fa-right-from-bracket"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- FILTER & SEARCH -->

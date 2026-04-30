@@ -172,14 +172,6 @@ class DashboardController extends Controller
                     'color' => 'blue'
                 ],
                 [
-                    'title' => 'Status Pembayaran',
-                    'value' => '1 Belum Lunas',
-                    'change' => 'Perlu ditindaklanjuti',
-                    'change_type' => 'negative',
-                    'icon' => 'fas fa-wallet',
-                    'color' => 'orange'
-                ],
-                [
                     'title' => 'Total Belanja Bulan Ini',
                     'value' => 'Rp 1.250.000',
                     'change' => '+12% dari bulan lalu',
@@ -206,24 +198,21 @@ class DashboardController extends Controller
                     'tanggal' => '2026-04-24',
                     'produk' => 'Roti Coklat Premium',
                     'total' => 'Rp 350.000',
-                    'status_pesanan' => 'Diproses',
-                    'status_bayar' => 'Lunas'
+                    'status_pesanan' => 'Diproses'
                 ],
                 [
                     'kode' => 'ORD-260395',
                     'tanggal' => '2026-04-22',
                     'produk' => 'Cake Ulang Tahun',
                     'total' => 'Rp 650.000',
-                    'status_pesanan' => 'Dikirim',
-                    'status_bayar' => 'Lunas'
+                    'status_pesanan' => 'Dikirim'
                 ],
                 [
                     'kode' => 'ORD-260388',
                     'tanggal' => '2026-04-20',
                     'produk' => 'Pastry Box',
                     'total' => 'Rp 250.000',
-                    'status_pesanan' => 'Menunggu Konfirmasi',
-                    'status_bayar' => 'Belum Lunas'
+                    'status_pesanan' => 'Menunggu Konfirmasi'
                 ]
             ],
             'status_ringkasan' => [
@@ -238,14 +227,9 @@ class DashboardController extends Controller
                     'class' => 'info'
                 ],
                 [
-                    'label' => 'Belum Lunas',
+                    'label' => 'Menunggu Konfirmasi',
                     'value' => 1,
                     'class' => 'warning'
-                ],
-                [
-                    'label' => 'Lunas',
-                    'value' => 2,
-                    'class' => 'success'
                 ]
             ]
         ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');

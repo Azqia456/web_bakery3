@@ -45,7 +45,7 @@
 
         .sidebar {
             width: 280px;
-            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
+            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
             color: var(--white);
             position: fixed;
             height: 100vh;
@@ -66,6 +66,7 @@
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 4px;
+            letter-spacing: -0.025em;
         }
 
         .sidebar-header p {
@@ -96,6 +97,7 @@
         .sidebar-menu-item a:hover,
         .sidebar-menu-item a.active {
             background-color: rgba(255, 255, 255, 0.15);
+            color: var(--white);
             transform: translateX(4px);
         }
 
@@ -128,6 +130,8 @@
         .header-title {
             font-size: 24px;
             font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
         }
 
         .header-subtitle {
@@ -139,19 +143,108 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border: 1px solid var(--medium-gray);
-            border-radius: 999px;
-            font-size: 12px;
+        .profile-menu {
+            position: relative;
+        }
+
+        .notification-btn,
+        .profile-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: var(--light-gray);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
             color: var(--dark-gray);
+        }
+
+        .notification-btn:hover,
+        .profile-btn:hover {
+            background: var(--medium-gray);
+            transform: scale(1.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-green), #81C784);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 180px;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-dropdown a,
+        .profile-dropdown button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background: var(--light-gray);
+        }
+
+        .profile-dropdown .logout-action {
+            color: #EF4444;
         }
 
         .dashboard-content {
@@ -182,7 +275,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary-brown), #D4A574);
+            background: linear-gradient(90deg, var(--primary-green), #81C784);
         }
 
         .summary-card-icon {
@@ -378,21 +471,35 @@
                 display: block;
             }
         }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .dashboard-content {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>Three D Bakery</h1>
+                <h1>🍞 Three D Bakery</h1>
                 <p>Panel Pelanggan</p>
             </div>
             <nav class="sidebar-menu">
                 <div class="sidebar-menu-item">
-                    <a href="/dashboard/pelanggan" class="active"><i class="fas fa-home"></i>Dashboard Pelanggan</a>
+                    <a href="{{ route('pelanggan.dashboard') }}" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard Pelanggan</a>
                 </div>
                 <div class="sidebar-menu-item">
-                    <a href="/pelanggan/pesanan"><i class="fas fa-box"></i>Pesanan Saya</a>
+                    <a href="{{ url('/pelanggan/pesanan') }}"><i class="fas fa-shopping-cart"></i>Pesanan Saya</a>
                 </div>
             </nav>
         </aside>
@@ -404,7 +511,29 @@
                     <p class="header-subtitle">Informasi pesanan dan pembayaran Anda dalam satu halaman</p>
                 </div>
                 <div class="header-right">
-                    <span class="chip"><i class="fas fa-clock"></i>Update otomatis</span>
+                    <button class="notification-btn" type="button" aria-label="Notifikasi">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">1</span>
+                    </button>
+                    <div class="profile-menu">
+                        <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
+                            <div class="profile-avatar">P</div>
+                        </button>
+
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <a href="{{ route('profile.edit') }}">
+                                <i class="fas fa-user"></i>
+                                Profil
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="logout-action">
+                                    <i class="fas fa-right-from-bracket"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -447,7 +576,6 @@
                                         <th>Produk</th>
                                         <th>Total</th>
                                         <th>Status Pesanan</th>
-                                        <th>Status Bayar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="ordersTableBody"></tbody>
@@ -461,9 +589,8 @@
                         </div>
                         <div class="card-body">
                             <div class="quick-actions">
-                                <a href="/pelanggan/pesanan"><i class="fas fa-plus-circle"></i> Buat Pesanan Baru</a>
+                                <a href="{{ url('/pelanggan/pesanan') }}"><i class="fas fa-bag-shopping"></i> Pesan Sekarang</a>
                                 <a href="/pelanggan/pesanan"><i class="fas fa-search"></i> Lacak Pesanan</a>
-                                <a href="/pelanggan/pesanan"><i class="fas fa-credit-card"></i> Konfirmasi Pembayaran</a>
                             </div>
                         </div>
                     </article>
@@ -529,10 +656,6 @@
             return 'warning';
         }
 
-        function getPaymentStatusClass(status) {
-            return status.toLowerCase() === 'lunas' ? 'success' : 'warning';
-        }
-
         function renderOrdersTable(orders) {
             const ordersTableBody = document.getElementById('ordersTableBody');
             ordersTableBody.innerHTML = orders.map(order => `
@@ -542,7 +665,6 @@
                     <td>${order.produk}</td>
                     <td>${order.total}</td>
                     <td><span class="status ${getOrderStatusClass(order.status_pesanan)}">${order.status_pesanan}</span></td>
-                    <td><span class="status ${getPaymentStatusClass(order.status_bayar)}">${order.status_bayar}</span></td>
                 </tr>
             `).join('');
         }
@@ -562,7 +684,7 @@
 
         async function loadDashboard() {
             try {
-                const response = await fetch('/api/dashboard/pelanggan/stats');
+                const response = await fetch('/api/pelanggan/dashboard_pelanggan/stats');
                 if (!response.ok) {
                     throw new Error('Gagal memuat data dashboard pelanggan');
                 }
@@ -575,6 +697,24 @@
             } catch (error) {
                 console.error(error);
             }
+        }
+
+        const profileMenuButton = document.getElementById('profileMenuButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileMenuButton && profileDropdown) {
+            profileMenuButton.addEventListener('click', () => {
+                profileDropdown.classList.toggle('show');
+                const expanded = profileDropdown.classList.contains('show');
+                profileMenuButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!profileMenuButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                    profileMenuButton.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', loadDashboard);

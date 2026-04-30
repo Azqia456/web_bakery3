@@ -70,18 +70,18 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
 
     // OWNER
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('role:owner')->name('dashboard');
 
     // PELANGGAN
-    Route::get('/pelanggan/dashboard_pelanggan', [DashboardController::class, 'pelanggan'])->name('pelanggan.dashboard');
+    Route::get('/pelanggan/dashboard_pelanggan', [DashboardController::class, 'pelanggan'])->middleware('role:pelanggan')->name('pelanggan.dashboard');
 
     // API
-    Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats']);
-    Route::get('/api/pelanggan/dashboard_pelanggan/stats', [DashboardController::class, 'getPelangganStats']);
+    Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->middleware('role:owner');
+    Route::get('/api/pelanggan/dashboard_pelanggan/stats', [DashboardController::class, 'getPelangganStats'])->middleware('role:pelanggan');
 
     // PESANAN
-    Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView']);
-    Route::get('/pesanan', [PesananController::class, 'view'])->name('pesanan');
+    Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView'])->middleware('role:pelanggan');
+    Route::get('/pesanan', [PesananController::class, 'view'])->middleware('role:owner')->name('pesanan');
     Route::get('/pesanan-offline', [PesananController::class, 'offline'])->name('pesanan-offline');
     Route::get('/pesanan-online', [PesananController::class, 'online'])->name('pesanan-online');
 

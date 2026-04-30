@@ -21,5 +21,14 @@ class DatabaseSeeder extends Seeder
                 'role' => 'owner',
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'pelangganbakery3@gmail.com'],
+            [
+                'username' => 'pelanggan_bakery',
+                'password' => Hash::make('pelanggan123'),
+                'role' => 'pelanggan',
+            ]
+        );
     }
 }

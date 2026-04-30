@@ -250,4 +250,34 @@ class DashboardController extends Controller
             ]
         ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
+
+    public function dataKaryawan()
+    {
+        return view('data-karyawan');
+    }
+
+    public function dataPelanggan()
+    {
+        return view('data-pelanggan');
+    }
+
+    public function produk()
+    {
+        return view('produk');
+    }
+
+    public function storKaryawan()
+    {
+        return view('stor-karyawan');
+    }
+
+    public function riwayatTransaksi()
+    {
+        return view('riwayat-transaksi');
+    }
+
+    public function laporan()
+    {
+        return view('laporan');
+    }
 }

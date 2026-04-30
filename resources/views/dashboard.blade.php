@@ -86,9 +86,15 @@
             margin: 4px 16px;
         }
 
-        .sidebar-menu-item a {
+        .sidebar-menu-item {
+            margin: 4px 16px;
+        }
+
+        .sidebar-menu-item > a,
+        .sidebar-menu-toggle {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 12px 16px;
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
@@ -96,20 +102,71 @@
             transition: var(--transition);
             font-weight: 500;
             font-size: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
         }
 
-        .sidebar-menu-item a:hover,
-        .sidebar-menu-item a.active {
+        .sidebar-menu-item > a:hover,
+        .sidebar-menu-item > a.active,
+        .sidebar-menu-toggle:hover,
+        .sidebar-menu-toggle.active {
             background-color: rgba(255, 255, 255, 0.15);
             color: var(--white);
-            transform: translateX(4px);
         }
 
-        .sidebar-menu-item i {
+        .sidebar-menu-item > a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-menu-item i,
+        .sidebar-menu-toggle i {
             width: 20px;
             margin-right: 12px;
             text-align: center;
             font-size: 16px;
+        }
+
+        .sidebar-menu-item .toggle-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+            margin-left: auto;
+        }
+
+        .sidebar-menu-item .toggle-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            margin: 0 8px;
+        }
+
+        .sidebar-submenu.open {
+            max-height: 500px;
+        }
+
+        .sidebar-submenu-item {
+            padding: 10px 16px 10px 48px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 400;
+            transition: var(--transition);
+        }
+
+        .sidebar-submenu-item:hover,
+        .sidebar-submenu-item.active {
+            color: var(--white);
+            padding-left: 52px;
         }
 
         /* Main Content */
@@ -778,46 +835,56 @@
                         Dashboard
                     </a>
                 </div>
+
+                <!-- Pesanan Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/orders">
-                        <i class="fas fa-shopping-cart"></i>
-                        Pesanan
-                    </a>
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
+                        <span><i class="fas fa-shopping-cart"></i> Pesanan</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
+                        <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
+                    </div>
                 </div>
+
+                <!-- Data Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/customers">
-                        <i class="fas fa-users"></i>
-                        Pelanggan
-                    </a>
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
+                        <span><i class="fas fa-database"></i> Data</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
+                        <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
+                    </div>
                 </div>
+
+                <!-- Produk Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/employees">
-                        <i class="fas fa-user-tie"></i>
-                        Karyawan
-                    </a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <a href="/products">
+                    <a href="/produk">
                         <i class="fas fa-box"></i>
                         Produk
                     </a>
                 </div>
+
+                <!-- Pembayaran Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/payments">
-                        <i class="fas fa-credit-card"></i>
-                        Pembayaran
-                    </a>
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
+                        <span><i class="fas fa-credit-card"></i> Pembayaran</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
+                        <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
+                    </div>
                 </div>
+
+                <!-- Laporan Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/reports">
+                    <a href="/laporan">
                         <i class="fas fa-chart-line"></i>
                         Laporan
-                    </a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <a href="/settings">
-                        <i class="fas fa-cog"></i>
-                        Pengaturan
                     </a>
                 </div>
             </nav>
@@ -1190,6 +1257,16 @@
             // Auto refresh every 30 seconds
             setInterval(loadDashboardData, 30000);
         });
+
+        // Toggle submenu function
+        function toggleSubmenu(button) {
+            const submenu = button.nextElementSibling;
+            const arrow = button.querySelector('.toggle-arrow');
+            
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('open');
+            button.classList.toggle('active');
+        }
 
         const profileMenuButton = document.getElementById('profileMenuButton');
         const profileDropdown = document.getElementById('profileDropdown');

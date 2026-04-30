@@ -82,4 +82,20 @@ Route::middleware('auth')->group(function () {
     // PESANAN
     Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView']);
     Route::get('/pesanan', [PesananController::class, 'view'])->name('pesanan');
+    Route::get('/pesanan-offline', [PesananController::class, 'offline'])->name('pesanan-offline');
+    Route::get('/pesanan-online', [PesananController::class, 'online'])->name('pesanan-online');
+
+    // DATA
+    Route::get('/data-karyawan', [DashboardController::class, 'dataKaryawan'])->name('data-karyawan');
+    Route::get('/data-pelanggan', [DashboardController::class, 'dataPelanggan'])->name('data-pelanggan');
+
+    // PRODUK
+    Route::get('/produk', [DashboardController::class, 'produk'])->name('produk');
+
+    // PEMBAYARAN
+    Route::get('/stor-karyawan', [DashboardController::class, 'storKaryawan'])->name('stor-karyawan');
+    Route::get('/riwayat-transaksi', [DashboardController::class, 'riwayatTransaksi'])->name('riwayat-transaksi');
+
+    // LAPORAN
+    Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
 });

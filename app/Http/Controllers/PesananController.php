@@ -65,4 +65,14 @@ class PesananController extends Controller
 
         return response()->noContent();
     }
+
+    public function offline()
+    {
+        return view('pesanan-offline');
+    }
+
+    public function online()
+    {
+        return view('pesanan-online');
+    }
 }

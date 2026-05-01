@@ -205,9 +205,9 @@
         }
 
         .btn-primary {
-            background-color: var(--primary-brown);
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
             color: var(--white);
-            padding: 10px 20px;
+            padding: 10px 24px;
             border: none;
             border-radius: var(--border-radius);
             font-weight: 600;
@@ -217,12 +217,13 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
+            box-shadow: 0 2px 8px rgba(139, 111, 71, 0.15);
         }
 
         .btn-primary:hover {
-            background-color: #6B4F33;
+            background: linear-gradient(135deg, #6B4F33, #c49557);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.25);
         }
 
         .content {
@@ -247,11 +248,79 @@
             margin: 0;
         }
 
+        /* Summary Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 24px;
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--medium-gray);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-brown), #D4A574);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+        .stat-card-icon.green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+        .stat-card-icon.orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
+        .stat-card-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333EA; }
+
+        .stat-card-label {
+            font-size: 13px;
+            color: var(--dark-gray);
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
         .tabs {
             display: flex;
             gap: 12px;
             margin-bottom: 24px;
             border-bottom: 2px solid var(--medium-gray);
+            background: var(--white);
+            padding: 0;
+            border-radius: 0;
         }
 
         .tab {
@@ -264,6 +333,11 @@
             transition: var(--transition);
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            color: var(--primary-brown);
         }
 
         .tab.active {
@@ -285,6 +359,7 @@
             border-radius: var(--border-radius-xl);
             box-shadow: var(--shadow-md);
             overflow: hidden;
+            border: 1px solid var(--medium-gray);
         }
 
         .table-toolbar {
@@ -311,11 +386,18 @@
             background: var(--white);
             font-size: 14px;
             transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box input:hover {
+            border-color: #D4A574;
+            box-shadow: 0 2px 6px rgba(139, 111, 71, 0.1);
         }
 
         .search-box input:focus {
             outline: none;
             border-color: var(--primary-brown);
+            background: var(--white);
             box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
         }
 
@@ -342,11 +424,18 @@
             font-size: 14px;
             cursor: pointer;
             transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-select:hover {
+            border-color: var(--primary-brown);
+            box-shadow: 0 2px 6px rgba(139, 111, 71, 0.1);
         }
 
         .filter-select:focus {
             outline: none;
             border-color: var(--primary-brown);
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
         }
 
         table {
@@ -374,6 +463,11 @@
 
         tbody tr:hover {
             background: var(--light-gray);
+            transition: var(--transition);
+        }
+
+        tbody tr {
+            transition: var(--transition);
         }
 
         .status-badge {
@@ -381,7 +475,8 @@
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .status-badge.pending {
@@ -414,7 +509,8 @@
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .payment-badge.lunas {
@@ -436,24 +532,28 @@
             width: 36px;
             height: 36px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             background: var(--light-gray);
-            color: var(--text-dark);
+            color: var(--dark-gray);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: var(--transition);
             font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .btn-icon:hover {
             background: var(--primary-brown);
             color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(139, 111, 71, 0.15);
         }
 
         .btn-icon.delete:hover {
             background: var(--red);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.15);
         }
 
         /* Modal */
@@ -481,7 +581,8 @@
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .modal-header {
@@ -490,6 +591,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.05), rgba(212, 165, 116, 0.05));
         }
 
         .modal-title {
@@ -536,6 +638,12 @@
             font-size: 14px;
             font-family: inherit;
             transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control:hover {
+            border-color: #D4A574;
+            box-shadow: 0 2px 6px rgba(139, 111, 71, 0.08);
         }
 
         .form-control:focus {
@@ -562,9 +670,10 @@
             gap: 12px;
             margin-bottom: 16px;
             padding: 12px;
-            background: var(--light-gray);
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.03), rgba(212, 165, 116, 0.03));
             border-radius: var(--border-radius);
             align-items: flex-end;
+            border: 1px solid rgba(139, 111, 71, 0.08);
         }
 
         .product-item-controls {
@@ -585,6 +694,13 @@
             border: 1px solid var(--medium-gray);
             border-radius: 6px;
             font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .product-item input:focus {
+            outline: none;
+            border-color: var(--primary-brown);
+            box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.08);
         }
 
         .btn-delete-product {
@@ -595,12 +711,15 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.1);
         }
 
         .btn-delete-product:hover {
             background: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
         }
 
         .btn-add-product {
@@ -611,18 +730,21 @@
             border-radius: var(--border-radius);
             cursor: pointer;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             transition: var(--transition);
             width: 100%;
             margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(139, 111, 71, 0.12);
         }
 
         .btn-add-product:hover {
             background: #6B4F33;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(139, 111, 71, 0.2);
         }
 
         .total-section {
-            background: var(--light-gray);
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.05), rgba(212, 165, 116, 0.05));
             padding: 16px;
             border-radius: var(--border-radius);
             margin: 16px 0;
@@ -630,6 +752,8 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
+            border: 1px solid rgba(139, 111, 71, 0.1);
+            color: var(--text-dark);
         }
 
         .modal-footer {
@@ -638,6 +762,26 @@
             display: flex;
             justify-content: flex-end;
             gap: 12px;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.02), rgba(212, 165, 116, 0.02));
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(139, 111, 71, 0.15);
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #6B4F33, #c49557);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.25);
         }
 
         .btn-cancel {
@@ -650,26 +794,13 @@
             cursor: pointer;
             transition: var(--transition);
             font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .btn-cancel:hover {
             background: #d4d4d4;
-        }
-
-        .btn-save {
-            background: var(--primary-brown);
-            color: var(--white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 14px;
-        }
-
-        .btn-save:hover {
-            background: #6B4F33;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Responsive */
@@ -723,18 +854,18 @@
             </div>
             <nav class="sidebar-menu">
                 <div class="sidebar-menu-item">
-                    <a href="/dashboard">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
+                        <a href="/dashboard" style="justify-content: flex-start; gap: 12px;">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span style="font-weight:700;">Dashboard</span>
+                        </a>
                 </div>
 
                 <!-- Pesanan Menu -->
                 <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-shopping-cart"></i> Pesanan</span>
-                        <i class="fas fa-chevron-down toggle-arrow open"></i>
-                    </button>
+                        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                            <span style="display:flex;align-items:center;font-weight:700;"><i class="fas fa-shopping-cart"></i> Pesanan</span>
+                            <i class="fas fa-chevron-down toggle-arrow open"></i>
+                        </button>
                     <div class="sidebar-submenu open">
                         <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
                         <a href="/pesanan-offline" class="sidebar-submenu-item active">Pesanan Offline</a>
@@ -743,10 +874,10 @@
 
                 <!-- Data Menu -->
                 <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-database"></i> Data</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
+                        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                            <span style="display:flex;align-items:center;font-weight:700;"><i class="fas fa-database"></i> Data</span>
+                            <i class="fas fa-chevron-down toggle-arrow"></i>
+                        </button>
                     <div class="sidebar-submenu">
                         <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
                         <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
@@ -755,18 +886,18 @@
 
                 <!-- Produk Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/produk">
-                        <i class="fas fa-box"></i>
-                        Produk
-                    </a>
+                        <a href="/produk" style="justify-content: flex-start; gap: 12px;">
+                            <i class="fas fa-box"></i>
+                            <span style="font-weight:700;">Produk</span>
+                        </a>
                 </div>
 
                 <!-- Pembayaran Menu -->
                 <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-credit-card"></i> Pembayaran</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
+                        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                            <span style="display:flex;align-items:center;font-weight:700;"><i class="fas fa-credit-card"></i> Pembayaran</span>
+                            <i class="fas fa-chevron-down toggle-arrow"></i>
+                        </button>
                     <div class="sidebar-submenu">
                         <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
                         <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
@@ -775,10 +906,10 @@
 
                 <!-- Laporan Menu -->
                 <div class="sidebar-menu-item">
-                    <a href="/laporan">
-                        <i class="fas fa-chart-line"></i>
-                        Laporan
-                    </a>
+                        <a href="/laporan" style="justify-content: flex-start; gap: 12px;">
+                            <i class="fas fa-chart-line"></i>
+                            <span style="font-weight:700;">Laporan</span>
+                        </a>
                 </div>
             </nav>
         </aside>
@@ -800,6 +931,38 @@
 
             <!-- Content -->
             <div class="content">
+                <!-- Summary Stats -->
+                <section class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon blue">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-card-label">Total Pesanan</div>
+                        <div class="stat-card-value" id="total-pesanan">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-card-label">Pesanan Selesai</div>
+                        <div class="stat-card-value" id="pesanan-selesai">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon orange">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-card-label">Pesanan Pending</div>
+                        <div class="stat-card-value" id="pesanan-pending">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon purple">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-card-label">Total Revenue</div>
+                        <div class="stat-card-value" id="total-revenue">Rp 0</div>
+                    </div>
+                </section>
+
                 <!-- Tabs -->
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab(this, 'karyawan')">
@@ -1053,12 +1216,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderTables();
             setupSearch();
+            updateStats();
         });
 
         // Render Tables
         function renderTables() {
             renderKaryawanTable();
             renderPelangganTable();
+            updateStats();
         }
 
         function renderKaryawanTable() {
@@ -1473,6 +1638,20 @@
             submenu.classList.toggle('open');
             arrow.classList.toggle('open');
             button.classList.toggle('active');
+        }
+
+        // Update Stats
+        function updateStats() {
+            const allPesanan = [...pesananData.karyawan, ...pesananData.pelanggan];
+            const totalPesanan = allPesanan.length;
+            const pesananSelesai = allPesanan.filter(p => p.status === 'selesai' || p.status === 'stor').length;
+            const pesananPending = allPesanan.filter(p => p.status === 'pending' || p.status === 'belum_stor').length;
+            const totalRevenue = allPesanan.reduce((sum, p) => sum + p.total, 0);
+
+            document.getElementById('total-pesanan').textContent = totalPesanan;
+            document.getElementById('pesanan-selesai').textContent = pesananSelesai;
+            document.getElementById('pesanan-pending').textContent = pesananPending;
+            document.getElementById('total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
         }
 
         // Close modal when clicking outside

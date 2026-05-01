@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -100,13 +100,14 @@
             text-decoration: none;
             border-radius: var(--border-radius);
             transition: var(--transition);
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
             background: none;
             border: none;
             cursor: pointer;
             width: 100%;
             text-align: left;
+            letter-spacing: 0.3px;
         }
 
         .sidebar-menu-item > a:hover,
@@ -124,6 +125,7 @@
         .sidebar-menu-item i,
         .sidebar-menu-toggle i {
             width: 20px;
+            min-width: 20px;
             margin-right: 12px;
             text-align: center;
             font-size: 16px;
@@ -133,6 +135,7 @@
             font-size: 12px;
             transition: transform 0.3s ease;
             margin-left: auto;
+            flex-shrink: 0;
         }
 
         .sidebar-menu-item .toggle-arrow.open {
@@ -829,63 +832,69 @@
                 <p>Management System</p>
             </div>
             <nav class="sidebar-menu">
-                <div class="sidebar-menu-item">
-                    <a href="/dashboard" class="active">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
-                </div>
+    <!-- Dashboard Menu -->
+    <div class="sidebar-menu-item">
+        <a href="/dashboard" class="active" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-tachometer-alt"></i>
+            <span style="font-weight:700;">Dashboard</span>
+        </a>
+    </div>
 
-                <!-- Pesanan Menu -->
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-shopping-cart"></i> Pesanan</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
-                        <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
-                    </div>
-                </div>
+    <!-- Pesanan Menu -->
+    <div class="sidebar-menu-item">
+        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-shopping-cart"></i>
+            <span style="font-weight:700;">Pesanan</span>
+            <i class="fas fa-chevron-down toggle-arrow"></i>
+        </button>
+        <div class="sidebar-submenu">
+            <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
+            <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
+        </div>
+    </div>
 
-                <!-- Data Menu -->
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-database"></i> Data</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
-                        <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
-                    </div>
-                </div>
+    <!-- Data Menu -->
+    <div class="sidebar-menu-item">
+        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-database"></i>
+            <span style="font-weight:700;">Data</span>
+            <i class="fas fa-chevron-down toggle-arrow"></i>
+        </button>
+        <div class="sidebar-submenu">
+            <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
+            <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
+        </div>
+    </div>
 
-                <!-- Produk Menu -->
-                <div class="sidebar-menu-item">
-                    <a href="/produk">
-                        <i class="fas fa-box"></i>
-                        Produk
-                    </a>
-                </div>
+    <!-- Produk Menu -->
+    <div class="sidebar-menu-item">
+        <a href="/produk" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-box"></i>
+            <span style="font-weight:700;">Produk</span>
+        </a>
+    </div>
 
-                <!-- Pembayaran Menu -->
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)">
-                        <span><i class="fas fa-credit-card"></i> Pembayaran</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
-                        <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
-                    </div>
-                </div>
+    <!-- Pembayaran Menu -->
+    <div class="sidebar-menu-item">
+        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-credit-card"></i>
+            <span style="font-weight:700;">Pembayaran</span>
+            <i class="fas fa-chevron-down toggle-arrow"></i>
+        </button>
+        <div class="sidebar-submenu">
+            <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
+            <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
+        </div>
+    </div>
 
-                <!-- Laporan Menu -->
-                <div class="sidebar-menu-item">
-                    <a href="/laporan">
-                        <i class="fas fa-chart-line"></i>
-                        Laporan
-                    </a>
+    <!-- Laporan Menu -->
+    <div class="sidebar-menu-item">
+        <a href="/laporan" style="justify-content: flex-start; gap: 12px;">
+            <i class="fas fa-chart-line"></i>
+            <span style="font-weight:700;">Laporan</span>
+        </a>
+    </div>
+</nav>
                 </div>
             </nav>
         </aside>

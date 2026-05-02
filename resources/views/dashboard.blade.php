@@ -894,8 +894,6 @@
             <span style="font-weight:700;">Laporan</span>
         </a>
     </div>
-</nav>
-                </div>
             </nav>
         </aside>
 

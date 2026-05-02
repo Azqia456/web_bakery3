@@ -623,7 +623,7 @@
         <div class="login-section">
             <div class="form-container">
                 <div class="form-header">
-                    <h2>Selamat Datang Kembali</h2>
+                    <h2>Selamat Datang</h2>
                     <p>Masuk untuk mengakses akun Anda</p>
                 </div>
 
@@ -639,11 +639,6 @@
                         </ul>
                     </div>
                     @endif
-
-                    <div id="debugInfo" style="background: #FFF8E1; border: 1px solid #C69C6D; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; color: #8B6F47; display: none;">
-                        <strong>Debug Info:</strong>
-                        <div id="debugContent"></div>
-                    </div>
 
                     <div class="form-group">
                         <label for="login">Email</label>
@@ -689,39 +684,13 @@
         // Form submission handling
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
-            loginForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                
-                const loginInput = document.getElementById('email').value;
-                const passwordInput = document.getElementById('password').value;
-                const tokenInput = document.querySelector('input[name="_token"]').value;
-                
-                console.log('=== FORM DEBUG ===');
-                console.log('Email:', loginInput);
-                console.log('Password:', passwordInput ? '***' : '(empty)');
-                console.log('CSRF Token:', tokenInput ? tokenInput.substring(0, 20) + '...' : '(missing)');
-                console.log('Form action:', this.action);
-                console.log('Form method:', this.method);
-                
-                // Show debug info
-                const debugDiv = document.getElementById('debugInfo');
-                const debugContent = document.getElementById('debugContent');
-                debugContent.innerHTML = `
-                    <div>Email: <strong>${loginInput}</strong></div>
-                    <div>Token: <strong>${tokenInput ? tokenInput.substring(0, 30) + '...' : '❌ MISSING'}</strong></div>
-                    <div>Status: <strong>Ready to submit</strong></div>
-                `;
-                debugDiv.style.display = 'block';
-                
+            loginForm.addEventListener('submit', function () {
                 const btn = this.querySelector('.login-btn');
-                btn.style.opacity = '0.8';
-                btn.style.pointerEvents = 'none';
-                btn.textContent = 'Sedang masuk...';
-                
-                // Delay for UX, then submit normally
-                setTimeout(() => {
-                    this.submit(); // NOW submit the form normally
-                }, 500);
+                if (btn) {
+                    btn.style.opacity = '0.8';
+                    btn.style.pointerEvents = 'none';
+                    btn.textContent = 'Sedang masuk...';
+                }
             });
         }
 

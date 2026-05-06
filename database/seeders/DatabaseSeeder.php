@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Produk;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -30,5 +31,20 @@ class DatabaseSeeder extends Seeder
                 'role' => 'pelanggan',
             ]
         );
+
+        $produkList = [
+            ['nama_produk' => 'Roti Kelapa', 'harga_produk' => 30000],
+            ['nama_produk' => 'Roti Kacang Ijo', 'harga_produk' => 30000],
+            ['nama_produk' => 'Roti Stroberi', 'harga_produk' => 35000],
+            ['nama_produk' => 'Roti Bluberi', 'harga_produk' => 38000],
+            ['nama_produk' => 'Roti Cokelat', 'harga_produk' => 35000],
+        ];
+
+        foreach ($produkList as $produk) {
+            Produk::updateOrCreate(
+                ['nama_produk' => $produk['nama_produk']],
+                ['harga_produk' => $produk['harga_produk']]
+            );
+        }
     }
 }

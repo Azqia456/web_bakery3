@@ -62,6 +62,7 @@ class AuthController extends Controller
 
     /**
      * Handle register request
+     * Role otomatis menjadi "pelanggan" - user tidak bisa memilih role
      */
     public function register(Request $request)
     {
@@ -69,21 +70,19 @@ class AuthController extends Controller
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:owner,pelanggan',
         ]);
 
-        $user = User::create([
+        // Buat user baru dengan role otomatis "pelanggan"
+        User::create([
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
+            'role' => 'pelanggan', // Role otomatis menjadi pelanggan
         ]);
 
-        // Auto login after registration
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return $this->redirectForRole($user->role)->with('success', 'Registrasi berhasil! Selamat datang.');
+        // Redirect ke login page - user harus login manual
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil! Silahkan login dengan akun Anda.');
     }
 
     /**

@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -80,10 +80,6 @@
 
         .sidebar-menu {
             padding: 16px 0;
-        }
-
-        .sidebar-menu-item {
-            margin: 4px 16px;
         }
 
         .sidebar-menu-item {
@@ -420,18 +416,18 @@
             align-items: center;
             font-size: 12px;
             font-weight: 500;
-        }
-
-        .summary-card-change.positive {
-            color: #22C55E;
-        }
-
-        .summary-card-change.negative {
-            color: #EF4444;
+            color: var(--dark-gray);
         }
 
         .summary-card-change i {
             margin-right: 4px;
+        }
+
+        .empty-state {
+            padding: 24px;
+            text-align: center;
+            color: var(--dark-gray);
+            font-size: 14px;
         }
 
         /* Charts Section */
@@ -509,74 +505,6 @@
             overflow-y: auto;
         }
 
-        .customer-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            transition: var(--transition);
-        }
-
-        .customer-item:hover {
-            background: var(--light-gray);
-        }
-
-        .customer-item:last-child {
-            border-bottom: none;
-        }
-
-        .customer-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .customer-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 2px;
-        }
-
-        .customer-meta {
-            font-size: 12px;
-            color: var(--dark-gray);
-        }
-
-        .customer-category {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 500;
-            text-transform: uppercase;
-            margin-left: 8px;
-        }
-
-        .customer-category.vip {
-            background: rgba(249, 115, 22, 0.1);
-            color: #F97316;
-        }
-
-        .customer-category.regular {
-            background: rgba(107, 114, 128, 0.1);
-            color: #6B7280;
-        }
-
-        .customer-category.new {
-            background: rgba(34, 197, 94, 0.1);
-            color: #22C55E;
-        }
-
         /* Bottom Section */
         .bottom-section {
             display: grid;
@@ -616,57 +544,6 @@
         .deposits-list {
             max-height: 300px;
             overflow-y: auto;
-        }
-
-        .deposit-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            transition: var(--transition);
-        }
-
-        .deposit-item:hover {
-            background: var(--light-gray);
-        }
-
-        .deposit-item:last-child {
-            border-bottom: none;
-        }
-
-        .deposit-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 2px;
-        }
-
-        .deposit-date {
-            font-size: 12px;
-            color: var(--dark-gray);
-        }
-
-        .deposit-amount {
-            text-align: right;
-        }
-
-        .deposit-amount .value {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            display: block;
-        }
-
-        .deposit-status {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 500;
-            background: rgba(34, 197, 94, 0.1);
-            color: #22C55E;
-            margin-top: 4px;
         }
 
         /* Statistics */
@@ -789,21 +666,6 @@
             }
         }
 
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(168, 218, 220, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--primary-green);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -825,81 +687,72 @@
 </head>
 <body>
     <div class="dashboard">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h1>🍞 Three D Bakery</h1>
                 <p>Management System</p>
             </div>
             <nav class="sidebar-menu">
-    <!-- Dashboard Menu -->
-    <div class="sidebar-menu-item">
-        <a href="/dashboard" class="active" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-tachometer-alt"></i>
-            <span style="font-weight:700;">Dashboard</span>
-        </a>
-    </div>
+                <div class="sidebar-menu-item">
+                    <a href="/dashboard" class="active" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span style="font-weight:700;">Dashboard</span>
+                    </a>
+                </div>
 
-    <!-- Pesanan Menu -->
-    <div class="sidebar-menu-item">
-        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-shopping-cart"></i>
-            <span style="font-weight:700;">Pesanan</span>
-            <i class="fas fa-chevron-down toggle-arrow"></i>
-        </button>
-        <div class="sidebar-submenu">
-            <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
-            <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
-        </div>
-    </div>
+                <div class="sidebar-menu-item">
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span style="font-weight:700;">Pesanan</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
+                        <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
+                    </div>
+                </div>
 
-    <!-- Data Menu -->
-    <div class="sidebar-menu-item">
-        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-database"></i>
-            <span style="font-weight:700;">Data</span>
-            <i class="fas fa-chevron-down toggle-arrow"></i>
-        </button>
-        <div class="sidebar-submenu">
-            <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
-            <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
-        </div>
-    </div>
+                <div class="sidebar-menu-item">
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-database"></i>
+                        <span style="font-weight:700;">Data</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
+                        <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
+                    </div>
+                </div>
 
-    <!-- Produk Menu -->
-    <div class="sidebar-menu-item">
-        <a href="/produk" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-box"></i>
-            <span style="font-weight:700;">Produk</span>
-        </a>
-    </div>
+                <div class="sidebar-menu-item">
+                    <a href="/produk" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-box"></i>
+                        <span style="font-weight:700;">Produk</span>
+                    </a>
+                </div>
 
-    <!-- Pembayaran Menu -->
-    <div class="sidebar-menu-item">
-        <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-credit-card"></i>
-            <span style="font-weight:700;">Pembayaran</span>
-            <i class="fas fa-chevron-down toggle-arrow"></i>
-        </button>
-        <div class="sidebar-submenu">
-            <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
-            <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
-        </div>
-    </div>
+                <div class="sidebar-menu-item">
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-credit-card"></i>
+                        <span style="font-weight:700;">Pembayaran</span>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
+                        <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
+                    </div>
+                </div>
 
-    <!-- Laporan Menu -->
-    <div class="sidebar-menu-item">
-        <a href="/laporan" style="justify-content: flex-start; gap: 12px;">
-            <i class="fas fa-chart-line"></i>
-            <span style="font-weight:700;">Laporan</span>
-        </a>
-    </div>
+                <div class="sidebar-menu-item">
+                    <a href="/laporan" style="justify-content: flex-start; gap: 12px;">
+                        <i class="fas fa-chart-line"></i>
+                        <span style="font-weight:700;">Laporan</span>
+                    </a>
+                </div>
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Header -->
             <header class="header">
                 <div class="header-left">
                     <h1 class="header-title">Dashboard</h1>
@@ -913,19 +766,19 @@
                 <div class="header-right">
                     <button class="notification-btn">
                         <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">0</span>
                     </button>
                     <div class="profile-menu">
                         <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                            <div class="profile-avatar">JD</div>
+                            <div class="profile-avatar">AD</div>
                         </button>
 
                         <div class="profile-dropdown" id="profileDropdown">
-                            <a href="{{ route('profile.edit') }}">
+                            <a href="{{ route('profile.edit') ?? '#' }}">
                                 <i class="fas fa-user"></i>
                                 Profil
                             </a>
-                            <form action="{{ route('logout') }}" method="POST">
+                            <form action="{{ route('logout') ?? '#' }}" method="POST">
                                 @csrf
                                 <button type="submit" class="logout-action">
                                     <i class="fas fa-right-from-bracket"></i>
@@ -937,16 +790,58 @@
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
             <main class="dashboard-content">
-                <!-- Summary Cards -->
                 <section class="summary-cards" id="summary-cards">
-                    <!-- Cards will be populated by JavaScript -->
+                    <div class="summary-card">
+                        <div class="summary-card-icon blue">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="summary-card-title">Total Pemesanan</div>
+                        <div class="summary-card-value">0</div>
+                        <div class="summary-card-change">
+                            <i class="fas fa-minus"></i>
+                            Belum ada data
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-card-icon green">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="summary-card-title">Pendapatan Bulan Ini</div>
+                        <div class="summary-card-value">Rp 0</div>
+                        <div class="summary-card-change">
+                            <i class="fas fa-minus"></i>
+                            Belum ada data
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-card-icon orange">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="summary-card-title">Pesanan Belum Lunas</div>
+                        <div class="summary-card-value">0</div>
+                        <div class="summary-card-change">
+                            <i class="fas fa-minus"></i>
+                            Belum ada data
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-card-icon purple">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="summary-card-title">Setoran Karyawan</div>
+                        <div class="summary-card-value">Rp 0</div>
+                        <div class="summary-card-change">
+                            <i class="fas fa-minus"></i>
+                            Belum ada data
+                        </div>
+                    </div>
                 </section>
 
-                <!-- Charts Section -->
                 <section class="charts-section">
-                    <!-- Orders Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3 class="chart-title">
@@ -959,7 +854,6 @@
                         </div>
                     </div>
 
-                    <!-- Customers Panel -->
                     <div class="customers-panel">
                         <div class="customers-header">
                             <h3 class="customers-title">
@@ -968,14 +862,12 @@
                             </h3>
                         </div>
                         <div class="customers-list" id="customers-list">
-                            <!-- Customers will be populated by JavaScript -->
+                            <div class="empty-state">Belum ada pelanggan.</div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Bottom Section -->
                 <section class="bottom-section">
-                    <!-- Deposits Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3 class="chart-title">
@@ -988,7 +880,6 @@
                         </div>
                     </div>
 
-                    <!-- Deposits List -->
                     <div class="deposits-panel">
                         <div class="deposits-header">
                             <h3 class="deposits-title">
@@ -997,12 +888,11 @@
                             </h3>
                         </div>
                         <div class="deposits-list" id="deposits-list">
-                            <!-- Deposits will be populated by JavaScript -->
+                            <div class="empty-state">Belum ada setoran terbaru.</div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Statistics -->
                 <section class="statistics-panel">
                     <div class="statistics-header">
                         <h3 class="statistics-title">
@@ -1011,7 +901,20 @@
                         </h3>
                     </div>
                     <div class="statistics-grid" id="statistics-grid">
-                        <!-- Statistics will be populated by JavaScript -->
+                        <div class="statistic-item">
+                            <div class="statistic-icon blue">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div class="statistic-value">0</div>
+                            <div class="statistic-label">Total Produk</div>
+                        </div>
+                        <div class="statistic-item">
+                            <div class="statistic-icon green">
+                                <i class="fas fa-id-badge"></i>
+                            </div>
+                            <div class="statistic-value">0</div>
+                            <div class="statistic-label">Total Karyawan</div>
+                        </div>
                     </div>
                 </section>
             </main>
@@ -1021,17 +924,17 @@
     <script>
         let ordersChart, depositsChart;
 
-        // Initialize charts
+        // Initialize empty charts
         function initCharts() {
-            // Orders Line Chart
+            // Orders Line Chart (Empty)
             const ordersCtx = document.getElementById('ordersChart').getContext('2d');
             ordersChart = new Chart(ordersCtx, {
                 type: 'line',
                 data: {
-                    labels: [],
+                    labels: [], // Kosong
                     datasets: [{
                         label: 'Total Pemesanan',
-                        data: [],
+                        data: [], // Kosong
                         borderColor: 'rgba(168, 218, 220, 1)',
                         backgroundColor: 'rgba(168, 218, 220, 0.1)',
                         borderWidth: 3,
@@ -1064,27 +967,19 @@
                                 color: 'rgba(0, 0, 0, 0.05)'
                             }
                         }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart'
                     }
                 }
             });
 
-            // Deposits Bar Chart
+            // Deposits Bar Chart (Empty)
             const depositsCtx = document.getElementById('depositsChart').getContext('2d');
             depositsChart = new Chart(depositsCtx, {
                 type: 'bar',
                 data: {
-                    labels: [],
+                    labels: [], // Kosong
                     datasets: [{
                         label: 'Setoran (Rp)',
-                        data: [],
+                        data: [], // Kosong
                         backgroundColor: 'rgba(168, 218, 220, 0.8)',
                         borderColor: 'rgba(168, 218, 220, 1)',
                         borderWidth: 2,
@@ -1118,151 +1013,14 @@
                                 color: 'rgba(0, 0, 0, 0.05)'
                             }
                         }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart'
                     }
                 }
-            });
-        }
-
-        // Load dashboard data
-        function loadDashboardData() {
-            fetch('/api/dashboard/stats')
-                .then(response => response.json())
-                .then(data => {
-                    updateSummaryCards(data.summary_cards);
-                    updateOrdersChart(data.orders_chart);
-                    updateCustomersList(data.customers_list);
-                    updateDepositsChart(data.deposits_chart);
-                    updateDepositsList(data.deposits_list);
-                    updateStatistics(data.statistics);
-                })
-                .catch(error => {
-                    console.error('Error loading dashboard data:', error);
-                });
-        }
-
-        // Update summary cards
-        function updateSummaryCards(cards) {
-            const container = document.getElementById('summary-cards');
-            container.innerHTML = '';
-
-            cards.forEach(card => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'summary-card';
-
-                cardElement.innerHTML = `
-                    <div class="summary-card-icon ${card.color}">
-                        <i class="${card.icon}"></i>
-                    </div>
-                    <div class="summary-card-title">${card.title}</div>
-                    <div class="summary-card-value">${card.value}</div>
-                    <div class="summary-card-change ${card.change_type}">
-                        <i class="fas fa-arrow-${card.change_type === 'positive' ? 'up' : 'down'}"></i>
-                        ${card.change} dari bulan lalu
-                    </div>
-                `;
-
-                container.appendChild(cardElement);
-            });
-        }
-
-        // Update orders chart
-        function updateOrdersChart(chartData) {
-            if (ordersChart) {
-                ordersChart.data.labels = chartData.labels;
-                ordersChart.data.datasets[0].data = chartData.data;
-                ordersChart.update();
-            }
-        }
-
-        // Update customers list
-        function updateCustomersList(customers) {
-            const container = document.getElementById('customers-list');
-            container.innerHTML = '';
-
-            customers.forEach(customer => {
-                const item = document.createElement('div');
-                item.className = 'customer-item';
-
-                item.innerHTML = `
-                    <div class="customer-avatar">${customer.avatar}</div>
-                    <div class="customer-info">
-                        <h4>${customer.name}</h4>
-                        <div class="customer-meta">
-                            ${customer.orders_count} pesanan • ${customer.last_order}
-                            <span class="customer-category ${customer.category.toLowerCase()}">${customer.category}</span>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(item);
-            });
-        }
-
-        // Update deposits chart
-        function updateDepositsChart(chartData) {
-            if (depositsChart) {
-                depositsChart.data.labels = chartData.labels;
-                depositsChart.data.datasets[0].data = chartData.data;
-                depositsChart.update();
-            }
-        }
-
-        // Update deposits list
-        function updateDepositsList(deposits) {
-            const container = document.getElementById('deposits-list');
-            container.innerHTML = '';
-
-            deposits.forEach(deposit => {
-                const item = document.createElement('div');
-                item.className = 'deposit-item';
-
-                item.innerHTML = `
-                    <div class="deposit-info">
-                        <h4>${deposit.name}</h4>
-                        <div class="deposit-date">${deposit.date}</div>
-                    </div>
-                    <div class="deposit-amount">
-                        <div class="value">Rp ${(deposit.amount / 1000000).toFixed(1)}M</div>
-                        <span class="deposit-status">${deposit.status}</span>
-                    </div>
-                `;
-
-                container.appendChild(item);
-            });
-        }
-
-        // Update statistics
-        function updateStatistics(statistics) {
-            const container = document.getElementById('statistics-grid');
-            container.innerHTML = '';
-
-            statistics.forEach(stat => {
-                const item = document.createElement('div');
-                item.className = 'statistic-item';
-
-                item.innerHTML = `
-                    <div class="statistic-icon ${stat.color}">
-                        <i class="${stat.icon}"></i>
-                    </div>
-                    <div class="statistic-value">${stat.value.toLocaleString('id-ID')}</div>
-                    <div class="statistic-label">${stat.label}</div>
-                `;
-
-                container.appendChild(item);
             });
         }
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initCharts();
-            loadDashboardData();
-
-            // Auto refresh every 30 seconds
-            setInterval(loadDashboardData, 30000);
         });
 
         // Toggle submenu function

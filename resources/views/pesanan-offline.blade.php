@@ -1171,35 +1171,8 @@
     <script>
         // Sample data (in production, this would come from database)
         let pesananData = {
-            karyawan: [
-                {
-                    id: 'K001',
-                    nama: 'Budi Santoso',
-                    status: 'stor',
-                    tanggal_pesan: '2026-04-20',
-                    tanggal_pickup: '2026-04-22',
-                    total: 250000,
-                    produk: [
-                        { nama: 'Roti Tawar', jumlah: 5, harga: 30000, subtotal: 150000 },
-                        { nama: 'Donat Glaze', jumlah: 2, harga: 50000, subtotal: 100000 }
-                    ]
-                }
-            ],
-            pelanggan: [
-                {
-                    id: 'P001',
-                    nama: 'Siti Handoko',
-                    status: 'pending',
-                    tanggal_pesan: '2026-04-21',
-                    pembayaran: 'belum_lunas',
-                    tanggal_pickup: '2026-04-23',
-                    total: 500000,
-                    produk: [
-                        { nama: 'Kue Tart', jumlah: 1, harga: 300000, subtotal: 300000 },
-                        { nama: 'Roti Croissant', jumlah: 2, harga: 100000, subtotal: 200000 }
-                    ]
-                }
-            ]
+            karyawan: [],
+            pelanggan: []
         };
 
         let currentTab = 'karyawan';

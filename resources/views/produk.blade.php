@@ -31,6 +31,8 @@
         margin: 0;
     }
 
+    .min-h-screen > nav { display: none; }
+
     .dashboard {
         display: flex;
         min-height: 100vh;
@@ -144,9 +146,9 @@
         top: 0;
         z-index: 999;
     }
-    .header-title { font-size: 24px; font-weight: 700; color: var(--text-dark); margin: 0; }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .notification-btn, .profile-btn {
+    .header-title { font-size: 22px; font-weight: 700; color: var(--text-dark); margin: 0; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .notification-btn {
         position: relative;
         width: 40px; height: 40px;
         border-radius: 50%;
@@ -155,7 +157,7 @@
         display: flex; align-items: center; justify-content: center;
         transition: var(--transition); color: var(--dark-gray);
     }
-    .notification-btn:hover, .profile-btn:hover { background: var(--medium-gray); transform: scale(1.05); }
+    .notification-btn:hover { background: var(--medium-gray); transform: scale(1.05); }
     .notification-badge {
         position: absolute; top: -2px; right: -2px;
         width: 18px; height: 18px;
@@ -163,12 +165,23 @@
         border-radius: 50%; font-size: 10px; font-weight: 600;
         display: flex; align-items: center; justify-content: center;
     }
+    .profile-btn {
+        position: relative;
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--light-gray);
+        border: none; cursor: pointer;
+        transition: var(--transition); color: var(--text-dark);
+    }
+    .profile-btn:hover { background: var(--medium-gray); }
     .profile-avatar {
         width: 32px; height: 32px; border-radius: 50%;
         background: linear-gradient(135deg, var(--primary-green), #81C784);
         color: white; display: flex; align-items: center; justify-content: center;
-        font-weight: 600; font-size: 14px;
+        font-weight: 700; font-size: 13px;
     }
+    .profile-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
     .profile-dropdown {
         position: absolute; top: calc(100% + 10px); right: 0;
         min-width: 180px; background: var(--white);
@@ -294,13 +307,27 @@
             </div>
 
             <div class="header-right">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
+                <button class="notification-btn" type="button" aria-label="Notifikasi">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 01-6 0" />
+                    </svg>
                     <span class="notification-badge">3</span>
                 </button>
                 <div class="profile-menu">
+                    @php
+                        $userName = Auth::user()->name ?? 'User';
+                        $parts = preg_split('/\s+/', trim($userName));
+                        $initials = '';
+                        foreach ($parts as $part) {
+                            if ($part !== '') {
+                                $initials .= strtoupper(substr($part, 0, 1));
+                            }
+                        }
+                        $initials = substr($initials, 0, 2);
+                    @endphp
                     <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                        <div class="profile-avatar">JD</div>
+                        <div class="profile-avatar">{{ $initials }}</div>
+                        <span class="profile-name">{{ $userName }}</span>
                     </button>
 
                     <div class="profile-dropdown" id="profileDropdown">

@@ -97,4 +97,19 @@ Route::middleware('auth')->group(function () {
 
     // LAPORAN
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
+    Route::get('/laporan-penjualan', function () {
+        return view('laporan_penjualan');
+    })->name('laporan-penjualan');
+    Route::get('/laporan-pesanan-online', function () {
+        return view('laporan_pesanan_online');
+    })->name('laporan-pesanan-online');
+    Route::get('/laporan-pesanan-offline', function () {
+        return view('laporan_pesanan_offline');
+    })->name('laporan-pesanan-offline');
+    Route::get('/laporan-pembayaran', function () {
+        return view('laporan_pembayaran');
+    })->name('laporan-pembayaran');
+    Route::get('/laporan-setoran-karyawan', function () {
+        return view('laporan_setoran_karyawan');
+    })->name('laporan-setoran-karyawan');
 });

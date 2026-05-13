@@ -242,13 +242,13 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        padding: 24px;
+        padding: 12px;
         border: 2px dashed #D4BFA8;
         border-radius: 12px;
         background: linear-gradient(135deg, #F9F6F1 0%, #F7F3E9 100%);
         cursor: pointer;
         transition: all 0.3s ease;
-        min-height: 120px;
+        min-height: 80px;
     }
 
     .file-input-label:hover {
@@ -264,7 +264,7 @@
     }
 
     .file-input-icon {
-        font-size: 32px;
+        font-size: 24px;
         margin-bottom: 8px;
     }
 
@@ -346,8 +346,8 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        overflow: hidden !important;
-        padding: 0 !important;
+        overflow-y: auto !important;
+        padding: 24px 16px !important;
         margin: 0 !important;
     }
 
@@ -356,6 +356,30 @@
         .sidebar { transform: translateX(-100%); }
         .main-content { margin-left: 0; }
         .header { padding: 12px 16px; }
+    }
+
+    #addProductForm,
+    #editProductForm {
+        padding: 16px !important;
+    }
+
+    .product-modal-card {
+        width: min(900px, 100%);
+        height: auto;
+    }
+
+    @media (min-width: 1024px) {
+        #addProductModal:not(.hidden),
+        #editProductModal:not(.hidden) {
+            align-items: flex-start !important;
+            padding: 72px 24px 24px 304px !important;
+        }
+
+        .product-modal-card {
+            width: calc(100vw - 328px);
+            max-width: calc(100vw - 328px);
+            height: auto;
+        }
     }
 </style>
 
@@ -537,8 +561,8 @@
 </div>
 
 <div id="addProductModal" class="hidden">
-    <div style="width: calc(100% - 32px); max-width: 700px; height: auto; max-height: 90vh; background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
-        <div class="border-b border-[#E5D5C0] p-6">
+    <div class="product-modal-card" style="background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; margin: auto;">
+        <div class="border-b border-[#E5D5C0] p-3">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-[#42352A]">Tambah Produk Baru</h2>
                 <button type="button" id="closeModal" class="text-[#8B7355] hover:text-[#42352A] text-2xl leading-none">
@@ -547,7 +571,7 @@
             </div>
         </div>
 
-        <form id="addProductForm" class="p-6 space-y-4 overflow-y-auto flex-1" enctype="multipart/form-data">
+        <form id="addProductForm" class="p-6 space-y-2 overflow-visible flex-1" enctype="multipart/form-data">
             <div>
                 <label class="block text-sm font-semibold text-[#42352A] mb-2">
                     Nama Produk
@@ -568,7 +592,7 @@
                 <textarea
                     id="productDescription"
                     placeholder="Deskripsi produk..."
-                    rows="3"
+                    rows="2"
                     class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent resize-none"
                 ></textarea>
             </div>
@@ -615,7 +639,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
+            <div class="flex gap-3 pt-2 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
                 <button
                     type="button"
                     id="cancelBtn"
@@ -635,8 +659,8 @@
 </div>
 
 <div id="editProductModal" class="hidden">
-    <div style="width: calc(100% - 32px); max-width: 700px; height: auto; max-height: 90vh; background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
-        <div class="border-b border-[#E5D5C0] p-6">
+    <div class="product-modal-card" style="background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; margin: auto;">
+        <div class="border-b border-[#E5D5C0] p-3">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-[#42352A]">Edit Produk</h2>
                 <button type="button" id="closeEditModal" class="text-[#8B7355] hover:text-[#42352A] text-2xl leading-none">
@@ -645,7 +669,7 @@
             </div>
         </div>
 
-        <form id="editProductForm" class="p-6 space-y-4 overflow-y-auto flex-1" enctype="multipart/form-data">
+        <form id="editProductForm" class="p-6 space-y-2 overflow-visible flex-1" enctype="multipart/form-data">
             <input type="hidden" id="editProductId" />
 
             <div>
@@ -666,7 +690,7 @@
                 </label>
                 <textarea
                     id="editProductDescription"
-                    rows="3"
+                    rows="2"
                     class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent resize-none"
                 ></textarea>
             </div>
@@ -712,7 +736,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
+            <div class="flex gap-3 pt-2 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
                 <button
                     type="button"
                     id="cancelEditBtn"

@@ -326,6 +326,31 @@
         background: rgba(0, 0, 0, 0.8);
     }
 
+    /* Modal Styling */
+    #addProductModal.hidden,
+    #editProductModal.hidden {
+        display: none !important;
+    }
+
+    #addProductModal:not(.hidden),
+    #editProductModal:not(.hidden) {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        z-index: 50 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .sidebar { transform: translateX(-100%); }
@@ -485,7 +510,7 @@
                             />
                         </div>
 
-                        <button class="btn-transition flex items-center justify-center gap-2 px-4 py-2.5 bg-[#C69C6D] hover:bg-[#B38A5C] text-white rounded-lg font-semibold text-sm shadow-sm whitespace-nowrap">
+                        <button onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="btn-transition flex items-center justify-center gap-2 px-4 py-2.5 bg-[#C69C6D] hover:bg-[#B38A5C] text-white rounded-lg font-semibold text-sm shadow-sm whitespace-nowrap">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                             </svg>
@@ -511,8 +536,8 @@
     </div>
 </div>
 
-<div id="addProductModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+<div id="addProductModal" class="hidden">
+    <div style="width: calc(100% - 32px); max-width: 700px; height: auto; max-height: 90vh; background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
         <div class="border-b border-[#E5D5C0] p-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-[#42352A]">Tambah Produk Baru</h2>
@@ -522,7 +547,7 @@
             </div>
         </div>
 
-        <form id="addProductForm" class="p-6 space-y-4" enctype="multipart/form-data">
+        <form id="addProductForm" class="p-6 space-y-4 overflow-y-auto flex-1" enctype="multipart/form-data">
             <div>
                 <label class="block text-sm font-semibold text-[#42352A] mb-2">
                     Nama Produk
@@ -590,7 +615,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0]">
+            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
                 <button
                     type="button"
                     id="cancelBtn"
@@ -609,8 +634,8 @@
     </div>
 </div>
 
-<div id="editProductModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+<div id="editProductModal" class="hidden">
+    <div style="width: calc(100% - 32px); max-width: 700px; height: auto; max-height: 90vh; background: white; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
         <div class="border-b border-[#E5D5C0] p-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-[#42352A]">Edit Produk</h2>
@@ -620,7 +645,7 @@
             </div>
         </div>
 
-        <form id="editProductForm" class="p-6 space-y-4" enctype="multipart/form-data">
+        <form id="editProductForm" class="p-6 space-y-4 overflow-y-auto flex-1" enctype="multipart/form-data">
             <input type="hidden" id="editProductId" />
 
             <div>
@@ -687,7 +712,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0]">
+            <div class="flex gap-3 pt-4 border-t border-[#E5D5C0] flex-shrink-0 bg-white">
                 <button
                     type="button"
                     id="cancelEditBtn"
@@ -743,6 +768,18 @@
             }
         });
     }
+
+    // Move modals to body for proper fixed positioning
+    setTimeout(() => {
+        const addModal = document.getElementById('addProductModal');
+        const editModal = document.getElementById('editProductModal');
+        if (addModal && addModal.parentElement !== document.body) {
+            document.body.appendChild(addModal);
+        }
+        if (editModal && editModal.parentElement !== document.body) {
+            document.body.appendChild(editModal);
+        }
+    }, 0);
 
     // DATA DAN FUNGSI PRODUK - SINKRONISASI DENGAN DATABASE
     let produkData = [];
@@ -1031,10 +1068,25 @@
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const productName = document.getElementById('productName').value.trim();
+        const productPrice = document.getElementById('productPrice').value.trim();
+        const productDescription = document.getElementById('productDescription').value.trim();
+        
+        // Validasi field wajib
+        if (!productName) {
+            alert('Nama produk harus diisi!');
+            return;
+        }
+        
+        if (!productPrice || parseFloat(productPrice) <= 0) {
+            alert('Harga produk harus lebih dari 0!');
+            return;
+        }
+        
         const formDataObj = new FormData();
-        formDataObj.append('nama_produk', document.getElementById('productName').value);
-        formDataObj.append('harga_produk', parseFloat(document.getElementById('productPrice').value));
-        formDataObj.append('deskripsi', document.getElementById('productDescription').value);
+        formDataObj.append('nama_produk', productName);
+        formDataObj.append('harga_produk', parseFloat(productPrice));
+        formDataObj.append('deskripsi', productDescription);
         
         if (document.getElementById('productImage').files.length > 0) {
             formDataObj.append('gambar', document.getElementById('productImage').files[0]);
@@ -1051,6 +1103,7 @@
             });
 
             const result = await response.json();
+            console.log('Response:', response.status, result);
 
             if (response.ok) {
                 const gambarUrl = result.gambar ? '/storage/' + result.gambar : null;
@@ -1067,13 +1120,15 @@
                 addProductForm.reset();
                 document.getElementById('productImagePreview').classList.remove('show');
                 document.getElementById('productImageLabel').classList.remove('hidden');
-                alert('Produk berhasil ditambahkan ke database!');
+                alert('Produk berhasil ditambahkan!');
             } else {
-                alert('Gagal menambahkan produk: ' + (result.message || 'Unknown error'));
+                const errorMessage = result.message || result.errors || JSON.stringify(result) || 'Unknown error';
+                console.error('API Error:', errorMessage);
+                alert('Gagal menambahkan produk:\n' + errorMessage);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat menambahkan produk!');
+            alert('Terjadi kesalahan saat menambahkan produk:\n' + error.message);
         }
     });
 
@@ -1105,10 +1160,25 @@
         e.preventDefault();
         
         const productId = parseInt(document.getElementById('editProductId').value);
+        const editProductName = document.getElementById('editProductName').value.trim();
+        const editProductPrice = document.getElementById('editProductPrice').value.trim();
+        const editProductDescription = document.getElementById('editProductDescription').value.trim();
+        
+        // Validasi field wajib
+        if (!editProductName) {
+            alert('Nama produk harus diisi!');
+            return;
+        }
+        
+        if (!editProductPrice || parseFloat(editProductPrice) <= 0) {
+            alert('Harga produk harus lebih dari 0!');
+            return;
+        }
+        
         const formDataObj = new FormData();
-        formDataObj.append('nama_produk', document.getElementById('editProductName').value);
-        formDataObj.append('harga_produk', parseFloat(document.getElementById('editProductPrice').value));
-        formDataObj.append('deskripsi', document.getElementById('editProductDescription').value);
+        formDataObj.append('nama_produk', editProductName);
+        formDataObj.append('harga_produk', parseFloat(editProductPrice));
+        formDataObj.append('deskripsi', editProductDescription);
         
         if (document.getElementById('editProductImage').files.length > 0) {
             formDataObj.append('gambar', document.getElementById('editProductImage').files[0]);
@@ -1125,6 +1195,7 @@
             });
 
             const result = await response.json();
+            console.log('Response:', response.status, result);
 
             if (response.ok) {
                 const product = produkData.find(p => p.id === productId);
@@ -1141,13 +1212,15 @@
                 editProductForm.reset();
                 document.getElementById('editProductImagePreview').classList.remove('show');
                 document.getElementById('editProductImageLabel').classList.remove('hidden');
-                alert('Produk berhasil diperbarui di database!');
+                alert('Produk berhasil diperbarui!');
             } else {
-                alert('Gagal memperbarui produk: ' + (result.message || 'Unknown error'));
+                const errorMessage = result.message || result.errors || JSON.stringify(result) || 'Unknown error';
+                console.error('API Error:', errorMessage);
+                alert('Gagal memperbarui produk:\n' + errorMessage);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat memperbarui produk!');
+            alert('Terjadi kesalahan saat memperbarui produk:\n' + error.message);
         }
     });
 

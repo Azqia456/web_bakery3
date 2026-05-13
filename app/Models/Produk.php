@@ -14,6 +14,8 @@ class Produk extends Model
     protected $fillable = [
         'nama_produk',
         'harga_produk',
+        'gambar',
+        'deskripsi',
     ];
 
     public function detailPesanans()

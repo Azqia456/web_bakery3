@@ -226,6 +226,106 @@
     .btn-transition { transition: all 0.3s ease; }
     .btn-transition:active { transform: scale(0.98); }
 
+    /* Image Upload Preview Styles */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        display: none;
+    }
+
+    .file-input-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 24px;
+        border: 2px dashed #D4BFA8;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #F9F6F1 0%, #F7F3E9 100%);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-height: 120px;
+    }
+
+    .file-input-label:hover {
+        border-color: #C69C6D;
+        background: linear-gradient(135deg, #FAF8F5 0%, #F8F5EC 100%);
+    }
+
+    .file-input-label.has-file {
+        padding: 0;
+        border: none;
+        background: transparent;
+        min-height: auto;
+    }
+
+    .file-input-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .file-input-text {
+        text-align: center;
+    }
+
+    .file-input-text .file-main {
+        font-weight: 600;
+        color: #42352A;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .file-input-text .file-sub {
+        font-size: 12px;
+        color: #8B7355;
+    }
+
+    .image-preview-container {
+        position: relative;
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #F5F1EB;
+        aspect-ratio: 16/9;
+        display: none;
+    }
+
+    .image-preview-container.show {
+        display: block;
+    }
+
+    .image-preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-preview-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .image-preview-remove:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .sidebar { transform: translateX(-100%); }
@@ -422,7 +522,7 @@
             </div>
         </div>
 
-        <form id="addProductForm" class="p-6 space-y-4">
+        <form id="addProductForm" class="p-6 space-y-4" enctype="multipart/form-data">
             <div>
                 <label class="block text-sm font-semibold text-[#42352A] mb-2">
                     Nama Produk
@@ -445,7 +545,6 @@
                     placeholder="Deskripsi produk..."
                     rows="3"
                     class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent resize-none"
-                    required
                 ></textarea>
             </div>
 
@@ -467,15 +566,28 @@
 
             <div>
                 <label class="block text-sm font-semibold text-[#42352A] mb-2">
-                    URL Gambar
+                    📸 Gambar Produk
                 </label>
-                <input
-                    type="text"
-                    id="productImage"
-                    placeholder="/image/produk.jpg"
-                    class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent text-sm"
-                    required
-                />
+                <div class="file-input-wrapper">
+                    <input
+                        type="file"
+                        id="productImage"
+                        name="gambar"
+                        accept="image/jpeg,image/jpg,image/png"
+                        class="file-input"
+                    />
+                    <label for="productImage" class="file-input-label" id="productImageLabel">
+                        <div class="file-input-icon">📁</div>
+                        <div class="file-input-text">
+                            <div class="file-main">Pilih atau drag gambar di sini</div>
+                            <div class="file-sub">JPG, PNG - Max 2MB</div>
+                        </div>
+                    </label>
+                    <div class="image-preview-container" id="productImagePreview">
+                        <img id="productImagePreviewImg" alt="Preview" />
+                        <button type="button" class="image-preview-remove" id="productImageRemove">✕</button>
+                    </div>
+                </div>
             </div>
 
             <div class="flex gap-3 pt-4 border-t border-[#E5D5C0]">
@@ -508,7 +620,7 @@
             </div>
         </div>
 
-        <form id="editProductForm" class="p-6 space-y-4">
+        <form id="editProductForm" class="p-6 space-y-4" enctype="multipart/form-data">
             <input type="hidden" id="editProductId" />
 
             <div>
@@ -531,7 +643,6 @@
                     id="editProductDescription"
                     rows="3"
                     class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent resize-none"
-                    required
                 ></textarea>
             </div>
 
@@ -552,14 +663,28 @@
 
             <div>
                 <label class="block text-sm font-semibold text-[#42352A] mb-2">
-                    URL Gambar
+                    📸 Gambar Produk
                 </label>
-                <input
-                    type="text"
-                    id="editProductImage"
-                    class="w-full px-4 py-2.5 border border-[#D4BFA8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C69C6D] focus:border-transparent text-sm"
-                    required
-                />
+                <div class="file-input-wrapper">
+                    <input
+                        type="file"
+                        id="editProductImage"
+                        name="gambar"
+                        accept="image/jpeg,image/jpg,image/png"
+                        class="file-input"
+                    />
+                    <label for="editProductImage" class="file-input-label" id="editProductImageLabel">
+                        <div class="file-input-icon">📁</div>
+                        <div class="file-input-text">
+                            <div class="file-main">Pilih atau drag gambar di sini</div>
+                            <div class="file-sub">JPG, PNG - Max 2MB</div>
+                        </div>
+                    </label>
+                    <div class="image-preview-container" id="editProductImagePreview">
+                        <img id="editProductImagePreviewImg" alt="Preview" />
+                        <button type="button" class="image-preview-remove" id="editProductImageRemove">✕</button>
+                    </div>
+                </div>
             </div>
 
             <div class="flex gap-3 pt-4 border-t border-[#E5D5C0]">
@@ -635,8 +760,8 @@
                 id: produk.id_produk,
                 nama: produk.nama_produk,
                 harga: produk.harga_produk,
-                deskripsi: '',
-                gambar: 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(produk.nama_produk),
+                deskripsi: produk.deskripsi || '',
+                gambar: produk.gambar ? '/storage/' + produk.gambar : null,
                 status: 'aktif'
             }));
             
@@ -667,7 +792,7 @@
             <div class="product-card bg-white rounded-lg border border-[#E8DFD5]">
                 <div class="relative h-48 overflow-hidden bg-[#F5F1EB]">
                     <img
-                        src="${produk.gambar}"
+                        src="${produk.gambar || 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(produk.nama)}"
                         alt="${produk.nama}"
                         class="product-image w-full h-full"
                         onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(produk.nama)}'"
@@ -681,7 +806,7 @@
                 </div>
                 <div class="p-4">
                     <h3 class="text-base font-bold text-[#42352A] mb-2 line-clamp-1">${produk.nama}</h3>
-                    <p class="text-sm text-[#8B7355] mb-3 line-clamp-2">${produk.deskripsi || 'Produk dari database'}</p>
+                    <p class="text-sm text-[#8B7355] mb-3 line-clamp-2">${produk.deskripsi || 'Produk berkualitas dari Three D Bakery'}</p>
                     <p class="text-base font-bold text-[#A0815A] mb-3">Rp. ${Number(produk.harga).toLocaleString('id-ID')}</p>
                     <div class="flex gap-2">
                         <button class="btn-transition edit-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#F9D79B] hover:bg-[#F6C878] text-[#42352A] rounded-lg font-semibold text-sm shadow-sm" data-product-id="${produk.id}">
@@ -714,7 +839,17 @@
                     document.getElementById('editProductName').value = product.nama;
                     document.getElementById('editProductDescription').value = product.deskripsi || '';
                     document.getElementById('editProductPrice').value = product.harga;
-                    document.getElementById('editProductImage').value = product.gambar;
+                    
+                    // Show existing image in preview if available
+                    if (product.gambar) {
+                        document.getElementById('editProductImagePreviewImg').src = product.gambar;
+                        document.getElementById('editProductImagePreview').classList.add('show');
+                        document.getElementById('editProductImageLabel').classList.add('hidden');
+                    } else {
+                        document.getElementById('editProductImagePreview').classList.remove('show');
+                        document.getElementById('editProductImageLabel').classList.remove('hidden');
+                    }
+                    
                     document.getElementById('editProductModal').classList.remove('hidden');
                 }
             });
@@ -765,6 +900,104 @@
         });
     });
 
+    // IMAGE PREVIEW HANDLERS - ADD FORM
+    const productImageInput = document.getElementById('productImage');
+    const productImageLabel = document.getElementById('productImageLabel');
+    const productImagePreview = document.getElementById('productImagePreview');
+    const productImagePreviewImg = document.getElementById('productImagePreviewImg');
+    const productImageRemove = document.getElementById('productImageRemove');
+
+    productImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                productImagePreviewImg.src = event.target.result;
+                productImagePreview.classList.add('show');
+                productImageLabel.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    productImageRemove.addEventListener('click', (e) => {
+        e.preventDefault();
+        productImageInput.value = '';
+        productImagePreview.classList.remove('show');
+        productImageLabel.classList.remove('hidden');
+    });
+
+    // Drag and drop for add form
+    const fileInputWrapper = productImageLabel.parentElement;
+    fileInputWrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        productImageLabel.style.borderColor = '#C69C6D';
+        productImageLabel.style.backgroundColor = '#F8F5EC';
+    });
+    fileInputWrapper.addEventListener('dragleave', () => {
+        productImageLabel.style.borderColor = '#D4BFA8';
+        productImageLabel.style.backgroundColor = '';
+    });
+    fileInputWrapper.addEventListener('drop', (e) => {
+        e.preventDefault();
+        productImageLabel.style.borderColor = '#D4BFA8';
+        productImageLabel.style.backgroundColor = '';
+        if (e.dataTransfer.files.length > 0) {
+            productImageInput.files = e.dataTransfer.files;
+            const event = new Event('change', { bubbles: true });
+            productImageInput.dispatchEvent(event);
+        }
+    });
+
+    // IMAGE PREVIEW HANDLERS - EDIT FORM
+    const editProductImageInput = document.getElementById('editProductImage');
+    const editProductImageLabel = document.getElementById('editProductImageLabel');
+    const editProductImagePreview = document.getElementById('editProductImagePreview');
+    const editProductImagePreviewImg = document.getElementById('editProductImagePreviewImg');
+    const editProductImageRemove = document.getElementById('editProductImageRemove');
+
+    editProductImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                editProductImagePreviewImg.src = event.target.result;
+                editProductImagePreview.classList.add('show');
+                editProductImageLabel.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    editProductImageRemove.addEventListener('click', (e) => {
+        e.preventDefault();
+        editProductImageInput.value = '';
+        editProductImagePreview.classList.remove('show');
+        editProductImageLabel.classList.remove('hidden');
+    });
+
+    // Drag and drop for edit form
+    const editFileInputWrapper = editProductImageLabel.parentElement;
+    editFileInputWrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        editProductImageLabel.style.borderColor = '#C69C6D';
+        editProductImageLabel.style.backgroundColor = '#F8F5EC';
+    });
+    editFileInputWrapper.addEventListener('dragleave', () => {
+        editProductImageLabel.style.borderColor = '#D4BFA8';
+        editProductImageLabel.style.backgroundColor = '';
+    });
+    editFileInputWrapper.addEventListener('drop', (e) => {
+        e.preventDefault();
+        editProductImageLabel.style.borderColor = '#D4BFA8';
+        editProductImageLabel.style.backgroundColor = '';
+        if (e.dataTransfer.files.length > 0) {
+            editProductImageInput.files = e.dataTransfer.files;
+            const event = new Event('change', { bubbles: true });
+            editProductImageInput.dispatchEvent(event);
+        }
+    });
+
     // Modals
     const modal = document.getElementById('addProductModal');
     const addProductForm = document.getElementById('addProductForm');
@@ -774,43 +1007,66 @@
         if (tambahBtn) tambahBtn.addEventListener('click', () => modal.classList.remove('hidden'));
     }, 100);
 
-    document.getElementById('closeModal').addEventListener('click', () => { modal.classList.add('hidden'); addProductForm.reset(); });
-    document.getElementById('cancelBtn').addEventListener('click', () => { modal.classList.add('hidden'); addProductForm.reset(); });
-    modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.add('hidden'); addProductForm.reset(); } });
+    document.getElementById('closeModal').addEventListener('click', () => { 
+        modal.classList.add('hidden'); 
+        addProductForm.reset();
+        document.getElementById('productImagePreview').classList.remove('show');
+        document.getElementById('productImageLabel').classList.remove('hidden');
+    });
+    document.getElementById('cancelBtn').addEventListener('click', () => { 
+        modal.classList.add('hidden'); 
+        addProductForm.reset();
+        document.getElementById('productImagePreview').classList.remove('show');
+        document.getElementById('productImageLabel').classList.remove('hidden');
+    });
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) { 
+            modal.classList.add('hidden'); 
+            addProductForm.reset();
+            document.getElementById('productImagePreview').classList.remove('show');
+            document.getElementById('productImageLabel').classList.remove('hidden');
+        } 
+    });
 
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const formData = {
-            nama_produk: document.getElementById('productName').value,
-            harga_produk: parseFloat(document.getElementById('productPrice').value)
-        };
+        const formDataObj = new FormData();
+        formDataObj.append('nama_produk', document.getElementById('productName').value);
+        formDataObj.append('harga_produk', parseFloat(document.getElementById('productPrice').value));
+        formDataObj.append('deskripsi', document.getElementById('productDescription').value);
+        
+        if (document.getElementById('productImage').files.length > 0) {
+            formDataObj.append('gambar', document.getElementById('productImage').files[0]);
+        }
 
         try {
             const response = await fetch('/api/produks', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: formDataObj
             });
 
             const result = await response.json();
 
             if (response.ok) {
+                const gambarUrl = result.gambar ? '/storage/' + result.gambar : null;
                 produkData.push({
                     id: result.id_produk,
                     nama: result.nama_produk,
                     harga: result.harga_produk,
-                    deskripsi: '',
-                    gambar: 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(result.nama_produk),
+                    deskripsi: result.deskripsi || '',
+                    gambar: gambarUrl,
                     status: 'aktif'
                 });
                 renderProducts();
                 modal.classList.add('hidden');
                 addProductForm.reset();
+                document.getElementById('productImagePreview').classList.remove('show');
+                document.getElementById('productImageLabel').classList.remove('hidden');
                 alert('Produk berhasil ditambahkan ke database!');
             } else {
                 alert('Gagal menambahkan produk: ' + (result.message || 'Unknown error'));
@@ -824,28 +1080,48 @@
     const editModal = document.getElementById('editProductModal');
     const editProductForm = document.getElementById('editProductForm');
 
-    document.getElementById('closeEditModal').addEventListener('click', () => { editModal.classList.add('hidden'); editProductForm.reset(); });
-    document.getElementById('cancelEditBtn').addEventListener('click', () => { editModal.classList.add('hidden'); editProductForm.reset(); });
-    editModal.addEventListener('click', (e) => { if (e.target === editModal) { editModal.classList.add('hidden'); editProductForm.reset(); } });
+    document.getElementById('closeEditModal').addEventListener('click', () => { 
+        editModal.classList.add('hidden'); 
+        editProductForm.reset();
+        document.getElementById('editProductImagePreview').classList.remove('show');
+        document.getElementById('editProductImageLabel').classList.remove('hidden');
+    });
+    document.getElementById('cancelEditBtn').addEventListener('click', () => { 
+        editModal.classList.add('hidden'); 
+        editProductForm.reset();
+        document.getElementById('editProductImagePreview').classList.remove('show');
+        document.getElementById('editProductImageLabel').classList.remove('hidden');
+    });
+    editModal.addEventListener('click', (e) => { 
+        if (e.target === editModal) { 
+            editModal.classList.add('hidden'); 
+            editProductForm.reset();
+            document.getElementById('editProductImagePreview').classList.remove('show');
+            document.getElementById('editProductImageLabel').classList.remove('hidden');
+        } 
+    });
 
     editProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const productId = parseInt(document.getElementById('editProductId').value);
-        const formData = {
-            nama_produk: document.getElementById('editProductName').value,
-            harga_produk: parseFloat(document.getElementById('editProductPrice').value)
-        };
+        const formDataObj = new FormData();
+        formDataObj.append('nama_produk', document.getElementById('editProductName').value);
+        formDataObj.append('harga_produk', parseFloat(document.getElementById('editProductPrice').value));
+        formDataObj.append('deskripsi', document.getElementById('editProductDescription').value);
+        
+        if (document.getElementById('editProductImage').files.length > 0) {
+            formDataObj.append('gambar', document.getElementById('editProductImage').files[0]);
+        }
 
         try {
             const response = await fetch(`/api/produks/${productId}`, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: formDataObj
             });
 
             const result = await response.json();
@@ -855,10 +1131,16 @@
                 if (product) {
                     product.nama = result.nama_produk;
                     product.harga = result.harga_produk;
+                    product.deskripsi = result.deskripsi || '';
+                    if (result.gambar) {
+                        product.gambar = '/storage/' + result.gambar;
+                    }
                     renderProducts();
                 }
                 editModal.classList.add('hidden');
                 editProductForm.reset();
+                document.getElementById('editProductImagePreview').classList.remove('show');
+                document.getElementById('editProductImageLabel').classList.remove('hidden');
                 alert('Produk berhasil diperbarui di database!');
             } else {
                 alert('Gagal memperbarui produk: ' + (result.message || 'Unknown error'));
@@ -871,5 +1153,6 @@
 
     // Load produk saat halaman dimuat
     loadProducts();
+
 </script>
 @endsection

@@ -11,7 +11,8 @@ class ProdukController extends Controller
     public function index()
     {
         // Sinkronkan data produk dan tampilkan
-        return ProdukSyncService::syncAll();
+        $produks = ProdukSyncService::syncAll();
+        return response()->json($produks);
     }
 
     public function store(Request $request)
@@ -22,12 +23,14 @@ class ProdukController extends Controller
         ]);
 
         // Gunakan service untuk sinkronisasi dan mencegah duplikat
-        return ProdukSyncService::createProduct($validated);
+        $produk = ProdukSyncService::createProduct($validated);
+        return response()->json($produk, 201);
     }
 
     public function show($id_produk)
     {
-        return Produk::findOrFail($id_produk);
+        $produk = Produk::findOrFail($id_produk);
+        return response()->json($produk);
     }
 
     public function update(Request $request, $id_produk)
@@ -41,7 +44,7 @@ class ProdukController extends Controller
 
         $produk->update($validated);
 
-        return $produk;
+        return response()->json($produk);
     }
 
     public function destroy($id_produk)

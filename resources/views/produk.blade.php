@@ -619,17 +619,33 @@
         });
     }
 
-    // DATA DAN FUNGSI PRODUK (SAMA SEPERTI SEBELUMNYA)
-    const produkData = [
-        { id: 1, nama: "D'Blueberry", gambar: '/image/blueberry.jpg', deskripsi: 'Roti lembut dengan isian blueberry premium.', harga: 'Rp. 1.300', status: 'aktif' },
-        { id: 2, nama: "D'Kacang Hijau", gambar: '/image/kacanghijau.jpg', deskripsi: 'Roti lembut dengan isian kacang hijau manis.', harga: 'Rp. 1.300', status: 'aktif' },
-        { id: 3, nama: "D'Coklat", gambar: '/image/coklat.jpg', deskripsi: 'Roti lembut dengan isian coklat leleh premium.', harga: 'Rp. 1.300', status: 'aktif' },
-        { id: 4, nama: "D'Strawberry", gambar: '/image/strawberry.jpg', deskripsi: 'Roti lembut dengan isian strawberry segar.', harga: 'Rp. 1.300', status: 'aktif' },
-        { id: 5, nama: "D'Kelapa", gambar: '/image/kelapa.jpg', deskripsi: 'Roti lembut dengan isian kelapa gurih manis.', harga: 'Rp. 1.300', status: 'aktif' },
-    ];
-
+    // DATA DAN FUNGSI PRODUK - SINKRONISASI DENGAN DATABASE
+    let produkData = [];
     let currentFilter = 'semua';
     let currentSearch = '';
+
+    // Load data produk dari API
+    async function loadProducts() {
+        try {
+            const response = await fetch('/api/produks');
+            const data = await response.json();
+            
+            // Transform data dari database ke format UI
+            produkData = data.map(produk => ({
+                id: produk.id_produk,
+                nama: produk.nama_produk,
+                harga: produk.harga_produk,
+                deskripsi: '',
+                gambar: 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(produk.nama_produk),
+                status: 'aktif'
+            }));
+            
+            renderProducts();
+        } catch (error) {
+            console.error('Error loading products:', error);
+            renderProducts();
+        }
+    }
 
     function renderProducts() {
         const grid = document.getElementById('produkGrid');
@@ -665,8 +681,8 @@
                 </div>
                 <div class="p-4">
                     <h3 class="text-base font-bold text-[#42352A] mb-2 line-clamp-1">${produk.nama}</h3>
-                    <p class="text-sm text-[#8B7355] mb-3 line-clamp-2">${produk.deskripsi}</p>
-                    <p class="text-base font-bold text-[#A0815A] mb-3">${produk.harga}</p>
+                    <p class="text-sm text-[#8B7355] mb-3 line-clamp-2">${produk.deskripsi || 'Produk dari database'}</p>
+                    <p class="text-base font-bold text-[#A0815A] mb-3">Rp. ${Number(produk.harga).toLocaleString('id-ID')}</p>
                     <div class="flex gap-2">
                         <button class="btn-transition edit-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#F9D79B] hover:bg-[#F6C878] text-[#42352A] rounded-lg font-semibold text-sm shadow-sm" data-product-id="${produk.id}">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -696,8 +712,8 @@
                 if (product) {
                     document.getElementById('editProductId').value = product.id;
                     document.getElementById('editProductName').value = product.nama;
-                    document.getElementById('editProductDescription').value = product.deskripsi;
-                    document.getElementById('editProductPrice').value = product.harga.replace('Rp. ', '');
+                    document.getElementById('editProductDescription').value = product.deskripsi || '';
+                    document.getElementById('editProductPrice').value = product.harga;
                     document.getElementById('editProductImage').value = product.gambar;
                     document.getElementById('editProductModal').classList.remove('hidden');
                 }
@@ -705,14 +721,31 @@
         });
 
         document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const productId = parseInt(e.currentTarget.dataset.productId);
                 const product = produkData.find(p => p.id === productId);
                 
                 if (product && confirm(`Hapus produk "${product.nama}"?`)) {
-                    produkData.splice(produkData.indexOf(product), 1);
-                    renderProducts();
-                    alert('Produk berhasil dihapus!');
+                    try {
+                        const response = await fetch(`/api/produks/${productId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                                'Accept': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            produkData = produkData.filter(p => p.id !== productId);
+                            renderProducts();
+                            alert('Produk berhasil dihapus!');
+                        } else {
+                            alert('Gagal menghapus produk!');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus produk!');
+                    }
                 }
             });
         });
@@ -745,20 +778,47 @@
     document.getElementById('cancelBtn').addEventListener('click', () => { modal.classList.add('hidden'); addProductForm.reset(); });
     modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.add('hidden'); addProductForm.reset(); } });
 
-    addProductForm.addEventListener('submit', (e) => {
+    addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        produkData.push({
-            id: produkData.length + 1,
-            nama: document.getElementById('productName').value,
-            deskripsi: document.getElementById('productDescription').value,
-            harga: 'Rp. ' + document.getElementById('productPrice').value,
-            gambar: document.getElementById('productImage').value,
-            status: 'aktif'
-        });
-        renderProducts();
-        modal.classList.add('hidden');
-        addProductForm.reset();
-        alert('Produk berhasil ditambahkan!');
+        
+        const formData = {
+            nama_produk: document.getElementById('productName').value,
+            harga_produk: parseFloat(document.getElementById('productPrice').value)
+        };
+
+        try {
+            const response = await fetch('/api/produks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                produkData.push({
+                    id: result.id_produk,
+                    nama: result.nama_produk,
+                    harga: result.harga_produk,
+                    deskripsi: '',
+                    gambar: 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(result.nama_produk),
+                    status: 'aktif'
+                });
+                renderProducts();
+                modal.classList.add('hidden');
+                addProductForm.reset();
+                alert('Produk berhasil ditambahkan ke database!');
+            } else {
+                alert('Gagal menambahkan produk: ' + (result.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menambahkan produk!');
+        }
     });
 
     const editModal = document.getElementById('editProductModal');
@@ -768,24 +828,48 @@
     document.getElementById('cancelEditBtn').addEventListener('click', () => { editModal.classList.add('hidden'); editProductForm.reset(); });
     editModal.addEventListener('click', (e) => { if (e.target === editModal) { editModal.classList.add('hidden'); editProductForm.reset(); } });
 
-    editProductForm.addEventListener('submit', (e) => {
+    editProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const productId = parseInt(document.getElementById('editProductId').value);
-        const product = produkData.find(p => p.id === productId);
         
-        if (product) {
-            product.nama = document.getElementById('editProductName').value;
-            product.deskripsi = document.getElementById('editProductDescription').value;
-            product.harga = 'Rp. ' + document.getElementById('editProductPrice').value;
-            product.gambar = document.getElementById('editProductImage').value;
-            
-            renderProducts();
-            editModal.classList.add('hidden');
-            editProductForm.reset();
-            alert('Produk berhasil diperbarui!');
+        const productId = parseInt(document.getElementById('editProductId').value);
+        const formData = {
+            nama_produk: document.getElementById('editProductName').value,
+            harga_produk: parseFloat(document.getElementById('editProductPrice').value)
+        };
+
+        try {
+            const response = await fetch(`/api/produks/${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                const product = produkData.find(p => p.id === productId);
+                if (product) {
+                    product.nama = result.nama_produk;
+                    product.harga = result.harga_produk;
+                    renderProducts();
+                }
+                editModal.classList.add('hidden');
+                editProductForm.reset();
+                alert('Produk berhasil diperbarui di database!');
+            } else {
+                alert('Gagal memperbarui produk: ' + (result.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat memperbarui produk!');
         }
     });
 
-    renderProducts();
+    // Load produk saat halaman dimuat
+    loadProducts();
 </script>
 @endsection

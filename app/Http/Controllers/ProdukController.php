@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Services\ProdukSyncService;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
 {
     public function index()
     {
-        return Produk::all();
+        // Sinkronkan data produk dan tampilkan
+        return ProdukSyncService::syncAll();
     }
 
     public function store(Request $request)
@@ -19,7 +21,8 @@ class ProdukController extends Controller
             'harga_produk' => 'required|numeric|min:0',
         ]);
 
-        return Produk::create($validated);
+        // Gunakan service untuk sinkronisasi dan mencegah duplikat
+        return ProdukSyncService::createProduct($validated);
     }
 
     public function show($id_produk)

@@ -30,3 +30,13 @@ Route::post('detail-pesanans', [App\Http\Controllers\DetailPesananController::cl
 Route::get('detail-pesanans/{id_pesanan}/{id_produk}', [App\Http\Controllers\DetailPesananController::class, 'show']);
 Route::put('detail-pesanans/{id_pesanan}/{id_produk}', [App\Http\Controllers\DetailPesananController::class, 'update']);
 Route::delete('detail-pesanans/{id_pesanan}/{id_produk}', [App\Http\Controllers\DetailPesananController::class, 'destroy']);
+
+// Pesanan Offline Routes - dengan sinkronisasi otomatis ke database
+Route::prefix('pesanan-offline')->group(function () {
+    Route::get('/', [App\Http\Controllers\PesananOfflineController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\PesananOfflineController::class, 'store']);
+    Route::put('/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'update']);
+    Route::delete('/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'destroy']);
+    Route::get('/type/{type}', [App\Http\Controllers\PesananOfflineController::class, 'getByType']);
+});
+

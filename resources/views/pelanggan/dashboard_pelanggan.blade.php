@@ -377,6 +377,23 @@
             justify-content: center;
             font-size: 24px;
             flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cart-item-image .cart-emoji {
+            font-size: 24px;
+        }
+
+        .cart-item-image:not(.no-image) .cart-emoji {
+            display: none;
         }
 
         .cart-item-info {
@@ -730,6 +747,23 @@
             align-items: center;
             justify-content: center;
             font-size: 46px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-image .product-emoji {
+            font-size: 46px;
+        }
+
+        .product-image:not(.no-image) .product-emoji {
+            display: none;
         }
 
         .product-fav {
@@ -961,6 +995,23 @@
             justify-content: center;
             font-size: 16px;
             flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .order-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .order-item-icon .order-emoji {
+            font-size: 16px;
+        }
+
+        .order-item-icon:not(.no-image) .order-emoji {
+            display: none;
         }
 
         .order-item-details {
@@ -1527,6 +1578,28 @@
             return descriptions[name] || 'Roti fresh harian dengan bahan berkualitas.';
         }
 
+        function normalizeProductName(name) {
+            return (name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        }
+
+        function getProductImagePath(name) {
+            const productImageMap = {
+                'roti kelapa': '/image/kelapa.jpg',
+                'roti kacang ijo': '/image/kacanghijau.jpg',
+                'roti kacang hijau': '/image/kacanghijau.jpg',
+                'roti stroberi': '/image/strawberry.jpg',
+                'roti strawberry': '/image/strawberry.jpg',
+                'roti bluberi': '/image/blueberry.jpg',
+                'roti blueberry': '/image/blueberry.jpg',
+                'roti cokelat': '/image/coklat.jpg',
+                'roti coklat': '/image/coklat.jpg',
+                'roti cokelat premium': '/image/coklat.jpg',
+                'roti coklat premium': '/image/coklat.jpg'
+            };
+
+            return productImageMap[normalizeProductName(name)] || '/image/rotibulat.png';
+        }
+
         // Load Products
         async function loadProducts() {
             try {
@@ -1545,6 +1618,7 @@
                 productsGrid.innerHTML = products.map(product => {
                     const productName = product.nama_produk || 'Produk';
                     const description = getProductDescription(productName);
+                    const imagePath = getProductImagePath(productName);
                     return `
                     <div
                         class="product-card"
@@ -1552,11 +1626,18 @@
                         data-name="${productName}"
                         data-price="${parseInt(product.harga_produk || 0)}"
                         data-emoji="${product.emoji || '🍞'}"
+                        data-image="${imagePath}"
                         data-desc="${description}"
                     >
                         <div class="product-media">
-                            <div class="product-image">
-                                ${product.emoji || '🍞'}
+                            <div class="product-image no-image">
+                                <img
+                                    src="${imagePath}"
+                                    alt="${productName}"
+                                    onload="this.parentElement.classList.remove('no-image')"
+                                    onerror="this.style.display='none'; this.parentElement.classList.add('no-image');"
+                                />
+                                <span class="product-emoji">${product.emoji || '🍞'}</span>
                             </div>
                             <button class="product-fav" type="button" aria-label="Favorit">
                                 <i class="far fa-heart"></i>
@@ -1680,17 +1761,27 @@
                     }).join('');
 
                     // Render items
-                    const itemsHTML = (order.items || []).slice(0, 3).map(item => `
+                    const itemsHTML = (order.items || []).slice(0, 3).map(item => {
+                        const itemName = item.nama_produk || 'Produk';
+                        const itemImage = getProductImagePath(itemName);
+                        return `
                         <div class="order-item">
-                            <div class="order-item-icon">
-                                ${item.emoji || '🍞'}
+                            <div class="order-item-icon no-image">
+                                <img
+                                    src="${itemImage}"
+                                    alt="${itemName}"
+                                    onload="this.parentElement.classList.remove('no-image')"
+                                    onerror="this.style.display='none'; this.parentElement.classList.add('no-image');"
+                                />
+                                <span class="order-emoji">${item.emoji || '🍞'}</span>
                             </div>
                             <div class="order-item-details">
-                                <div class="order-item-name">${item.nama_produk || 'Produk'}</div>
+                                <div class="order-item-name">${itemName}</div>
                                 <div class="order-item-qty">${item.jumlah || item.quantity || 1} item${(item.jumlah || item.quantity || 1) > 1 ? 's' : ''}</div>
                             </div>
                         </div>
-                    `).join('');
+                    `;
+                    }).join('');
 
                     return `
                         <div class="order-card" data-status="${statusClass}">
@@ -1924,9 +2015,19 @@
 
             document.getElementById('checkoutBtn').disabled = false;
 
-            cartItems.innerHTML = cart.map(item => `
+            cartItems.innerHTML = cart.map(item => {
+                const itemImage = item.image || getProductImagePath(item.nama_produk);
+                return `
                 <div class="cart-item">
-                    <div class="cart-item-image">${item.emoji || '🍞'}</div>
+                    <div class="cart-item-image no-image">
+                        <img
+                            src="${itemImage}"
+                            alt="${item.nama_produk}"
+                            onload="this.parentElement.classList.remove('no-image')"
+                            onerror="this.style.display='none'; this.parentElement.classList.add('no-image');"
+                        />
+                        <span class="cart-emoji">${item.emoji || '🍞'}</span>
+                    </div>
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.nama_produk}</div>
                         <div class="cart-item-price">Rp ${parseInt(item.harga_produk).toLocaleString('id-ID')}</div>
@@ -1940,7 +2041,8 @@
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             // Update summary
             const subtotal = cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0);
@@ -2080,7 +2182,8 @@
                         id_produk: parseInt(card.dataset.id, 10),
                         nama_produk: card.dataset.name,
                         harga_produk: parseInt(card.dataset.price, 10),
-                        emoji: card.dataset.emoji || card.querySelector('.product-image').textContent.trim()
+                        image: card.dataset.image || getProductImagePath(card.dataset.name),
+                        emoji: card.dataset.emoji || card.querySelector('.product-emoji')?.textContent.trim() || '🍞'
                     };
                     const qty = Math.max(1, parseInt(qtyInput.value || '1', 10));
                     addToCart(productData, qty);

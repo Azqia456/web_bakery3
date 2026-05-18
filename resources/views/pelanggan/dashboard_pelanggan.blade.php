@@ -1584,17 +1584,17 @@
 
         function getProductImagePath(name) {
             const productImageMap = {
-                'roti kelapa': '/image/kelapa.jpg',
-                'roti kacang ijo': '/image/kacanghijau.jpg',
-                'roti kacang hijau': '/image/kacanghijau.jpg',
-                'roti stroberi': '/image/strawberry.jpg',
-                'roti strawberry': '/image/strawberry.jpg',
-                'roti bluberi': '/image/blueberry.jpg',
-                'roti blueberry': '/image/blueberry.jpg',
-                'roti cokelat': '/image/coklat.jpg',
-                'roti coklat': '/image/coklat.jpg',
-                'roti cokelat premium': '/image/coklat.jpg',
-                'roti coklat premium': '/image/coklat.jpg'
+                'roti kelapa': '/image/kelapa.png',
+                'roti kacang ijo': '/image/kacanghiaju.png',
+                'roti kacang hijau': '/image/kacanghiaju.png',
+                'roti stroberi': '/image/strawberry.png',
+                'roti strawberry': '/image/strawberry.png',
+                'roti bluberi': '/image/bluberry.png',
+                'roti blueberry': '/image/bluberry.png',
+                'roti cokelat': '/image/coklat.png',
+                'roti coklat': '/image/coklat.png',
+                'roti cokelat premium': '/image/coklat.png',
+                'roti coklat premium': '/image/coklat.png'
             };
 
             return productImageMap[normalizeProductName(name)] || '/image/rotibulat.png';

@@ -366,14 +366,86 @@
             </header>
 
             <div class="page-container">
-                <div class="content-card">
-                    <div class="empty-state">
-                        <i class="fas fa-receipt"></i>
-                        <h2>Laporan Pembayaran</h2>
-                        <p>Laporan transaksi pembayaran dari pelanggan akan ditampilkan di sini.</p>
-                        <p style="margin-top: 16px; font-size: 12px; color: #999;">
-                            Fitur laporan pembayaran masih dalam tahap pengembangan.
-                        </p>
+                <!-- Statistics Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #28a745;">
+                        <h6 style="color: #6c757d; font-size: 13px; margin-bottom: 8px; font-weight: 600;">Total Pembayaran</h6>
+                        <h3 style="color: #28a745; font-size: 24px; font-weight: 700; margin: 0;">
+                            Rp {{ number_format($totalPembayaran ?? 0, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #007bff;">
+                        <h6 style="color: #6c757d; font-size: 13px; margin-bottom: 8px; font-weight: 600;">Transaksi Lunas</h6>
+                        <h3 style="color: #007bff; font-size: 24px; font-weight: 700; margin: 0;">
+                            {{ $transaksiLunas ?? 0 }}
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: flex-end;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333;">Tanggal Mulai</label>
+                            <input type="date" id="startDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px;" value="{{ $startDate ?? date('Y-m-d') }}">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333;">Tanggal Akhir</label>
+                            <input type="date" id="endDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px;" value="{{ $endDate ?? date('Y-m-d') }}">
+                        </div>
+                        <button onclick="filterData()" style="background: #8B6F47; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s;">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h5 style="font-weight: 700; margin-bottom: 20px; color: #333;">Daftar Pembayaran</h5>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #f0f0f0; background: #f8f9fa;">
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Nama Pelanggan</th>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Metode Pembayaran</th>
+                                    <th style="padding: 12px; text-align: right; font-weight: 600; color: #333;">Jumlah Pembayaran</th>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Tanggal Pembayaran</th>
+                                    <th style="padding: 12px; text-align: center; font-weight: 600; color: #333;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($pembayaranData ?? [] as $item)
+                                    <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
+                                        <td style="padding: 12px;">{{ $item['nama_pelanggan'] ?? '-' }}</td>
+                                        <td style="padding: 12px;">{{ $item['metode_pembayaran'] ?? '-' }}</td>
+                                        <td style="padding: 12px; text-align: right; font-weight: 600; color: #28a745;">
+                                            Rp {{ number_format($item['jumlah_pembayaran'] ?? 0, 0, ',', '.') }}
+                                        </td>
+                                        <td style="padding: 12px;">{{ date('d-m-Y', strtotime($item['tanggal_pembayaran'] ?? now())) }}</td>
+                                        <td style="padding: 12px; text-align: center;">
+                                            @php
+                                                $status = $item['status'] ?? 'pending';
+                                                $badgeClass = match($status) {
+                                                    'lunas' => 'background: #d1e7dd; color: #0f5132;',
+                                                    'sebagian' => 'background: #cfe2ff; color: #084298;',
+                                                    'belum' => 'background: #f8d7da; color: #842029;',
+                                                    default => 'background: #fff3cd; color: #664d03;'
+                                                };
+                                            @endphp
+                                            <span style="{{ $badgeClass }} padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                {{ ucfirst($status) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" style="padding: 24px; text-align: center; color: #999;">
+                                            Tidak ada data pembayaran
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -381,6 +453,24 @@
     </div>
 
     <script>
+        function filterData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if(startDate && endDate) {
+                const url = new URL(window.location);
+                url.searchParams.set('start_date', startDate);
+                url.searchParams.set('end_date', endDate);
+                window.location = url.toString();
+            }
+        }
+
+        document.getElementById('endDate').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                filterData();
+            }
+        });
+
         function toggleSubmenu(button) {
             const submenu = button.nextElementSibling;
             const arrow = button.querySelector('.toggle-arrow');

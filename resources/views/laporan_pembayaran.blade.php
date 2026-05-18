@@ -366,80 +366,157 @@
             </header>
 
             <div class="page-container">
-                <!-- Statistics Cards -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px;">
-                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #28a745;">
-                        <h6 style="color: #6c757d; font-size: 13px; margin-bottom: 8px; font-weight: 600;">Total Pembayaran</h6>
-                        <h3 style="color: #28a745; font-size: 24px; font-weight: 700; margin: 0;">
-                            Rp {{ number_format($totalPembayaran ?? 0, 0, ',', '.') }}
-                        </h3>
+                <!-- Header Section -->
+                <div style="margin-bottom: 32px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <i class="fas fa-wallet" style="font-size: 28px; color: #198754;"></i>
+                        <h2 style="margin: 0; color: #333; font-weight: 700; font-size: 28px;">Laporan Pembayaran</h2>
                     </div>
-                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #007bff;">
-                        <h6 style="color: #6c757d; font-size: 13px; margin-bottom: 8px; font-weight: 600;">Transaksi Lunas</h6>
-                        <h3 style="color: #007bff; font-size: 24px; font-weight: 700; margin: 0;">
-                            {{ $transaksiLunas ?? 0 }}
-                        </h3>
+                    <p style="margin: 0; color: #6c757d; font-size: 14px;">💳 Monitoring riwayat pembayaran pelanggan bakery</p>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 28px;">
+                    <!-- Card 1: Total Pembayaran -->
+                    <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-top: 4px solid #198754; transition: transform 0.3s, box-shadow 0.3s;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <p style="margin: 0; color: #6c757d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Pembayaran</p>
+                                <h3 style="margin: 12px 0 0 0; color: #198754; font-size: 28px; font-weight: 700;">
+                                    Rp {{ number_format($totalPembayaran ?? 0, 0, ',', '.') }}
+                                </h3>
+                            </div>
+                            <div style="background: rgba(25, 135, 84, 0.1); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-wallet" style="font-size: 28px; color: #198754;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Transaksi Lunas -->
+                    <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-top: 4px solid #0d6efd; transition: transform 0.3s, box-shadow 0.3s;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <p style="margin: 0; color: #6c757d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Transaksi Lunas</p>
+                                <h3 style="margin: 12px 0 0 0; color: #0d6efd; font-size: 32px; font-weight: 700;">
+                                    {{ $transaksiLunas ?? 0 }}
+                                </h3>
+                            </div>
+                            <div style="background: rgba(13, 110, 253, 0.1); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check-circle" style="font-size: 28px; color: #0d6efd;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Pembayaran Pending -->
+                    <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border-top: 4px solid #fd7e14; transition: transform 0.3s, box-shadow 0.3s;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <p style="margin: 0; color: #6c757d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Pembayaran Pending</p>
+                                <h3 style="margin: 12px 0 0 0; color: #fd7e14; font-size: 32px; font-weight: 700;">
+                                    {{ $pembayaranPending ?? 0 }}
+                                </h3>
+                            </div>
+                            <div style="background: rgba(253, 126, 20, 0.1); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-hourglass-half" style="font-size: 28px; color: #fd7e14;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Filter Section -->
-                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: flex-end;">
+                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 28px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: flex-end;">
                         <div>
                             <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333;">Tanggal Mulai</label>
-                            <input type="date" id="startDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px;" value="{{ $startDate ?? date('Y-m-d') }}">
+                            <input type="date" id="startDate" style="width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 13px; font-family: inherit;" value="{{ $startDate ?? date('Y-m-d', strtotime('-30 days')) }}">
                         </div>
                         <div>
                             <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333;">Tanggal Akhir</label>
-                            <input type="date" id="endDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px;" value="{{ $endDate ?? date('Y-m-d') }}">
+                            <input type="date" id="endDate" style="width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 13px; font-family: inherit;" value="{{ $endDate ?? date('Y-m-d') }}">
                         </div>
-                        <button onclick="filterData()" style="background: #8B6F47; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s;">
-                            <i class="fas fa-search"></i> Filter
+                        <button onclick="filterData()" style="background: #198754; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-filter"></i> Filter
                         </button>
                     </div>
                 </div>
 
                 <!-- Table Section -->
-                <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <h5 style="font-weight: 700; margin-bottom: 20px; color: #333;">Daftar Pembayaran</h5>
+                <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                    <h5 style="font-weight: 700; margin-bottom: 20px; color: #333; font-size: 16px;">Daftar Pembayaran</h5>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                             <thead>
-                                <tr style="border-bottom: 2px solid #f0f0f0; background: #f8f9fa;">
-                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Nama Pelanggan</th>
-                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Metode Pembayaran</th>
-                                    <th style="padding: 12px; text-align: right; font-weight: 600; color: #333;">Jumlah Pembayaran</th>
-                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #333;">Tanggal Pembayaran</th>
-                                    <th style="padding: 12px; text-align: center; font-weight: 600; color: #333;">Status</th>
+                                <tr style="border-bottom: 2px solid #dee2e6; background: #f8f9fa;">
+                                    <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Nama Pelanggan</th>
+                                    <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Metode Pembayaran</th>
+                                    <th style="padding: 14px 12px; text-align: right; font-weight: 600; color: #495057;">Jumlah Pembayaran</th>
+                                    <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Tanggal Pembayaran</th>
+                                    <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($pembayaranData ?? [] as $item)
-                                    <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
-                                        <td style="padding: 12px;">{{ $item['nama_pelanggan'] ?? '-' }}</td>
-                                        <td style="padding: 12px;">{{ $item['metode_pembayaran'] ?? '-' }}</td>
-                                        <td style="padding: 12px; text-align: right; font-weight: 600; color: #28a745;">
+                                    <tr style="border-bottom: 1px solid #e9ecef; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='white'">
+                                        <td style="padding: 14px 12px; color: #333;">{{ $item['nama_pelanggan'] ?? 'Pelanggan' }}</td>
+                                        <td style="padding: 14px 12px; text-align: center;">
+                                            @php
+                                                $metode = $item['metode_pembayaran'] ?? 'cash';
+                                                $metodeStyle = match($metode) {
+                                                    'transfer' => 'background: #cfe2ff; color: #084298;',
+                                                    'qris' => 'background: #e2e3e5; color: #383d41;',
+                                                    default => 'background: #e2e3e5; color: #383d41;'
+                                                };
+                                            @endphp
+                                            <span style="{{ $metodeStyle }} padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                                @switch($metode)
+                                                    @case('transfer')
+                                                        <i class="fas fa-university"></i> Transfer
+                                                        @break
+                                                    @case('qris')
+                                                        <i class="fas fa-qrcode"></i> QRIS
+                                                        @break
+                                                    @default
+                                                        <i class="fas fa-money-bill"></i> Cash
+                                                @endswitch
+                                            </span>
+                                        </td>
+                                        <td style="padding: 14px 12px; text-align: right; font-weight: 600; color: #198754;">
                                             Rp {{ number_format($item['jumlah_pembayaran'] ?? 0, 0, ',', '.') }}
                                         </td>
-                                        <td style="padding: 12px;">{{ date('d-m-Y', strtotime($item['tanggal_pembayaran'] ?? now())) }}</td>
-                                        <td style="padding: 12px; text-align: center;">
+                                        <td style="padding: 14px 12px; text-align: center; color: #6c757d;">
+                                            {{ date('d-m-Y', strtotime($item['tanggal_pembayaran'] ?? now())) }}
+                                        </td>
+                                        <td style="padding: 14px 12px; text-align: center;">
                                             @php
                                                 $status = $item['status'] ?? 'pending';
-                                                $badgeClass = match($status) {
+                                                $statusStyle = match($status) {
                                                     'lunas' => 'background: #d1e7dd; color: #0f5132;',
-                                                    'sebagian' => 'background: #cfe2ff; color: #084298;',
-                                                    'belum' => 'background: #f8d7da; color: #842029;',
+                                                    'sebagian' => 'background: #fff3cd; color: #664d03;',
+                                                    'gagal' => 'background: #f8d7da; color: #842029;',
                                                     default => 'background: #fff3cd; color: #664d03;'
                                                 };
                                             @endphp
-                                            <span style="{{ $badgeClass }} padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
-                                                {{ ucfirst($status) }}
+                                            <span style="{{ $statusStyle }} padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                                @switch($status)
+                                                    @case('lunas')
+                                                        <i class="fas fa-check"></i> Lunas
+                                                        @break
+                                                    @case('sebagian')
+                                                        <i class="fas fa-hourglass-half"></i> Sebagian
+                                                        @break
+                                                    @case('gagal')
+                                                        <i class="fas fa-times"></i> Gagal
+                                                        @break
+                                                    @default
+                                                        <i class="fas fa-clock"></i> Pending
+                                                @endswitch
                                             </span>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" style="padding: 24px; text-align: center; color: #999;">
+                                        <td colspan="5" style="padding: 32px 12px; text-align: center; color: #999;">
+                                            <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
                                             Tidak ada data pembayaran
                                         </td>
                                     </tr>

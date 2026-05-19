@@ -43,6 +43,158 @@
             min-height: 100vh;
         }
 
+        .dashboard-layout {
+            display: flex;
+            gap: 24px;
+            padding: 24px 30px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #fbf7f1;
+            border: 1px solid var(--medium-gray);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: sticky;
+            top: 90px;
+            align-self: flex-start;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f2e6d5 0%, #e6d2b4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-brown);
+            font-size: 18px;
+        }
+
+        .brand-text h1 {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+            color: #4b2f1c;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            color: var(--dark-gray);
+        }
+
+        .user-card {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid var(--medium-gray);
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f3e7d7 0%, #e1c6a1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #4b2f1c;
+            font-size: 20px;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .user-tier {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f7e6cf;
+            color: #8b5a2b;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .user-email {
+            font-size: 11px;
+            color: var(--dark-gray);
+            margin-top: 6px;
+            word-break: break-word;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: var(--medium-gray);
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #7b5b3d;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .help-card {
+            margin-top: auto;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid var(--medium-gray);
+            text-align: left;
+        }
+
+        .help-card h4 {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .help-card p {
+            font-size: 11px;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        .help-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #8b5a2b;
+            color: var(--white);
+            padding: 6px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
         /* Header with Navigation */
         .header {
             background: linear-gradient(135deg, #A0815A 0%, #8B6F47 100%);
@@ -549,48 +701,43 @@
             background: var(--medium-gray);
         }
 
-        /* Navigation Tabs */
-        .nav-tabs {
-            background: var(--white);
-            border-bottom: 2px solid var(--medium-gray);
-            padding: 0;
-            margin: 0;
-            display: flex;
-            overflow-x: auto;
-        }
-
         .nav-tab {
-            padding: 16px 24px;
-            text-decoration: none;
-            color: var(--dark-gray);
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            border-bottom: 3px solid transparent;
-            transition: var(--transition);
-            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding: 10px 12px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #5b4530;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .nav-tab i {
+            width: 18px;
+            text-align: center;
+            font-size: 13px;
         }
 
         .nav-tab:hover {
-            color: var(--primary-brown);
+            background: #8b5a2b;
+            color: var(--white);
         }
 
         .nav-tab.active {
-            color: var(--primary-brown);
-            border-bottom-color: var(--primary-brown);
+            background: #8b5a2b;
+            color: var(--white);
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            padding: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
+            padding: 0;
             width: 100%;
         }
 
@@ -1186,8 +1333,14 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .main-content {
+            .dashboard-layout {
+                flex-direction: column;
                 padding: 16px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
             }
 
             .header-container {
@@ -1199,12 +1352,7 @@
                 font-size: 16px;
             }
 
-            .nav-tabs {
-                overflow-x: auto;
-            }
-
             .nav-tab {
-                padding: 12px 16px;
                 font-size: 13px;
             }
 
@@ -1284,24 +1432,69 @@
             </div>
         </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="nav-tabs" role="tablist">
-            <button class="nav-tab active" data-tab="home" role="tab">
-                <i class="fas fa-home"></i>
-                Beranda
-            </button>
-            <button class="nav-tab" data-tab="orders" role="tab">
-                <i class="fas fa-shopping-cart"></i>
-                Pesanan Saya
-            </button>
-            <button class="nav-tab" data-tab="profile" role="tab">
-                <i class="fas fa-id-card"></i>
-                Profil
-            </button>
-        </nav>
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>Three D Bakery</h1>
+                        <span>Freshly Baked Happiness</span>
+                    </div>
+                </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(auth()->user()->username ?? 'P', 0, 1)) }}
+                    </div>
+                    <div class="user-name">{{ auth()->user()->username ?? 'Pelanggan' }}</div>
+                    <div class="user-tier">
+                        <i class="fas fa-crown"></i>
+                        Sweet Member
+                    </div>
+                    <div class="user-email">{{ auth()->user()->email ?? '' }}</div>
+                </div>
+
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-section-title">Menu Pelanggan</div>
+
+                <nav class="sidebar-nav" role="tablist">
+                    <button class="nav-tab active" data-tab="home" role="tab">
+                        <i class="fas fa-home"></i>
+                        Beranda
+                    </button>
+                    <button class="nav-tab" data-tab="home" role="tab">
+                        <i class="fas fa-box"></i>
+                        Produk
+                    </button>
+                    <button class="nav-tab" data-tab="orders" role="tab">
+                        <i class="fas fa-shopping-bag"></i>
+                        Pesanan Saya
+                    </button>
+                    <button class="nav-tab" data-tab="orders" role="tab">
+                        <i class="fas fa-clock"></i>
+                        Riwayat Pesanan
+                    </button>
+                    <button class="nav-tab" data-tab="profile" role="tab">
+                        <i class="fas fa-user"></i>
+                        Profil
+                    </button>
+                </nav>
+
+                <div class="help-card">
+                    <h4>Butuh Bantuan?</h4>
+                    <p>Kami siap membantu setiap pertanyaanmu.</p>
+                    <a class="help-btn" href="https://wa.me/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-whatsapp"></i>
+                        Hubungi Kami
+                    </a>
+                    <div class="user-email" style="margin-top: 8px;">08:00 - 20:00 WIB</div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
             <!-- Home Tab -->
             <div class="tab-content active" id="home-tab">
                 <div class="welcome-section">
@@ -1412,6 +1605,7 @@
                 </div>
             </div>
         </main>
+    </div>
     </div>
 
     <!-- Quantity Modal -->

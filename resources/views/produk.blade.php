@@ -480,10 +480,11 @@
                     </button>
 
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="#"> <i class="fas fa-user"></i>
+                        <a href="{{ route('profile.edit') }}"> <i class="fas fa-user"></i>
                             Profil
                         </a>
-                        <form action="#" method="POST"> @csrf
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
                             <button type="submit" class="logout-action">
                                 <i class="fas fa-right-from-bracket"></i>
                                 Logout

@@ -87,13 +87,54 @@ class AuthController extends Controller
 
     /**
      * Handle logout
+     * 
+     * Logout dari sistem dengan benar:
+     * - Clear authentication state
+     * - Invalidate session
+     * - Regenerate CSRF token
+     * - Redirect ke login page
      */
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/')->with('success', 'Anda telah logout');
+        try {
+            // Capture user info BEFORE logout
+            $userId = auth('web')->id();
+            $username = auth('web')->user()?->username ?? 'unknown';
+            
+            // Clear authentication state
+            Auth::logout();
+            
+            // Invalidate current session
+            $request->session()->invalidate();
+            
+            // Regenerate CSRF token untuk keamanan
+            $request->session()->regenerateToken();
+            
+            // Log logout activity (AFTER logout to ensure it's recorded)
+            \Log::info('User logout successful', [
+                'user_id' => $userId,
+                'username' => $username,
+                'timestamp' => now(),
+                'ip_address' => $request->ip(),
+            ]);
+            
+            // Redirect ke login dengan success message
+            return redirect()->route('login')
+                ->with('success', 'Anda telah logout. Terima kasih telah menggunakan sistem kami.');
+        } catch (\Exception $e) {
+            // Log any errors during logout
+            \Log::error('Logout error', [
+                'error' => $e->getMessage(),
+                'user_id' => auth('web')->id() ?? 'unknown',
+            ]);
+            
+            // Tetap logout meski ada error, redirect ke login
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return redirect()->route('login')
+                ->with('success', 'Anda telah logout.');
+        }
     }
 }

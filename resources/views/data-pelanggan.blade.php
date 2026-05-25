@@ -21,6 +21,7 @@
         --border-radius: 12px;
         --border-radius-xl: 16px;
         --transition: all 0.3s ease;
+        --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     * {
@@ -30,10 +31,18 @@
     }
 
     body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: var(--font-base);
         font-size: 16px;
         background: var(--cream);
         color: var(--text-dark);
+        line-height: 1.6;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font-family: inherit;
     }
 
     .min-h-screen > nav {
@@ -183,11 +192,26 @@
         padding: 16px 24px;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
+        gap: 16px;
         box-shadow: var(--shadow-sm);
         position: sticky;
         top: 0;
         z-index: 999;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-dark);
+        letter-spacing: -0.02em;
     }
 
     .header-right {
@@ -319,7 +343,7 @@
     .page-title p {
         margin-top: 8px;
         color: #8A7561;
-        font-size: 17px;
+        font-size: 22px;
         font-weight: 300;
     }
 
@@ -1064,6 +1088,18 @@
     @media (max-width: 768px) {
         .header {
             padding: 12px 16px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .header-right {
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .header-title {
+            font-size: 20px;
         }
 
         .dashboard-content {
@@ -1091,6 +1127,9 @@
 
     <div class="main-content">
         <header class="header">
+            <div class="header-left">
+                <h1 class="header-title">Data Pelanggan</h1>
+            </div>
             <div class="header-right">
                 <button class="notification-btn" type="button" aria-label="Notifikasi">
                     <i class="fas fa-bell"></i>
@@ -1132,7 +1171,6 @@
         <main class="dashboard-content">
             <section class="page-hero">
                 <div class="page-title">
-                    <h1>Data Pelanggan</h1>
                     <p>Kelola seluruh data pelanggan Three D Bakery</p>
                 </div>
                 <div class="page-actions">
@@ -1689,7 +1727,6 @@
         })
         .catch(error => console.error('Error:', error));
     }, 30000);
-</script>
 
     // Profile Menu Functionality
     const profileMenuButton = document.getElementById('profileMenuButton');

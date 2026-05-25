@@ -623,6 +623,22 @@
             margin-bottom: 20px;
         }
 
+        .form-group.delivery-fields {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            margin-bottom: 0;
+            pointer-events: none;
+            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+        }
+
+        .form-group.delivery-fields.is-visible {
+            max-height: 240px;
+            opacity: 1;
+            margin-bottom: 20px;
+            pointer-events: auto;
+        }
+
         .form-label {
             display: block;
             margin-bottom: 8px;
@@ -651,6 +667,22 @@
             outline: none;
             border-color: var(--primary-brown);
             box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+
+        .form-control.textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+
+        .form-error {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--red);
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
         }
 
         .form-row {
@@ -777,6 +809,30 @@
             transition: var(--transition);
             font-size: 14px;
             box-shadow: 0 2px 8px rgba(139, 111, 71, 0.15);
+            position: relative;
+        }
+
+        .btn-save.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .btn-save .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            display: none;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-save.loading .btn-spinner {
+            display: inline-block;
+        }
+
+        .btn-save.loading .btn-text {
+            display: none;
         }
 
         .btn-save:hover {
@@ -804,6 +860,64 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 3000;
+            max-width: 320px;
+        }
+
+        .toast {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            padding: 12px 14px;
+            border-left: 4px solid var(--primary-brown);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            animation: toastSlide 0.3s ease;
+        }
+
+        .toast.success {
+            border-left-color: var(--green);
+        }
+
+        .toast.error {
+            border-left-color: var(--red);
+        }
+
+        .toast .toast-icon {
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .toast .toast-text {
+            font-size: 13px;
+            color: var(--text-dark);
+        }
+
+        @keyframes toastSlide {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -824,6 +938,12 @@
 
             .search-box {
                 min-width: auto;
+            }
+
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                max-width: none;
             }
         }
 
@@ -1029,15 +1149,19 @@
                                 <tr>
                                     <th>ID Pesanan</th>
                                     <th>Nama Pelanggan</th>
-                                    <th>Status</th>
-                                    <th>Pembayaran</th>
+                                    <th>No HP</th>
+                                    <th>Produk</th>
                                     <th>Total</th>
+                                    <th>Delivery/Pickup</th>
+                                    <th>Alamat</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="bodyPelanggan">
                                 <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--dark-gray);">
+                                    <td colspan="10" style="text-align: center; color: var(--dark-gray);">
                                         <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                                         Belum ada pesanan pelanggan
                                     </td>
@@ -1089,6 +1213,12 @@
                     <div class="form-group">
                         <label class="form-label">Nama Pelanggan <span style="color: var(--red);">*</span></label>
                         <input type="text" class="form-control" id="namaPelanggan" placeholder="Masukkan nama pelanggan">
+                        <div class="form-error" id="errorNamaPelanggan"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">No HP <span style="color: var(--red);">*</span></label>
+                        <input type="tel" class="form-control" id="noHpPelanggan" placeholder="08xxxxxxxxxx" inputmode="numeric">
+                        <div class="form-error" id="errorNoHpPelanggan"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Metode Pengambilan <span style="color: var(--red);">*</span></label>
@@ -1106,6 +1236,11 @@
                     <div class="form-group" id="tanggalDeliveryGroup" style="display: none;">
                         <label class="form-label">Tanggal Delivery</label>
                         <input type="date" class="form-control" id="tanggalDelivery">
+                    </div>
+                    <div class="form-group delivery-fields" id="alamatDeliveryGroup">
+                        <label class="form-label">Alamat Lengkap <span style="color: var(--red);">*</span></label>
+                        <textarea class="form-control textarea" id="alamatDelivery" placeholder="Masukkan alamat lengkap pelanggan"></textarea>
+                        <div class="form-error" id="errorAlamatPelanggan"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tanggal Pickup <span style="color: var(--red);">*</span></label>
@@ -1131,10 +1266,15 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeModal('modalAddPesanan')">Batal</button>
-                <button class="btn-save" onclick="savePesanan()">Simpan</button>
+                <button class="btn-save" id="btnSavePesanan" onclick="savePesanan()">
+                    <span class="btn-spinner"></span>
+                    <span class="btn-text">Simpan</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- Modal Detail Pesanan -->
     <div id="modalDetail" class="modal">
@@ -1297,15 +1437,19 @@
             } else {
                 document.getElementById('formKaryawan').style.display = 'none';
                 document.getElementById('formPelanggan').style.display = 'block';
+                changeMetode();
             }
         }
 
         function changeMetode() {
             const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
+            const alamatGroup = document.getElementById('alamatDeliveryGroup');
             if (metode === 'delivery') {
                 document.getElementById('tanggalDeliveryGroup').style.display = 'block';
+                alamatGroup.classList.add('is-visible');
             } else {
                 document.getElementById('tanggalDeliveryGroup').style.display = 'none';
+                alamatGroup.classList.remove('is-visible');
             }
         }
 

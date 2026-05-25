@@ -48,7 +48,7 @@ class PesananSyncService
             'id_karyawan' => $karyawan->id_karyawan,
             'id_pelanggan' => $data['id_pelanggan'] ?? null,
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
-            'sumber_pesanan' => 'offline',
+            'sumber_pesanan' => $data['sumber_pesanan'] ?? 'offline',
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
             'total_bayar' => $data['total_bayar'] ?? 0,
         ]);
@@ -68,10 +68,18 @@ class PesananSyncService
      */
     public static function createPesananPelanggan($data)
     {
-        // Cari atau buat pelanggan berdasarkan nama
-        $pelanggan = Pelanggan::where('nama', $data['nama_pelanggan'])
-            ->orWhere('id_pelanggan', $data['id_pelanggan'] ?? null)
-            ->first();
+        // Cari atau buat pelanggan berdasarkan nomor HP
+        $pelanggan = null;
+        if (!empty($data['no_tlp'])) {
+            $pelanggan = Pelanggan::findOrCreateByPhoneNumber(
+                $data['no_tlp'],
+                $data['nama_pelanggan'],
+                $data['email'] ?? null,
+                $data['alamat'] ?? null,
+                $data['id_user'] ?? null,
+                'Offline'
+            );
+        }
 
         if (!$pelanggan && isset($data['id_pelanggan'])) {
             $pelanggan = Pelanggan::find($data['id_pelanggan']);
@@ -100,6 +108,7 @@ class PesananSyncService
             'id_karyawan' => $karyawan->id_karyawan,
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
             'sumber_pesanan' => $data['sumber_pesanan'] ?? 'online',
+            'metode_pengambilan' => $data['metode'] ?? 'pickup',
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
             'total_bayar' => $data['total_bayar'] ?? 0,
         ]);

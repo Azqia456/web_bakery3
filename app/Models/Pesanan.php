@@ -15,6 +15,8 @@ class Pesanan extends Model
         'id_pelanggan',
         'id_karyawan',
         'tgl_pesan',
+        'sumber_pesanan',
+        'metode_pengambilan',
         'status_bayar',
         'total_bayar',
     ];

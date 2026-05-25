@@ -17,54 +17,155 @@ document.addEventListener('DOMContentLoaded', async function() {
     updateStats();
 });
 
-/**
- * Load pesanan data dari API database
- */
-async function loadPesananData() {
-    try {
-        const response = await fetch(API_BASE_URL, {
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            }
-        });
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) {
+        alert(message);
+        return;
+    }
 
-        if (response.ok) {
-            const result = await response.json();
-            const pesanan = result.data || [];
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
 
-            // Pisahkan berdasarkan tipe
-            pesananCache.karyawan = pesanan.filter(p => p.id_pelanggan === null || !p.id_pelanggan);
-            pesananCache.pelanggan = pesanan.filter(p => p.id_pelanggan !== null && p.id_pelanggan);
+    let icon = '<i class="fas fa-check-circle toast-icon"></i>';
+    if (type === 'error') {
+        icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
+    } else if (type === 'info') {
+        icon = '<i class="fas fa-info-circle toast-icon"></i>';
+    }
 
-            renderTables();
-        }
-    } catch (error) {
-        console.error('Error loading pesanan data:', error);
+    toast.innerHTML = `${icon}<div class="toast-text">${message}</div>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3500);
+}
+
+function setButtonLoading(isLoading) {
+    const btn = document.getElementById('btnSavePesanan');
+    if (!btn) {
+        return;
+    }
+
+    if (isLoading) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    } else {
+        btn.classList.remove('loading');
+        btn.disabled = false;
     }
 }
 
-/**
- * Save pesanan ke database
- */
-async function savePesanan() {
-    const tipePesanan = document.querySelector('input[name="tipePesanan"]:checked').value;
-    
-    let formData = {
-        tipe_pesanan: tipePesanan,
-        status_bayar: 'belum_lunas',
-        sumber_pesanan: 'offline',
-    };
+function setFieldError(id, message) {
+    const el = document.getElementById(id);
+    if (!el) {
+        return;
+    }
+    el.textContent = message;
+    el.classList.add('show');
+}
 
-    if (tipePesanan === 'karyawan') {
-        formData.nama_karyawan = document.getElementById('namaKaryawan').value;
-        formData.id_karyawan = document.getElementById('namaKaryawan').dataset.id || null;
-        formData.tgl_pesan = document.getElementById('tanggalPickupKaryawan').value;
-    } else {
-        formData.nama_pelanggan = document.getElementById('namaPelanggan').value;
+function clearFieldError(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        return;
+    }
+    el.textContent = '';
+    el.classList.remove('show');
+}
+
+function renderProdukList(pesanan) {
+    const details = pesanan.detail_pesanans || pesanan.detailPesanans || [];
+    if (!details.length) {
+        return '-';
+    }
+
+    return details.map(item => {
+        const namaProduk = item.produk?.nama_produk || item.nama_produk || 'Produk';
+        return `${namaProduk} x${item.jumlah_pesan}`;
+    }).join(', ');
+}
+
+function clearFormErrors() {
+    const tbody = document.getElementById('bodyPelanggan');
+
+    if (pesananCache.pelanggan.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+            <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+            Belum ada pesanan pelanggan</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = pesananCache.pelanggan.map(p => {
+        const metode = p.metode_pengambilan || p.metode || 'pickup';
+        const alamat = metode === 'delivery' ? (p.pelanggan?.alamat || '-') : '-';
+        const statusLabel = p.status_bayar === 'lunas' ? 'Selesai' : 'Pending';
+        const paymentLabel = p.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas';
+        const produkList = renderProdukList(p);
+        const noHp = p.pelanggan?.no_tlp || '-';
+        const tanggal = formatDate(p.tgl_pesan);
+        const metodeLabel = metode === 'delivery' ? 'Delivery' : 'Pickup';
+
+        return `
+            <tr>
+                <td><strong>#${p.id_pesanan}</strong></td>
+                <td>${p.pelanggan?.nama || '-'}</td>
+                <td>${noHp}</td>
+                <td>${produkList}</td>
+                <td>Rp ${formatNumber(p.total_bayar)}</td>
+                <td>${metodeLabel}</td>
+                <td>${alamat}</td>
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <span class="status-badge ${p.status_bayar === 'lunas' ? 'selesai' : 'pending'}">${statusLabel}</span>
+                        <span class="payment-badge ${p.status_bayar}">${paymentLabel}</span>
+                    </div>
+                </td>
+                <td>${tanggal}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+        if (!noHpPelanggan) {
+            setFieldError('errorNoHpPelanggan', 'No HP wajib diisi');
+            hasError = true;
+        } else if (!/^[0-9]+$/.test(noHpPelanggan)) {
+            setFieldError('errorNoHpPelanggan', 'No HP harus berupa angka');
+            hasError = true;
+        }
+
+        if (metode === 'delivery' && !alamatDelivery) {
+            setFieldError('errorAlamatPelanggan', 'Alamat wajib diisi untuk delivery');
+            hasError = true;
+        }
+
+        if (hasError) {
+            showToast('Lengkapi data pelanggan yang wajib diisi', 'error');
+            return;
+        }
+
+        formData.nama_pelanggan = namaPelanggan;
+        formData.no_tlp = noHpPelanggan;
+        formData.alamat = metode === 'delivery' ? alamatDelivery : null;
         formData.id_pelanggan = document.getElementById('namaPelanggan').dataset.id || null;
-        formData.tgl_pesan = document.getElementById('tanggalPickupPelanggan').value;
-        formData.metode = document.querySelector('input[name="metodeMetode"]:checked').value;
+        formData.metode = metode;
+        formData.tgl_pesan = metode === 'delivery'
+            ? document.getElementById('tanggalDelivery').value
+            : document.getElementById('tanggalPickupPelanggan').value;
     }
 
     // Kumpulkan produk
@@ -85,7 +186,7 @@ async function savePesanan() {
     });
 
     if (products.length === 0) {
-        alert('Silakan tambahkan minimal satu produk');
+        showToast('Silakan tambahkan minimal satu produk', 'error');
         return;
     }
 
@@ -93,6 +194,7 @@ async function savePesanan() {
     formData.total_bayar = calculateTotal();
 
     try {
+        setButtonLoading(true);
         const response = await fetch(API_BASE_URL, {
             method: 'POST',
             headers: {
@@ -106,7 +208,7 @@ async function savePesanan() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alert('Pesanan berhasil disimpan ke database!');
+            showToast('Pesanan berhasil disimpan', 'success');
             closeModal('modalAddPesanan');
             
             // Reload data dari database
@@ -115,11 +217,13 @@ async function savePesanan() {
             // Reset form
             resetForm();
         } else {
-            alert('Error: ' + (result.message || 'Gagal menyimpan pesanan'));
+            showToast(result.message || 'Gagal menyimpan pesanan', 'error');
         }
     } catch (error) {
         console.error('Error saving pesanan:', error);
-        alert('Error: ' + error.message);
+        showToast(error.message || 'Terjadi kesalahan saat menyimpan', 'error');
+    } finally {
+        setButtonLoading(false);
     }
 }
 
@@ -143,14 +247,14 @@ async function deletePesanan(id) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alert('Pesanan berhasil dihapus');
+            showToast('Pesanan berhasil dihapus', 'success');
             await loadPesananData();
         } else {
-            alert('Error: ' + (result.message || 'Gagal menghapus pesanan'));
+            showToast(result.message || 'Gagal menghapus pesanan', 'error');
         }
     } catch (error) {
         console.error('Error deleting pesanan:', error);
-        alert('Error: ' + error.message);
+        showToast(error.message || 'Terjadi kesalahan saat menghapus', 'error');
     }
 }
 
@@ -196,38 +300,70 @@ function renderKaryawanTable() {
     `).join('');
 }
 
+function renderProdukList(pesanan) {
+    const details = pesanan.detail_pesanans || pesanan.detailPesanans || [];
+    if (!details.length) {
+        return '-';
+    }
+
+    return details.map(item => {
+        const namaProduk = item.produk?.nama_produk || item.nama_produk || 'Produk';
+        return `${namaProduk} x${item.jumlah_pesan}`;
+    }).join(', ');
+}
+
 function renderPelangganTable() {
     const tbody = document.getElementById('bodyPelanggan');
-    
+
     if (pesananCache.pelanggan.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--dark-gray); padding: 40px;">
             <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
             Belum ada pesanan pelanggan</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = pesananCache.pelanggan.map(p => `
-        <tr>
-            <td><strong>#${p.id_pesanan}</strong></td>
-            <td>${p.pelanggan?.nama || '-'}</td>
-            <td><span class="status-badge pending">Pending</span></td>
-            <td><span class="payment-badge ${p.status_bayar}">${p.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas'}</span></td>
-            <td>Rp ${formatNumber(p.total_bayar)}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = pesananCache.pelanggan.map(p => {
+        const metode = p.metode_pengambilan || p.metode || 'pickup';
+        const alamat = metode === 'delivery' ? (p.pelanggan?.alamat || '-') : '-';
+        const statusLabel = p.status_bayar === 'lunas' ? 'Selesai' : 'Pending';
+        const paymentLabel = p.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas';
+        const produkList = renderProdukList(p);
+        const noHp = p.pelanggan?.no_tlp || '-';
+        const tanggal = formatDate(p.tgl_pesan);
+        const metodeLabel = metode === 'delivery' ? 'Delivery' : 'Pickup';
+
+        return `
+            <tr>
+                <td><strong>#${p.id_pesanan}</strong></td>
+                <td>${p.pelanggan?.nama || '-'}</td>
+                <td>${noHp}</td>
+                <td>${produkList}</td>
+                <td>Rp ${formatNumber(p.total_bayar)}</td>
+                <td>${metodeLabel}</td>
+                <td>${alamat}</td>
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <span class="status-badge ${p.status_bayar === 'lunas' ? 'selesai' : 'pending'}">${statusLabel}</span>
+                        <span class="payment-badge ${p.status_bayar}">${paymentLabel}</span>
+                    </div>
+                </td>
+                <td>${tanggal}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 /**
@@ -281,38 +417,86 @@ function searchAndFilter(type, query) {
     const filtered = data.filter(p => {
         const name = type === 'karyawan' ? (p.karyawan?.nama || '') : (p.pelanggan?.nama || '');
         const id = p.id_pesanan.toString();
-        return name.toLowerCase().includes(query.toLowerCase()) || id.includes(query);
+        const phone = type === 'karyawan' ? '' : (p.pelanggan?.no_tlp || '');
+        const normalizedQuery = query.toLowerCase();
+        return name.toLowerCase().includes(normalizedQuery)
+            || id.includes(normalizedQuery)
+            || phone.toLowerCase().includes(normalizedQuery);
     });
     
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 5 : 6}" style="text-align: center;">Tidak ada data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 5 : 10}" style="text-align: center;">Tidak ada data</td></tr>`;
         return;
     }
     
     // Render filtered
     const isKaryawan = type === 'karyawan';
-    tbody.innerHTML = filtered.map(p => `
-        <tr>
-            <td><strong>#${p.id_pesanan}</strong></td>
-            <td>${isKaryawan ? (p.karyawan?.nama || '-') : (p.pelanggan?.nama || '-')}</td>
-            <td>${isKaryawan ? '<span class="status-badge belum_stor">Belum Stor</span>' : '<span class="status-badge pending">Pending</span>'}</td>
-            ${!isKaryawan ? `<td><span class="payment-badge ${p.status_bayar}">${p.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas'}</span></td>` : ''}
-            <td>Rp ${formatNumber(p.total_bayar)}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = filtered.map(p => {
+        if (isKaryawan) {
+            return `
+                <tr>
+                    <td><strong>#${p.id_pesanan}</strong></td>
+                    <td>${p.karyawan?.nama || '-'}</td>
+                    <td><span class="status-badge belum_stor">Belum Stor</span></td>
+                    <td>Rp ${formatNumber(p.total_bayar)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        const metode = p.metode_pengambilan || p.metode || 'pickup';
+        const alamat = metode === 'delivery' ? (p.pelanggan?.alamat || '-') : '-';
+        const statusLabel = p.status_bayar === 'lunas' ? 'Selesai' : 'Pending';
+        const paymentLabel = p.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas';
+        const produkList = renderProdukList(p);
+        const noHp = p.pelanggan?.no_tlp || '-';
+        const tanggal = formatDate(p.tgl_pesan);
+        const metodeLabel = metode === 'delivery' ? 'Delivery' : 'Pickup';
+
+        return `
+            <tr>
+                <td><strong>#${p.id_pesanan}</strong></td>
+                <td>${p.pelanggan?.nama || '-'}</td>
+                <td>${noHp}</td>
+                <td>${produkList}</td>
+                <td>Rp ${formatNumber(p.total_bayar)}</td>
+                <td>${metodeLabel}</td>
+                <td>${alamat}</td>
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <span class="status-badge ${p.status_bayar === 'lunas' ? 'selesai' : 'pending'}">${statusLabel}</span>
+                        <span class="payment-badge ${p.status_bayar}">${paymentLabel}</span>
+                    </div>
+                </td>
+                <td>${tanggal}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon" onclick="viewDetail(${p.id_pesanan})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editPesanan(${p.id_pesanan})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete" onclick="deletePesanan(${p.id_pesanan})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 /**
@@ -348,6 +532,11 @@ function changePesananType() {
     const type = document.querySelector('input[name="tipePesanan"]:checked').value;
     document.getElementById('formKaryawan').style.display = type === 'karyawan' ? 'block' : 'none';
     document.getElementById('formPelanggan').style.display = type === 'pelanggan' ? 'block' : 'none';
+    if (type === 'karyawan') {
+        document.getElementById('tanggalDeliveryGroup').style.display = 'none';
+        document.getElementById('alamatDeliveryGroup').classList.remove('is-visible');
+        clearFormErrors();
+    }
 }
 
 /**
@@ -355,7 +544,18 @@ function changePesananType() {
  */
 function changeMetode() {
     const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
-    document.getElementById('tanggalDeliveryGroup').style.display = metode === 'delivery' ? 'block' : 'none';
+    const tanggalGroup = document.getElementById('tanggalDeliveryGroup');
+    const alamatGroup = document.getElementById('alamatDeliveryGroup');
+
+    if (metode === 'delivery') {
+        tanggalGroup.style.display = 'block';
+        alamatGroup.classList.add('is-visible');
+    } else {
+        tanggalGroup.style.display = 'none';
+        alamatGroup.classList.remove('is-visible');
+        document.getElementById('alamatDelivery').value = '';
+        clearFieldError('errorAlamatPelanggan');
+    }
 }
 
 /**
@@ -464,6 +664,8 @@ function resetForm() {
     document.getElementById('productList').innerHTML = '';
     document.getElementById('namaKaryawan').value = '';
     document.getElementById('namaPelanggan').value = '';
+    document.getElementById('noHpPelanggan').value = '';
+    document.getElementById('alamatDelivery').value = '';
     document.getElementById('tanggalPickupKaryawan').value = '';
     document.getElementById('tanggalPickupPelanggan').value = '';
     document.getElementById('tanggalDelivery').value = '';
@@ -472,7 +674,9 @@ function resetForm() {
     document.getElementById('formKaryawan').style.display = 'block';
     document.getElementById('formPelanggan').style.display = 'none';
     document.getElementById('tanggalDeliveryGroup').style.display = 'none';
+    document.getElementById('alamatDeliveryGroup').classList.remove('is-visible');
     document.getElementById('totalPesanan').textContent = 'Rp 0';
+    clearFormErrors();
 }
 
 /**

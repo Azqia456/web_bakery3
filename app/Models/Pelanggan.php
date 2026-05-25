@@ -55,7 +55,21 @@ class Pelanggan extends Model
         $pelanggan = self::where('no_tlp', $phoneNumber)->first();
 
         if ($pelanggan) {
-            return $pelanggan;
+            $updateData = [
+                'nama' => $name,
+                'status' => $status,
+            ];
+
+            if ($email !== null) {
+                $updateData['email'] = $email;
+            }
+
+            if ($address !== null) {
+                $updateData['alamat'] = $address;
+            }
+
+            $pelanggan->update($updateData);
+            return $pelanggan->refresh();
         }
 
         return self::create([
@@ -63,7 +77,7 @@ class Pelanggan extends Model
             'nama' => $name,
             'no_tlp' => $phoneNumber,
             'email' => $email,
-            'alamat' => $address,
+            'alamat' => $address ?? 'Pickup',
             'status' => $status,
         ]);
     }

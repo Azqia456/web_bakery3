@@ -2,9 +2,6 @@
 
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
     :root {
@@ -33,7 +30,8 @@
     }
 
     body {
-        font-family: 'Manrope', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
         background: var(--cream);
         color: var(--text-dark);
     }
@@ -67,14 +65,14 @@
     }
 
     .sidebar-header h1 {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         margin-bottom: 4px;
         letter-spacing: -0.02em;
     }
 
     .sidebar-header p {
-        font-size: 12px;
+        font-size: 13px;
         opacity: 0.85;
         font-weight: 500;
     }
@@ -98,7 +96,7 @@
         border-radius: var(--border-radius);
         transition: var(--transition);
         font-weight: 600;
-        font-size: 14px;
+        font-size: 15px;
         background: none;
         border: none;
         cursor: pointer;
@@ -125,11 +123,11 @@
         min-width: 20px;
         margin-right: 12px;
         text-align: center;
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .sidebar-menu-item .toggle-arrow {
-        font-size: 12px;
+        font-size: 13px;
         transition: transform 0.3s ease;
         margin-left: auto;
         flex-shrink: 0;
@@ -158,7 +156,7 @@
         text-decoration: none;
         display: flex;
         align-items: center;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 400;
         transition: var(--transition);
     }
@@ -221,7 +219,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 14px;
+        font-size: 15px;
         color: var(--dark-gray);
         font-weight: 600;
     }
@@ -267,7 +265,7 @@
         background: #EF4444;
         color: var(--white);
         border-radius: 50%;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -288,7 +286,7 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .profile-dropdown {
@@ -321,7 +319,7 @@
         background: transparent;
         color: var(--text-dark);
         text-decoration: none;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
         text-align: left;
@@ -351,8 +349,7 @@
     }
 
     .page-title h1 {
-        font-family: 'Fraunces', serif;
-        font-size: 30px;
+        font-size: 32px;
         font-weight: 700;
         color: var(--text-dark);
     }
@@ -360,7 +357,8 @@
     .page-title p {
         margin-top: 8px;
         color: #8A7561;
-        font-size: 14px;
+        font-size: 17px;
+        font-weight: 300;
     }
 
     .page-actions {
@@ -382,7 +380,7 @@
         border: 1px solid var(--medium-gray);
         border-radius: 12px;
         background: var(--white);
-        font-size: 14px;
+        font-size: 15px;
         transition: var(--transition);
     }
 
@@ -398,7 +396,7 @@
         top: 50%;
         transform: translateY(-50%);
         color: var(--dark-gray);
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .filter-select {
@@ -410,7 +408,7 @@
         border: 1px solid var(--medium-gray);
         border-radius: 12px;
         background: var(--white);
-        font-size: 14px;
+        font-size: 15px;
         appearance: none;
         cursor: pointer;
         min-width: 140px;
@@ -421,7 +419,7 @@
         top: 50%;
         transform: translateY(-50%);
         color: var(--dark-gray);
-        font-size: 12px;
+        font-size: 13px;
         pointer-events: none;
     }
 
@@ -443,7 +441,7 @@
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
         color: var(--white);
         font-weight: 600;
-        font-size: 14px;
+        font-size: 15px;
         cursor: pointer;
         box-shadow: var(--shadow-sm);
         transition: var(--transition);
@@ -480,7 +478,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 19px;
     }
 
     .summary-icon.tan { background: rgba(198, 156, 109, 0.18); color: #8B6F47; }
@@ -495,20 +493,20 @@
     }
 
     .summary-title {
-        font-size: 12px;
+        font-size: 13px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: var(--dark-gray);
     }
 
     .summary-value {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: var(--text-dark);
     }
 
     .summary-subtext {
-        font-size: 12px;
+        font-size: 13px;
         color: #8A7561;
     }
 
@@ -531,13 +529,13 @@
     }
 
     .table-title h2 {
-        font-size: 16px;
+        font-size: 23px;
         font-weight: 700;
         color: var(--text-dark);
     }
 
     .table-title span {
-        font-size: 12px;
+        font-size: 17px;
         color: var(--dark-gray);
     }
 
@@ -573,13 +571,14 @@
     td {
         padding: 14px 16px;
         text-align: left;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     thead th {
         background: #FCFAF7;
         color: #806D5A;
         font-weight: 700;
+        font-size: 17px;
         letter-spacing: 0.3px;
     }
 
@@ -600,7 +599,7 @@
 
     .table-time {
         display: block;
-        font-size: 12px;
+        font-size: 50x;
         color: var(--dark-gray);
         margin-top: 4px;
     }
@@ -673,7 +672,17 @@
         }
 
         .page-title h1 {
-            font-size: 26px;
+            font-size: 40px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .page-title h1 {
+            font-size: 40px;
+        }
+
+        .page-title p {
+            font-size: px;
         }
     }
 </style>

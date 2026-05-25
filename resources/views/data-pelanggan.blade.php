@@ -185,49 +185,11 @@
         padding: 16px 24px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         box-shadow: var(--shadow-sm);
         position: sticky;
         top: 0;
         z-index: 999;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .menu-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        border: 1px solid var(--medium-gray);
-        background: var(--light-gray);
-        color: var(--text-dark);
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .menu-btn:hover {
-        background: var(--medium-gray);
-        transform: translateY(-1px);
-    }
-
-    .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        color: var(--dark-gray);
-        font-weight: 600;
-    }
-
-    .breadcrumb .current {
-        color: var(--text-dark);
     }
 
     .header-right {
@@ -663,6 +625,443 @@
         }
     }
 
+    /* Status Badge Styles */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-top: 4px;
+    }
+
+    .status-badge .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-online {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #22C55E;
+    }
+
+    .status-online .status-dot {
+        background-color: #22C55E;
+        animation: pulse-online 2s ease-in-out infinite;
+    }
+
+    .status-offline {
+        background-color: rgba(198, 156, 109, 0.15);
+        color: #8B6F47;
+    }
+
+    .status-offline .status-dot {
+        background-color: #8B6F47;
+    }
+
+    @keyframes pulse-online {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .pelanggan-name {
+        font-weight: 600;
+        display: block;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-lg);
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s ease;
+        z-index: 10000;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--medium-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--dark-gray);
+        transition: var(--transition);
+    }
+
+    .modal-close:hover {
+        color: var(--text-dark);
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        border-top: 1px solid var(--medium-gray);
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--text-dark);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--medium-gray);
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(198, 156, 109, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        border: 1px solid var(--medium-gray);
+        background: var(--light-gray);
+        color: var(--text-dark);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .btn-cancel:hover {
+        background: var(--medium-gray);
+    }
+
+    .btn-submit {
+        padding: 10px 20px;
+        border: none;
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        color: var(--white);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10001;
+        max-width: 350px;
+    }
+
+    .toast {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-lg);
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        animation: slideInRight 0.3s ease;
+        border-left: 4px solid var(--accent);
+    }
+
+    .toast.success {
+        border-left-color: #22C55E;
+    }
+
+    .toast.success .toast-icon {
+        color: #22C55E;
+    }
+
+    .toast.error {
+        border-left-color: #EF4444;
+    }
+
+    .toast.error .toast-icon {
+        color: #EF4444;
+    }
+
+    .toast.info {
+        border-left-color: #3B82F6;
+    }
+
+    .toast.info .toast-icon {
+        color: #3B82F6;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .toast-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .toast-message {
+        font-size: 14px;
+        color: var(--text-dark);
+        line-height: 1.4;
+    }
+
+    /* Pagination */
+    .pagination-info {
+        padding: 16px 20px;
+        text-align: center;
+        font-size: 13px;
+        color: var(--dark-gray);
+        background: var(--light-gray);
+        border-top: 1px solid var(--medium-gray);
+    }
+
+    .pagination {
+        display: flex;
+        gap: 8px;
+        padding: 16px 20px;
+        justify-content: center;
+        background: var(--light-gray);
+        border-top: 1px solid var(--medium-gray);
+        flex-wrap: wrap;
+    }
+
+    .pagination a,
+    .pagination button {
+        padding: 8px 12px;
+        border: 1px solid var(--medium-gray);
+        background: var(--white);
+        color: var(--text-dark);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .pagination a:hover,
+    .pagination button:hover {
+        background: var(--medium-gray);
+    }
+
+    .pagination .active {
+        background: var(--accent);
+        color: var(--white);
+        border-color: var(--accent);
+    }
+
+    .pagination .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .text-muted {
+        color: var(--dark-gray);
+    }
+
+    /* Alamat Column Styling */
+    .alamat-cell {
+        display: inline-block;
+        max-width: 250px;
+        word-wrap: break-word;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        white-space: normal;
+        line-height: 1.4;
+        font-size: 13px;
+        color: var(--text-dark);
+        cursor: help;
+        position: relative;
+    }
+
+    /* Tooltip untuk alamat lengkap */
+    .alamat-cell[title] {
+        position: relative;
+    }
+
+    .alamat-cell[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.9);
+        color: var(--white);
+        padding: 8px 12px;
+        border-radius: 6px;
+        white-space: normal;
+        width: 220px;
+        word-wrap: break-word;
+        font-size: 12px;
+        line-height: 1.4;
+        z-index: 1000;
+        font-weight: 400;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        animation: tooltipFadeIn 0.2s ease;
+    }
+
+    .alamat-cell[title]:hover::before {
+        content: '';
+        position: absolute;
+        bottom: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+    }
+
+    @keyframes tooltipFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .modal {
+            width: 95%;
+            max-width: 100%;
+        }
+
+        .toast-container {
+            max-width: calc(100% - 20px);
+            left: 10px;
+            right: 10px;
+        }
+
+        .pagination {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Responsive Alamat Column */
+        .alamat-cell {
+            max-width: 150px;
+            font-size: 12px;
+        }
+
+        .alamat-cell[title]:hover::after {
+            width: 180px;
+            font-size: 11px;
+            bottom: auto;
+            top: 125%;
+        }
+
+        .alamat-cell[title]:hover::before {
+            bottom: auto;
+            top: 120%;
+            border-top-color: transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px 6px;
+        }
+    }
+
     @media (max-width: 768px) {
         .header {
             padding: 12px 16px;
@@ -683,16 +1082,6 @@
 
     <div class="main-content">
         <header class="header">
-            <div class="header-left">
-                <button class="menu-btn" type="button" aria-label="Menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="breadcrumb">
-                    <span>Owner</span>
-                    <span>/</span>
-                    <span class="current">Data Pelanggan</span>
-                </div>
-            </div>
             <div class="header-right">
                 <button class="notification-btn" type="button" aria-label="Notifikasi">
                     <i class="fas fa-bell"></i>
@@ -740,19 +1129,18 @@
                 <div class="page-actions">
                     <div class="search-input">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Cari pelanggan...">
+                        <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP..." value="{{ $search ?? '' }}">
                     </div>
                     <div class="filter-select">
                         <i class="fas fa-filter filter-icon"></i>
-                        <select>
-                            <option>Filter</option>
-                            <option>Terbaru</option>
-                            <option>Terlama</option>
-                            <option>Terbanyak Pesanan</option>
+                        <select id="statusFilter">
+                            <option value="">Semua Status</option>
+                            <option value="Online" {{ $status === 'Online' ? 'selected' : '' }}>Online</option>
+                            <option value="Offline" {{ $status === 'Offline' ? 'selected' : '' }}>Offline</option>
                         </select>
                         <i class="fas fa-chevron-down select-arrow"></i>
                     </div>
-                    <button class="btn-primary" type="button">
+                    <button class="btn-primary" type="button" id="btnTambahPelanggan">
                         <i class="fas fa-plus"></i>
                         Tambah Pelanggan
                     </button>
@@ -766,7 +1154,7 @@
                     </div>
                     <div class="summary-meta">
                         <span class="summary-title">Total Pelanggan</span>
-                        <span class="summary-value">120</span>
+                        <span class="summary-value" id="totalPelanggan">{{ $stats['total_pelanggan'] ?? 0 }}</span>
                         <span class="summary-subtext">Semua pelanggan terdaftar</span>
                     </div>
                 </div>
@@ -776,7 +1164,7 @@
                     </div>
                     <div class="summary-meta">
                         <span class="summary-title">Pelanggan Online</span>
-                        <span class="summary-value">80</span>
+                        <span class="summary-value" id="pelangganOnline">{{ $stats['pelanggan_online'] ?? 0 }}</span>
                         <span class="summary-subtext">Dari website dan aplikasi</span>
                     </div>
                 </div>
@@ -786,7 +1174,7 @@
                     </div>
                     <div class="summary-meta">
                         <span class="summary-title">Pelanggan Offline</span>
-                        <span class="summary-value">40</span>
+                        <span class="summary-value" id="pelangganOffline">{{ $stats['pelanggan_offline'] ?? 0 }}</span>
                         <span class="summary-subtext">Dari toko langsung</span>
                     </div>
                 </div>
@@ -796,7 +1184,7 @@
                     </div>
                     <div class="summary-meta">
                         <span class="summary-title">Total Pesanan Hari Ini</span>
-                        <span class="summary-value">58</span>
+                        <span class="summary-value" id="totalPesananHariIni">{{ $stats['total_pesanan_hari_ini'] ?? 0 }}</span>
                         <span class="summary-subtext">Semua transaksi hari ini</span>
                     </div>
                 </div>
@@ -820,145 +1208,481 @@
                                 <th>No</th>
                                 <th>Nama Pelanggan</th>
                                 <th>No. HP</th>
+                                <th>Alamat</th>
                                 <th>Total Pesanan</th>
                                 <th>Terakhir Pesan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Aquila Aulia</td>
-                                <td>0812-3456-7890</td>
-                                <td>12 Pesanan</td>
-                                <td>
-                                    <span class="table-date">22 Mei 2026</span>
-                                    <span class="table-time">10:45 WIB</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn" type="button" aria-label="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="action-btn" type="button" aria-label="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn danger" type="button" aria-label="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Rina Putri</td>
-                                <td>0821-4567-8901</td>
-                                <td>8 Pesanan</td>
-                                <td>
-                                    <span class="table-date">21 Mei 2026</span>
-                                    <span class="table-time">16:20 WIB</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn" type="button" aria-label="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="action-btn" type="button" aria-label="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn danger" type="button" aria-label="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Dimas Saputra</td>
-                                <td>0813-5678-9012</td>
-                                <td>5 Pesanan</td>
-                                <td>
-                                    <span class="table-date">22 Mei 2026</span>
-                                    <span class="table-time">09:15 WIB</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn" type="button" aria-label="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="action-btn" type="button" aria-label="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn danger" type="button" aria-label="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Nabila Putri</td>
-                                <td>0822-6789-0123</td>
-                                <td>3 Pesanan</td>
-                                <td>
-                                    <span class="table-date">20 Mei 2026</span>
-                                    <span class="table-time">18:30 WIB</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn" type="button" aria-label="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="action-btn" type="button" aria-label="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn danger" type="button" aria-label="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Fajar Ramadhan</td>
-                                <td>0831-7890-1234</td>
-                                <td>7 Pesanan</td>
-                                <td>
-                                    <span class="table-date">22 Mei 2026</span>
-                                    <span class="table-time">11:05 WIB</span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="action-btn" type="button" aria-label="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="action-btn" type="button" aria-label="Edit">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                        <button class="action-btn danger" type="button" aria-label="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="pelanggantTableBody">
+                            @forelse($pelanggans as $key => $pelanggan)
+                                @php
+                                    $nomor = ($pelanggans->currentPage() - 1) * $pelanggans->perPage() + $key + 1;
+                                    $tanggalAkhir = $pelanggan->terakhir_pesan ? \Carbon\Carbon::parse($pelanggan->terakhir_pesan) : null;
+                                @endphp
+                                <tr data-id="{{ $pelanggan->id_pelanggan }}">
+                                    <td>{{ $nomor }}</td>
+                                    <td>
+                                        <span class="pelanggan-name">{{ $pelanggan->nama }}</span>
+                                        <span class="status-badge status-{{ strtolower($pelanggan->status) }}">
+                                            <span class="status-dot"></span>
+                                            {{ $pelanggan->status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $pelanggan->no_tlp }}</td>
+                                    <td>
+                                        <span class="alamat-cell" title="{{ $pelanggan->alamat }}">
+                                            {{ Str::limit($pelanggan->alamat, 40, '...') }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $pelanggan->total_pesanan ?? 0 }} Pesanan</td>
+                                    <td>
+                                        @if($tanggalAkhir)
+                                            <span class="table-date">{{ $tanggalAkhir->locale('id')->format('d M Y') }}</span>
+                                            <span class="table-time">{{ $tanggalAkhir->format('H:i') }} WIB</span>
+                                        @else
+                                            <span class="table-date text-muted">Belum ada pesanan</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn btn-view" type="button" aria-label="Lihat" data-id="{{ $pelanggan->id_pelanggan }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn btn-edit" type="button" aria-label="Edit" data-id="{{ $pelanggan->id_pelanggan }}">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="{{ $pelanggan->id_pelanggan }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                        <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
+                                        Tidak ada pelanggan ditemukan
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
+                <!-- Pagination Info -->
+                @if($pelanggans->total() > 0)
+                <div class="pagination-info">
+                    Menampilkan {{ $pelanggans->firstItem() }} sampai {{ $pelanggans->lastItem() }} dari {{ $pelanggans->total() }} pelanggan
+                </div>
+                <!-- Pagination Links -->
+                <div class="pagination">
+                    @if ($pelanggans->onFirstPage())
+                        <span class="disabled">&laquo; Sebelumnya</span>
+                    @else
+                        <a href="{{ $pelanggans->previousPageUrl() }}">&laquo; Sebelumnya</a>
+                    @endif
+
+                    @foreach ($pelanggans->getUrlRange(1, $pelanggans->lastPage()) as $page => $url)
+                        @if ($page == $pelanggans->currentPage())
+                            <button class="active">{{ $page }}</button>
+                        @else
+                            <a href="{{ $url }}">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($pelanggans->hasMorePages())
+                        <a href="{{ $pelanggans->nextPageUrl() }}">Selanjutnya &raquo;</a>
+                    @else
+                        <span class="disabled">Selanjutnya &raquo;</span>
+                    @endif
+                </div>
+                @endif
             </section>
         </main>
     </div>
 </div>
 
-<script>
-    function toggleSubmenu(button) {
-        const submenu = button.nextElementSibling;
-        const arrow = button.querySelector('.toggle-arrow');
+<!-- Modal Add/Edit Pelanggan -->
+<div class="modal-overlay" id="modalPelanggan">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Tambah Pelanggan</h2>
+            <button class="modal-close" type="button" onclick="closeModal('modalPelanggan')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="formPelanggan">
+                @csrf
+                <input type="hidden" id="pelangganId" name="pelanggan_id">
+                
+                <div class="form-group">
+                    <label for="inputNama">Nama Pelanggan</label>
+                    <input type="text" id="inputNama" name="nama" required>
+                </div>
 
-        submenu.classList.toggle('open');
-        arrow.classList.toggle('open');
-        button.classList.toggle('active');
+                <div class="form-group">
+                    <label for="inputNoTlp">Nomor HP</label>
+                    <input type="tel" id="inputNoTlp" name="no_tlp" placeholder="0812-1234-5678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">Email (Opsional)</label>
+                    <input type="email" id="inputEmail" name="email" placeholder="nama@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputAlamat">Alamat</label>
+                    <textarea id="inputAlamat" name="alamat" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputStatus">Status</label>
+                    <select id="inputStatus" name="status" required>
+                        <option value="Online">Online (Website/Aplikasi)</option>
+                        <option value="Offline">Offline (Toko Langsung)</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" type="button" onclick="closeModal('modalPelanggan')">Batal</button>
+            <button class="btn-submit" type="button" onclick="submitFormPelanggan()">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal View Detail Pelanggan -->
+<div class="modal-overlay" id="modalDetail">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Detail Pelanggan</h2>
+            <button class="modal-close" type="button" onclick="closeModal('modalDetail')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalDetailContent">
+            <!-- Will be populated via AJAX -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" type="button" onclick="closeModal('modalDetail')">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Delete -->
+<div class="modal-overlay" id="modalDelete">
+    <div class="modal" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2>Hapus Pelanggan</h2>
+            <button class="modal-close" type="button" onclick="closeModal('modalDelete')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Apakah Anda yakin ingin menghapus pelanggan <strong id="deletePelangganName"></strong>?</p>
+            <p style="color: #EF4444; margin-top: 12px; font-size: 13px;">
+                <i class="fas fa-exclamation-circle"></i> Tindakan ini tidak dapat dibatalkan.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" type="button" onclick="closeModal('modalDelete')">Batal</button>
+            <button class="btn-submit" type="button" onclick="confirmDelete()" style="background: linear-gradient(135deg, #EF4444, #DC2626);">Hapus</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // BASE URLs
+    const API_BASE_URL = '{{ url("/api") }}';
+
+    // Modal Functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
     }
 
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function resetFormPelanggan() {
+        document.getElementById('formPelanggan').reset();
+        document.getElementById('pelangganId').value = '';
+        document.getElementById('modalTitle').textContent = 'Tambah Pelanggan';
+        document.getElementById('inputStatus').value = 'Online';
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let icon = '';
+        if (type === 'success') icon = '<i class="fas fa-check-circle toast-icon"></i>';
+        else if (type === 'error') icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
+        else if (type === 'info') icon = '<i class="fas fa-info-circle toast-icon"></i>';
+
+        toast.innerHTML = `${icon}<div class="toast-message">${message}</div>`;
+        
+        document.getElementById('toastContainer').appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // Search and Filter
+    document.getElementById('searchInput').addEventListener('keyup', debounce(function() {
+        const search = this.value;
+        const status = document.getElementById('statusFilter').value;
+        loadPelanggans(search, status, 1);
+    }, 500));
+
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        const search = document.getElementById('searchInput').value;
+        loadPelanggans(search, this.value, 1);
+    });
+
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Load Pelanggans with AJAX
+    function loadPelanggans(search = '', status = '', page = 1) {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (status) params.append('status', status);
+        params.append('page', page);
+        params.append('per_page', 10);
+
+        fetch(`{{ route('data-pelanggan') }}?${params.toString()}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update stats
+            document.getElementById('totalPelanggan').textContent = data.stats.total_pelanggan;
+            document.getElementById('pelangganOnline').textContent = data.stats.pelanggan_online;
+            document.getElementById('pelangganOffline').textContent = data.stats.pelanggan_offline;
+            document.getElementById('totalPesananHariIni').textContent = data.stats.total_pesanan_hari_ini;
+
+            // Reload table
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Gagal memuat data pelanggan', 'error');
+        });
+    }
+
+    // Add/Edit Pelanggan
+    document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
+        resetFormPelanggan();
+        openModal('modalPelanggan');
+    });
+
+    function submitFormPelanggan() {
+        const formData = new FormData(document.getElementById('formPelanggan'));
+        const pelangganId = document.getElementById('pelangganId').value;
+        const url = pelangganId ? `${API_BASE_URL}/pelanggans/${pelangganId}` : `${API_BASE_URL}/pelanggans`;
+        const method = pelangganId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || document.querySelector('input[name="csrf-token"]')?.value,
+                'Accept': 'application/json',
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                closeModal('modalPelanggan');
+                setTimeout(() => location.reload(), 500);
+            } else {
+                showToast(data.message || 'Terjadi kesalahan', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Gagal menyimpan data pelanggan', 'error');
+        });
+    }
+
+    // View Detail
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-view')) {
+            const pelangganId = e.target.closest('.btn-view').dataset.id;
+            fetch(`${API_BASE_URL}/pelanggans/${pelangganId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const pelanggan = data.pelanggan;
+                const pesanans = data.pesanans;
+                let content = `
+                    <div style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Nama Pelanggan</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">${pelanggan.nama}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor HP</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">${pelanggan.no_tlp}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">${pelanggan.email || '-'}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">${pelanggan.alamat}</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">
+                                <span class="status-badge status-${pelanggan.status.toLowerCase()}">
+                                    <span class="status-dot"></span>
+                                    ${pelanggan.status}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Pesanan</label>
+                            <p style="padding: 10px; background: var(--light-gray); border-radius: 6px;">${pelanggan.total_pesanan || 0}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; border-top: 1px solid var(--medium-gray); padding-top: 16px;">
+                        <h3 style="margin-bottom: 12px; font-size: 14px; font-weight: 700;">Riwayat Pesanan</h3>
+                        ${pesanans.length > 0 ? `
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                ${pesanans.map(p => `
+                                    <div style="padding: 10px; background: var(--light-gray); border-radius: 6px; margin-bottom: 8px; font-size: 13px;">
+                                        <div><strong>#${p.id_pesanan}</strong> - ${new Date(p.tgl_pesan).toLocaleDateString('id-ID')}</div>
+                                        <div style="color: var(--dark-gray); margin-top: 4px;">Rp. ${parseInt(p.total_bayar || 0).toLocaleString('id-ID')}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p style="color: var(--dark-gray); font-size: 13px;">Belum ada pesanan</p>'}
+                    </div>
+                `;
+                document.getElementById('modalDetailContent').innerHTML = content;
+                openModal('modalDetail');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Gagal memuat detail pelanggan', 'error');
+            });
+        }
+    });
+
+    // Edit Pelanggan
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-edit')) {
+            const pelangganId = e.target.closest('.btn-edit').dataset.id;
+            fetch(`${API_BASE_URL}/pelanggans/${pelangganId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const pelanggan = data.pelanggan;
+                document.getElementById('pelangganId').value = pelanggan.id_pelanggan;
+                document.getElementById('inputNama').value = pelanggan.nama;
+                document.getElementById('inputNoTlp').value = pelanggan.no_tlp;
+                document.getElementById('inputEmail').value = pelanggan.email || '';
+                document.getElementById('inputAlamat').value = pelanggan.alamat;
+                document.getElementById('inputStatus').value = pelanggan.status;
+                document.getElementById('modalTitle').textContent = 'Edit Pelanggan';
+                openModal('modalPelanggan');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Gagal memuat data pelanggan', 'error');
+            });
+        }
+    });
+
+    // Delete Pelanggan
+    let deleteId = null;
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-delete')) {
+            deleteId = e.target.closest('.btn-delete').dataset.id;
+            const row = e.target.closest('tr');
+            const name = row.querySelector('.pelanggan-name').textContent;
+            document.getElementById('deletePelangganName').textContent = name;
+            openModal('modalDelete');
+        }
+    });
+
+    function confirmDelete() {
+        if (!deleteId) return;
+
+        fetch(`${API_BASE_URL}/pelanggans/${deleteId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || document.querySelector('input[name="csrf-token"]')?.value,
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                closeModal('modalDelete');
+                setTimeout(() => location.reload(), 500);
+            } else {
+                showToast(data.message || 'Terjadi kesalahan', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Gagal menghapus pelanggan', 'error');
+        });
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal(this.id);
+            }
+        });
+    });
+
+    // Auto-refresh stats every 30 seconds
+    setInterval(function() {
+        fetch(`${API_BASE_URL}/pelanggans-stats`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalPelanggan').textContent = data.total_pelanggan;
+            document.getElementById('pelangganOnline').textContent = data.pelanggan_online;
+            document.getElementById('pelangganOffline').textContent = data.pelanggan_offline;
+            document.getElementById('totalPesananHariIni').textContent = data.total_pesanan_hari_ini;
+        })
+        .catch(error => console.error('Error:', error));
+    }, 30000);
+</script>
+
+    // Profile Menu Functionality
     const profileMenuButton = document.getElementById('profileMenuButton');
     const profileDropdown = document.getElementById('profileDropdown');
 
@@ -984,6 +1708,17 @@
                 closeProfileDropdown();
             }
         });
+    }
+
+    // Sidebar Menu Toggle (if included sidebar)
+    function toggleSubmenu(button) {
+        const submenu = button.nextElementSibling;
+        const arrow = button.querySelector('.toggle-arrow');
+
+        if (submenu && arrow) {
+            submenu.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
     }
 </script>
 @endsection

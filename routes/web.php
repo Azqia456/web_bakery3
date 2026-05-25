@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DataPelangganController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\AuthController;
@@ -86,7 +87,16 @@ Route::middleware('auth')->group(function () {
 
     // DATA
     Route::get('/data-karyawan', [DashboardController::class, 'dataKaryawan'])->name('data-karyawan');
-    Route::get('/data-pelanggan', [DashboardController::class, 'dataPelanggan'])->name('data-pelanggan');
+    Route::get('/data-pelanggan', [DataPelangganController::class, 'index'])->name('data-pelanggan');
+    
+    // PELANGGAN AJAX ENDPOINTS
+    Route::post('/api/pelanggans', [DataPelangganController::class, 'store'])->name('pelanggans.store');
+    Route::get('/api/pelanggans/{id_pelanggan}', [DataPelangganController::class, 'show'])->name('pelanggans.show');
+    Route::put('/api/pelanggans/{id_pelanggan}', [DataPelangganController::class, 'update'])->name('pelanggans.update');
+    Route::delete('/api/pelanggans/{id_pelanggan}', [DataPelangganController::class, 'destroy'])->name('pelanggans.destroy');
+    Route::get('/api/pelanggans-autocomplete', [DataPelangganController::class, 'autocomplete'])->name('pelanggans.autocomplete');
+    Route::post('/api/pelanggans/find-or-create', [DataPelangganController::class, 'findOrCreateForOfflineOrder'])->name('pelanggans.findOrCreate');
+    Route::get('/api/pelanggans-stats', [DataPelangganController::class, 'statistics'])->name('pelanggans.statistics');
 
     // PRODUK
     Route::get('/produk', [DashboardController::class, 'produk'])->name('produk');

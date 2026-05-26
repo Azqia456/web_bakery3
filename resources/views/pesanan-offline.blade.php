@@ -1131,13 +1131,55 @@
 
                 <!-- Tabs -->
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab(this, 'pelanggan')">
+                    <button class="tab active" onclick="switchTab(this, 'karyawan')">
+                        <i class="fas fa-users"></i> Pesanan Karyawan
+                    </button>
+                    <button class="tab" onclick="switchTab(this, 'pelanggan')">
                         <i class="fas fa-user"></i> Pesanan Pelanggan
                     </button>
                 </div>
 
+                <!-- Pesanan Karyawan Tab -->
+                <div id="tab-karyawan" class="tab-content active">
+                    <div class="table-section">
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchKaryawan" placeholder="Cari nama karyawan, ID pesanan...">
+                            </div>
+                            <div class="filter-group">
+                                <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
+                                <select class="form-control" id="filterKaryawan" onchange="filterTable('karyawan')">
+                                    <option value="">Semua Status</option>
+                                    <option value="stor">Stor</option>
+                                    <option value="belum_stor">Belum Stor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table id="tableKaryawan">
+                            <thead>
+                                <tr>
+                                    <th>ID Pesanan</th>
+                                    <th>Nama Karyawan</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyKaryawan">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--dark-gray);">
+                                        <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                                        Belum ada pesanan karyawan
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Pesanan Pelanggan Tab -->
-                <div id="tab-pelanggan" class="tab-content active">
+                <div id="tab-pelanggan" class="tab-content">
                     <div class="table-section">
                         <div class="table-toolbar">
                             <div class="search-box">
@@ -1186,23 +1228,38 @@
     <div id="modalAddPesanan" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Tambah Pesanan Offline</h3>
+                <h3 class="modal-title" id="modalTitleAdd">Tambah Pesanan</h3>
                 <button class="modal-close" onclick="closeModal('modalAddPesanan')">×</button>
             </div>
             <div class="modal-body">
-                <!-- INFORMASI PELANGGAN -->
-                <div class="form-section-title">Informasi Pelanggan</div>
-
                 <div class="form-group">
-                    <label class="form-label">Cari Pelanggan Existing (Opsional)</label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" class="form-control" id="customerSearch" placeholder="Cari berdasarkan No HP..." oninput="searchCustomer(this.value)">
-                        <div id="autocompleteResults" class="autocomplete-results" style="display: none;"></div>
+                    <label class="form-label">Tipe Pesanan <span style="color: var(--red);">*</span></label>
+                    <div style="display: flex; gap: 16px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                            <input type="radio" name="tipePesanan" value="karyawan" onchange="changePesananType()" checked>
+                            Karyawan
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                            <input type="radio" name="tipePesanan" value="pelanggan" onchange="changePesananType()">
+                            Pelanggan
+                        </label>
                     </div>
-                    <div style="font-size: 12px; color: var(--dark-gray); margin-top: 4px;">Ketik No HP pelanggan untuk mencari data existing</div>
                 </div>
 
-                <div class="form-row">
+                <!-- Tipe Pesanan: Karyawan -->
+                <div id="formKaryawan">
+                    <div class="form-group">
+                        <label class="form-label">Nama Karyawan <span style="color: var(--red);">*</span></label>
+                        <input type="text" class="form-control" id="namaKaryawan" placeholder="Masukkan nama karyawan">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Pickup <span style="color: var(--red);">*</span></label>
+                        <input type="date" class="form-control" id="tanggalPickupKaryawan">
+                    </div>
+                </div>
+
+                <!-- Tipe Pesanan: Pelanggan -->
+                <div id="formPelanggan" style="display: none;">
                     <div class="form-group">
                         <label class="form-label">Nama Pelanggan <span style="color: var(--red);">*</span></label>
                         <input type="text" class="form-control" id="namaPelanggan" placeholder="Masukkan nama pelanggan">
@@ -1213,101 +1270,55 @@
                         <input type="tel" class="form-control" id="noHpPelanggan" placeholder="08xxxxxxxxxx" inputmode="numeric">
                         <div class="form-error" id="errorNoHpPelanggan"></div>
                     </div>
-                </div>
-
-                <!-- PENGIRIMAN -->
-                <div class="form-section-title">Pengiriman</div>
-
-                <div class="form-group">
-                    <label class="form-label">Tipe Pengambilan <span style="color: var(--red);">*</span></label>
-                    <div class="radio-group-inline">
-                        <label class="radio-item">
-                            <input type="radio" name="tipePengambilan" value="pickup" checked onchange="toggleDeliveryFields()">
-                            <span>Pickup</span>
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="tipePengambilan" value="delivery" onchange="toggleDeliveryFields()">
-                            <span>Delivery</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden-group" id="deliveryAddressGroup">
-                    <label class="form-label">Alamat Lengkap <span style="color: var(--red);">*</span></label>
-                    <textarea class="form-control textarea" id="alamatDelivery" placeholder="Masukkan alamat lengkap pengiriman"></textarea>
-                    <div class="form-error" id="errorAlamatDelivery"></div>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Tanggal Pengambilan <span style="color: var(--red);">*</span></label>
-                        <input type="date" class="form-control" id="tanggalPengambilan">
+                        <label class="form-label">Metode Pengambilan <span style="color: var(--red);">*</span></label>
+                        <div style="display: flex; gap: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metodeMetode" value="delivery" onchange="changeMetode()">
+                                Delivery
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metodeMetode" value="pickup" onchange="changeMetode()" checked>
+                                Pickup
+                            </label>
+                        </div>
                     </div>
-                    <div class="form-group hidden-group" id="deliveryDateGroup">
-                        <label class="form-label">Tanggal Pengiriman</label>
+                    <div class="form-group" id="tanggalDeliveryGroup" style="display: none;">
+                        <label class="form-label">Tanggal Delivery</label>
                         <input type="date" class="form-control" id="tanggalDelivery">
                     </div>
+                    <div class="form-group delivery-fields" id="alamatDeliveryGroup">
+                        <label class="form-label">Alamat Lengkap <span style="color: var(--red);">*</span></label>
+                        <textarea class="form-control textarea" id="alamatDelivery" placeholder="Masukkan alamat lengkap pelanggan"></textarea>
+                        <div class="form-error" id="errorAlamatPelanggan"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Pickup <span style="color: var(--red);">*</span></label>
+                        <input type="date" class="form-control" id="tanggalPickupPelanggan">
+                    </div>
                 </div>
 
-                <!-- DETAIL PESANAN -->
-                <div class="form-section-title">Detail Pesanan</div>
-
+                <!-- Produk Section -->
                 <div class="form-group">
                     <label class="form-label">Produk <span style="color: var(--red);">*</span></label>
                     <button type="button" class="btn-add-product" onclick="addProductRow()">
                         <i class="fas fa-plus"></i> Tambah Produk
                     </button>
-                    <div id="productList" class="product-list"></div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Catatan Pesanan (Opsional)</label>
-                    <textarea class="form-control textarea" id="catatanPesanan" placeholder="Tambahkan catatan khusus untuk pesanan ini..."></textarea>
-                </div>
-
-                <!-- METODE PEMBAYARAN -->
-                <div class="form-section-title">Metode Pembayaran</div>
-
-                <div class="form-group">
-                    <label class="form-label">Pilih Metode Pembayaran <span style="color: var(--red);">*</span></label>
-                    <div class="radio-group-inline">
-                        <label class="radio-item">
-                            <input type="radio" name="metodePembayaran" value="cash" checked onchange="updatePaymentStatus()">
-                            <span>Cash</span>
-                        </label>
-                        <label class="radio-item">
-                            <input type="radio" name="metodePembayaran" value="transfer" onchange="updatePaymentStatus()">
-                            <span>Transfer</span>
-                        </label>
+                    <div id="productList" class="product-list">
                     </div>
                 </div>
 
-                <div class="form-group hidden-group" id="buktiTransferGroup">
-                    <label class="form-label">Upload Bukti Transfer</label>
-                    <input type="file" class="form-control" id="buktiTransfer" accept="image/*,.pdf">
-                    <div style="font-size: 12px; color: var(--dark-gray); margin-top: 4px;">Format: JPG, PNG, PDF (Max 2MB)</div>
-                </div>
-
-                <!-- TOTAL & STATUS PEMBAYARAN -->
+                <!-- Total Section -->
                 <div class="total-section">
-                    <div>
-                        <span>Total Pesanan:</span>
-                        <span id="totalPesanan" style="font-size: 18px; color: var(--primary-brown);">Rp 0</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Status Pembayaran</label>
-                    <div style="padding: 10px 12px; background: var(--light-gray); border-radius: var(--border-radius); font-weight: 500; color: var(--text-dark);">
-                        <span id="statusPembayaranDisplay">Lunas</span>
-                        <input type="hidden" id="statusPembayaran" value="lunas">
-                    </div>
+                    <span>Total Pesanan:</span>
+                    <span id="totalPesanan">Rp 0</span>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeModal('modalAddPesanan')">Batal</button>
                 <button class="btn-save" id="btnSavePesanan" onclick="savePesanan()">
-                    <i class="fas fa-save"></i> Simpan
+                    <span class="btn-spinner"></span>
+                    <span class="btn-text">Simpan</span>
                 </button>
             </div>
         </div>
@@ -1332,56 +1343,67 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // Global variables
-        let pesananData = [];
-        let currentTab = 'pelanggan';
+        // Data structure untuk karyawan dan pelanggan
+        let pesananData = {
+            karyawan: [],
+            pelanggan: []
+        };
+        let currentTab = 'karyawan';
         let productCount = 0;
-        let selectedCustomerId = null;
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadPesananData();
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTables();
             setupSearch();
             updateStats();
         });
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-
-            let icon = '<i class="fas fa-check-circle toast-icon"></i>';
-            if (type === 'error') {
-                icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
-            } else if (type === 'info') {
-                icon = '<i class="fas fa-info-circle toast-icon"></i>';
-            }
-
-            toast.innerHTML = `${icon}<div class="toast-text">${message}</div>`;
-            container.appendChild(toast);
-
-            setTimeout(() => toast.remove(), 3500);
+        // Render Tables
+        function renderTables() {
+            renderKaryawanTable();
+            renderPelangganTable();
+            updateStats();
         }
 
-        async function loadPesananData() {
-            try {
-                const response = await fetch('/api/pesanan-offline');
-                const data = await response.json();
-                if (data.success) {
-                    pesananData = data.data || [];
-                    renderPelangganTable();
-                    updateStats();
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showToast('Gagal memuat data pesanan', 'error');
+        function renderKaryawanTable() {
+            const tbody = document.getElementById('bodyKaryawan');
+            if (pesananData.karyawan.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                    <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                    Belum ada pesanan karyawan
+                </td></tr>`;
+                return;
             }
+
+            tbody.innerHTML = pesananData.karyawan.map(item => `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.nama}</td>
+                    <td><span class="status-badge ${item.status}">${item.status === 'stor' ? 'Stor' : 'Belum Stor'}</span></td>
+                    <td>Rp ${(item.total).toLocaleString('id-ID')}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="showDetail('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" onclick="showEdit('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="deletePesanan('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn-icon" onclick="markComplete('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Selesai">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function renderPelangganTable() {
             const tbody = document.getElementById('bodyPelanggan');
-            
-            if (pesananData.length === 0) {
+            if (pesananData.pelanggan.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan pelanggan
@@ -1389,83 +1411,10 @@
                 return;
             }
 
-            tbody.innerHTML = pesananData.map((item, index) => {
-                const statusClass = item.status_pembayaran || 'belum_bayar';
-                const statusLabel = getStatusLabel(item.status_pembayaran);
-                const metodeLabel = item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup';
-                const metodePembayaran = item.metode_pembayaran || 'cash';
-                const tanggal = formatDate(item.tgl_pesan || item.created_at);
-                const nomorPesanan = item.id_pesanan || (index + 1);
-
-                return `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.pelanggan?.nama || item.nama_pelanggan || '-'}</td>
-                        <td>${metodeLabel}</td>
-                        <td>Rp ${formatCurrency(item.total_bayar)}</td>
-                        <td>${metodePembayaran === 'cash' ? '💵 Cash' : '🏦 Transfer'}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                        <td>${tanggal}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon" onclick="viewDetail(${nomorPesanan})" title="Detail">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-icon delete" onclick="deletePesanan(${nomorPesanan})" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            // ...existing code pelanggan table...
         }
 
-        function getStatusLabel(status) {
-            const labels = {
-                'lunas': 'Lunas',
-                'menunggu_verifikasi': 'Menunggu Verifikasi',
-                'belum_bayar': 'Belum Bayar'
-            };
-            return labels[status] || 'Belum Bayar';
-        }
-
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('id-ID').format(value || 0);
-        }
-
-        function formatDate(date) {
-            if (!date) return '-';
-            return new Date(date).toLocaleDateString('id-ID');
-        }
-
-        function filterTable() {
-            const searchValue = document.getElementById('searchPelanggan').value.toLowerCase();
-            const filterValue = document.getElementById('filterPelanggan').value;
-            const tbody = document.getElementById('bodyPelanggan');
-            const rows = tbody.getElementsByTagName('tr');
-
-            let hasVisibleRows = false;
-
-            for (let row of rows) {
-                const text = row.textContent.toLowerCase();
-                const statusBadge = row.querySelector('.status-badge');
-                const status = statusBadge ? statusBadge.className.match(/\b(lunas|menunggu_verifikasi|belum_bayar)\b/)?.[0] : '';
-
-                let show = text.includes(searchValue);
-                if (filterValue) {
-                    show = show && status === filterValue;
-                }
-
-                row.style.display = show ? '' : 'none';
-                if (show) hasVisibleRows = true;
-            }
-        }
-
-        function setupSearch() {
-            document.getElementById('searchPelanggan').addEventListener('keyup', filterTable);
-        }
-
+        // Tab Switching
         function switchTab(button, tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1474,47 +1423,41 @@
             currentTab = tab;
         }
 
+        // Modal Functions
         function openAddModal() {
             productCount = 0;
             document.getElementById('modalAddPesanan').classList.add('show');
             document.getElementById('productList').innerHTML = '';
-            document.getElementById('namaPelanggan').value = '';
-            document.getElementById('noHpPelanggan').value = '';
-            document.getElementById('catatanPesanan').value = '';
-            document.getElementById('customerSearch').value = '';
-            document.querySelector('input[name="tipePengambilan"][value="pickup"]').checked = true;
-            document.querySelector('input[name="metodePembayaran"][value="cash"]').checked = true;
-            toggleDeliveryFields();
-            updatePaymentStatus();
-            updateStats();
+            document.getElementById('totalPesanan').textContent = 'Rp 0';
+            document.querySelector('input[name="tipePesanan"][value="karyawan"]').checked = true;
+            changePesananType();
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function toggleDeliveryFields() {
-            const isDelivery = document.querySelector('input[name="tipePengambilan"]:checked').value === 'delivery';
-            document.getElementById('deliveryAddressGroup').classList.toggle('visible', isDelivery);
-            document.getElementById('deliveryDateGroup').classList.toggle('visible', isDelivery);
+        function changePesananType() {
+            const type = document.querySelector('input[name="tipePesanan"]:checked').value;
+            if (type === 'karyawan') {
+                document.getElementById('formKaryawan').style.display = 'block';
+                document.getElementById('formPelanggan').style.display = 'none';
+            } else {
+                document.getElementById('formKaryawan').style.display = 'none';
+                document.getElementById('formPelanggan').style.display = 'block';
+                changeMetode();
+            }
         }
 
-        function updatePaymentStatus() {
-            const metode = document.querySelector('input[name="metodePembayaran"]:checked').value;
-            const statusInput = document.getElementById('statusPembayaran');
-            const statusDisplay = document.getElementById('statusPembayaranDisplay');
-            const buktiGroup = document.getElementById('buktiTransferGroup');
-
-            if (metode === 'cash') {
-                statusInput.value = 'lunas';
-                statusDisplay.textContent = 'Lunas';
-                statusDisplay.style.color = '#22C55E';
-                buktiGroup.classList.remove('visible');
+        function changeMetode() {
+            const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
+            const alamatGroup = document.getElementById('alamatDeliveryGroup');
+            if (metode === 'delivery') {
+                document.getElementById('tanggalDeliveryGroup').style.display = 'block';
+                alamatGroup.classList.add('is-visible');
             } else {
-                statusInput.value = 'menunggu_verifikasi';
-                statusDisplay.textContent = 'Menunggu Verifikasi';
-                statusDisplay.style.color = '#F59E0B';
-                buktiGroup.classList.add('visible');
+                document.getElementById('tanggalDeliveryGroup').style.display = 'none';
+                alamatGroup.classList.remove('is-visible');
             }
         }
 
@@ -1527,15 +1470,15 @@
             productRow.innerHTML = `
                 <div class="product-item-controls" style="flex: 1;">
                     <label>Pilih Produk</label>
-                    <select class="form-control" onchange="updateTotal()" data-product-id>
+                    <select class="form-control" onchange="updateTotal()">
                         <option value="">-- Pilih Produk --</option>
-                        <option value="1|roti_tawar|30000">Roti Tawar - Rp 30.000</option>
-                        <option value="2|donat_glaze|50000">Donat Glaze - Rp 50.000</option>
-                        <option value="3|kue_tart|300000">Kue Tart - Rp 300.000</option>
-                        <option value="4|roti_croissant|100000">Roti Croissant - Rp 100.000</option>
+                        <option value="roti_tawar|30000">Roti Tawar - Rp 30.000</option>
+                        <option value="donat_glaze|50000">Donat Glaze - Rp 50.000</option>
+                        <option value="kue_tart|300000">Kue Tart - Rp 300.000</option>
+                        <option value="roti_croissant|100000">Roti Croissant - Rp 100.000</option>
                     </select>
                 </div>
-                <div class="product-item-controls" style="flex: 0.3;">
+                <div class="product-item-controls" style="flex: 0.5;">
                     <label>Jumlah</label>
                     <input type="number" min="1" value="1" class="form-control" onchange="updateTotal()">
                 </div>
@@ -1559,315 +1502,112 @@
                 const select = p.querySelector('select');
                 const input = p.querySelector('input[type="number"]');
                 if (select.value && input.value) {
-                    const [id, name, price] = select.value.split('|');
+                    const [name, price] = select.value.split('|');
                     total += parseInt(price) * parseInt(input.value);
                 }
             });
-            document.getElementById('totalPesanan').textContent = 'Rp ' + formatCurrency(total);
+            document.getElementById('totalPesanan').textContent = 'Rp ' + total.toLocaleString('id-ID');
         }
 
-        function updateStats() {
-            const total = pesananData.length;
-            const lunas = pesananData.filter(p => p.status_pembayaran === 'lunas').length;
-            const verifikasi = pesananData.filter(p => p.status_pembayaran === 'menunggu_verifikasi').length;
-            const totalRevenue = pesananData.reduce((sum, p) => sum + (p.total_bayar || 0), 0);
+        function savePesanan() {
+            const type = document.querySelector('input[name="tipePesanan"]:checked').value;
+            const newPesanan = {
+                id: type === 'karyawan' ? 'K' + String(pesananData.karyawan.length + 1).padStart(3, '0') : 'P' + String(pesananData.pelanggan.length + 1).padStart(3, '0'),
+                nama: type === 'karyawan' ? document.getElementById('namaKaryawan').value : document.getElementById('namaPelanggan').value,
+                status: type === 'karyawan' ? 'belum_stor' : 'pending',
+                tanggal_pesan: new Date().toISOString().split('T')[0],
+                total: parseInt(document.getElementById('totalPesanan').textContent.replace(/\D/g, '')) || 0,
+                produk: []
+            };
 
-            document.getElementById('total-pesanan').textContent = total;
-            document.getElementById('pesanan-lunas').textContent = lunas;
-            document.getElementById('pesanan-verifikasi').textContent = verifikasi;
-            document.getElementById('total-revenue').textContent = 'Rp ' + formatCurrency(totalRevenue);
-        }
-
-        async function savePesanan() {
-            // Validation
-            const namaPelanggan = document.getElementById('namaPelanggan').value.trim();
-            const noHpPelanggan = document.getElementById('noHpPelanggan').value.trim();
-            const tipePengambilan = document.querySelector('input[name="tipePengambilan"]:checked').value;
-            const tanggalPengambilan = document.getElementById('tanggalPengambilan').value;
-            const metodePembayaran = document.querySelector('input[name="metodePembayaran"]:checked').value;
-            const catatanPesanan = document.getElementById('catatanPesanan').value.trim();
-
-            if (!namaPelanggan) {
-                showToast('Nama pelanggan wajib diisi', 'error');
-                return;
-            }
-
-            if (!noHpPelanggan || !/^[0-9]+$/.test(noHpPelanggan)) {
-                showToast('No HP harus berupa angka', 'error');
-                return;
-            }
-
-            if (!tanggalPengambilan) {
-                showToast('Tanggal pengambilan wajib diisi', 'error');
-                return;
-            }
-
-            if (tipePengambilan === 'delivery') {
-                const alamatDelivery = document.getElementById('alamatDelivery').value.trim();
-                if (!alamatDelivery) {
-                    showToast('Alamat pengiriman wajib diisi', 'error');
-                    return;
-                }
-            }
-
-            const products = [];
-            const productItems = document.querySelectorAll('.product-item');
-            productItems.forEach(item => {
-                const select = item.querySelector('select');
-                const input = item.querySelector('input[type="number"]');
-                if (select.value && input.value) {
-                    const [id, name, price] = select.value.split('|');
-                    products.push({
-                        id_produk: parseInt(id),
-                        nama_produk: name,
-                        jumlah_pesan: parseInt(input.value),
-                        harga: parseInt(price)
-                    });
-                }
-            });
-
-            if (products.length === 0) {
-                showToast('Silakan tambahkan minimal satu produk', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('nama_pelanggan', namaPelanggan);
-            formData.append('no_tlp', noHpPelanggan);
-            formData.append('metode_pengambilan', tipePengambilan);
-            formData.append('tgl_pesan', new Date().toISOString().split('T')[0]);
-            formData.append('metode_pembayaran', metodePembayaran);
-            formData.append('status_pembayaran', document.getElementById('statusPembayaran').value);
-            formData.append('catatan_pesanan', catatanPesanan);
-            formData.append('total_bayar', parseInt(document.getElementById('totalPesanan').textContent.replace(/\D/g, '')));
-            
-            if (tipePengambilan === 'delivery') {
-                formData.append('alamat_delivery', document.getElementById('alamatDelivery').value.trim());
-                formData.append('tgl_delivery', document.getElementById('tanggalDelivery').value);
-            }
-
-            formData.append('products', JSON.stringify(products));
-
-            if (metodePembayaran === 'transfer') {
-                const buktiFile = document.getElementById('buktiTransfer').files[0];
-                if (buktiFile) {
-                    formData.append('bukti_transfer', buktiFile);
-                }
-            }
-
-            try {
-                document.getElementById('btnSavePesanan').disabled = true;
-                const response = await fetch('/api/pesanan-offline', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Pesanan berhasil disimpan', 'success');
-                    closeModal('modalAddPesanan');
-                    await loadPesananData();
-                } else {
-                    showToast(data.message || 'Gagal menyimpan pesanan', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan', 'error');
-            } finally {
-                document.getElementById('btnSavePesanan').disabled = false;
-            }
-        }
-
-        async function searchCustomer(query) {
-            const resultsDiv = document.getElementById('autocompleteResults');
-            
-            if (query.length < 2) {
-                resultsDiv.style.display = 'none';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/pelanggans-autocomplete?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-
-                if (data.results && data.results.length > 0) {
-                    resultsDiv.innerHTML = data.results.map(customer => `
-                        <div class="autocomplete-item" onclick="selectCustomer(${customer.id}, '${customer.nama}', '${customer.no_tlp}')">
-                            <strong>${customer.nama}</strong><br>
-                            <small style="color: var(--dark-gray);">${customer.no_tlp}</small>
-                        </div>
-                    `).join('');
-                    resultsDiv.style.display = 'block';
-                } else {
-                    resultsDiv.innerHTML = '<div class="autocomplete-item" style="cursor: default;">Pelanggan tidak ditemukan</div>';
-                    resultsDiv.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error searching customer:', error);
-            }
-        }
-
-        function selectCustomer(id, nama, noTlp) {
-            document.getElementById('namaPelanggan').value = nama;
-            document.getElementById('noHpPelanggan').value = noTlp;
-            document.getElementById('customerSearch').value = '';
-            document.getElementById('autocompleteResults').style.display = 'none';
-            selectedCustomerId = id;
-        }
-
-        async function viewDetail(pesananId) {
-            const pesanan = pesananData.find(p => p.id_pesanan === pesananId);
-            if (!pesanan) return;
-
-            const detailContent = document.getElementById('detailContent');
-            const detailFooter = document.getElementById('detailFooter');
-
-            const pelangganInfo = `
-                <div class="detail-section">
-                    <h4 style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">👤 Informasi Pelanggan</h4>
-                    <div class="detail-row">
-                        <div class="detail-label">Nama:</div>
-                        <div class="detail-value">${pesanan.pelanggan?.nama || '-'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">No HP:</div>
-                        <div class="detail-value">${pesanan.pelanggan?.no_tlp || pesanan.no_tlp || '-'}</div>
-                    </div>
-                    ${pesanan.metode_pengambilan === 'delivery' ? `
-                        <div class="detail-row">
-                            <div class="detail-label">Alamat:</div>
-                            <div class="detail-value">${pesanan.alamat_delivery || pesanan.pelanggan?.alamat || '-'}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-
-            const products = pesanan.detail_pesanans || pesanan.detailPesanans || [];
-            const produkInfo = `
-                <div class="detail-section">
-                    <h4 style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">📦 Detail Pesanan</h4>
-                    ${products.length > 0 ? `
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background: var(--light-gray);">
-                                    <th style="padding: 8px; border: 1px solid var(--medium-gray); text-align: left;">Produk</th>
-                                    <th style="padding: 8px; border: 1px solid var(--medium-gray); text-align: center;">Jumlah</th>
-                                    <th style="padding: 8px; border: 1px solid var(--medium-gray); text-align: right;">Harga</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${products.map(p => `
-                                    <tr>
-                                        <td style="padding: 8px; border: 1px solid var(--medium-gray);">${p.produk?.nama_produk || 'Produk'}</td>
-                                        <td style="padding: 8px; border: 1px solid var(--medium-gray); text-align: center;">${p.jumlah_pesan}</td>
-                                        <td style="padding: 8px; border: 1px solid var(--medium-gray); text-align: right;">Rp ${formatCurrency(p.harga_satuan)}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    ` : '<p>Tidak ada produk</p>'}
-                    ${pesanan.catatan_pesanan ? `
-                        <div class="detail-row" style="margin-top: 12px;">
-                            <div class="detail-label">Catatan:</div>
-                            <div class="detail-value">${pesanan.catatan_pesanan}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-
-            const paymentStatus = pesanan.status_pembayaran || 'belum_bayar';
-            const paymentInfo = `
-                <div class="detail-section">
-                    <h4 style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">💳 Pembayaran</h4>
-                    <div class="detail-row">
-                        <div class="detail-label">Metode:</div>
-                        <div class="detail-value">${pesanan.metode_pembayaran === 'cash' ? '💵 Cash' : '🏦 Transfer'}</div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Status:</div>
-                        <div class="detail-value">
-                            <span class="status-badge ${paymentStatus}">${getStatusLabel(paymentStatus)}</span>
-                        </div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="detail-label">Total:</div>
-                        <div class="detail-value" style="font-weight: 600; color: var(--primary-brown);">Rp ${formatCurrency(pesanan.total_bayar)}</div>
-                    </div>
-                    ${pesanan.tgl_verifikasi ? `
-                        <div class="detail-row">
-                            <div class="detail-label">Verifikasi:</div>
-                            <div class="detail-value">${formatDate(pesanan.tgl_verifikasi)}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-
-            detailContent.innerHTML = pelangganInfo + produkInfo + paymentInfo;
-
-            // Add verification button if needed
-            if (paymentStatus === 'menunggu_verifikasi') {
-                detailFooter.innerHTML = `
-                    <button class="btn-cancel" onclick="closeModal('modalDetail')">Tutup</button>
-                    <button class="btn-verify" onclick="verifyPayment(${pesananId})">
-                        <i class="fas fa-check"></i> Verifikasi Pembayaran
-                    </button>
-                `;
+            if (type === 'karyawan') {
+                newPesanan.tanggal_pickup = document.getElementById('tanggalPickupKaryawan').value;
+                pesananData.karyawan.push(newPesanan);
             } else {
-                detailFooter.innerHTML = `<button class="btn-cancel" onclick="closeModal('modalDetail')">Tutup</button>`;
+                newPesanan.pembayaran = 'belum_lunas';
+                newPesanan.tanggal_pickup = document.getElementById('tanggalPickupPelanggan').value;
+                pesananData.pelanggan.push(newPesanan);
             }
 
-            document.getElementById('modalDetail').classList.add('show');
+            renderTables();
+            closeModal('modalAddPesanan');
+            alert('Pesanan berhasil disimpan!');
         }
 
-        async function verifyPayment(pesananId) {
-            if (!confirm('Verifikasi pembayaran pesanan ini?')) return;
+        function showDetail(type, index) {
+            // ...implementasi detail modal sesuai kebutuhan...
+        }
 
-            try {
-                const response = await fetch(`/api/pesanan-offline/${pesananId}/verify`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    }
-                });
+        function showEdit(type, index) {
+            // ...implementasi edit modal sesuai kebutuhan...
+        }
 
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Pembayaran berhasil diverifikasi', 'success');
-                    closeModal('modalDetail');
-                    await loadPesananData();
+        function deletePesanan(type, index) {
+            if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
+                if (type === 'karyawan') {
+                    pesananData.karyawan.splice(index, 1);
                 } else {
-                    showToast(data.message || 'Gagal memverifikasi pembayaran', 'error');
+                    pesananData.pelanggan.splice(index, 1);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan', 'error');
+                renderTables();
+                alert('Pesanan berhasil dihapus!');
             }
         }
 
-        async function deletePesanan(pesananId) {
-            if (!confirm('Hapus pesanan ini?')) return;
+        function markComplete(type, index) {
+            const pesanan = type === 'karyawan' ? pesananData.karyawan[index] : pesananData.pelanggan[index];
+            if (type === 'karyawan') {
+                pesanan.status = pesanan.status === 'stor' ? 'belum_stor' : 'stor';
+            } else {
+                pesanan.status = pesanan.status === 'selesai' ? 'pending' : 'selesai';
+            }
+            renderTables();
+        }
 
-            try {
-                const response = await fetch(`/api/pesanan-offline/${pesananId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    }
-                });
+        // Search Functions
+        function setupSearch() {
+            document.getElementById('searchKaryawan').addEventListener('keyup', function() {
+                filterTable('karyawan');
+            });
+            document.getElementById('searchPelanggan').addEventListener('keyup', function() {
+                filterTable('pelanggan');
+            });
+        }
 
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Pesanan berhasil dihapus', 'success');
-                    await loadPesananData();
-                } else {
-                    showToast(data.message || 'Gagal menghapus pesanan', 'error');
+        function filterTable(type) {
+            if (!type) type = 'pelanggan';
+            const searchValue = type === 'karyawan' ? 
+                document.getElementById('searchKaryawan').value.toLowerCase() : 
+                document.getElementById('searchPelanggan').value.toLowerCase();
+            const filterValue = type === 'karyawan' ? 
+                document.getElementById('filterKaryawan').value : 
+                document.getElementById('filterPelanggan').value;
+
+            const tbody = type === 'karyawan' ? 
+                document.getElementById('bodyKaryawan') : 
+                document.getElementById('bodyPelanggan');
+            const rows = tbody.getElementsByTagName('tr');
+
+            let hasVisibleRows = false;
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                const status = row.getAttribute('data-status') || '';
+                
+                let show = text.includes(searchValue);
+                if (filterValue) {
+                    show = show && status === filterValue;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan', 'error');
+
+                row.style.display = show ? '' : 'none';
+                if (show) hasVisibleRows = true;
+            }
+
+            if (!hasVisibleRows && pesananData[type].length > 0) {
+                tbody.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 5 : 8}" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                    <i class="fas fa-search" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                    Pesanan tidak ditemukan
+                </td></tr>`;
             }
         }
 
@@ -1878,6 +1618,20 @@
             submenu.classList.toggle('open');
             arrow.classList.toggle('open');
             button.classList.toggle('active');
+        }
+
+        // Update Stats
+        function updateStats() {
+            const allPesanan = [...pesananData.karyawan, ...pesananData.pelanggan];
+            const totalPesanan = allPesanan.length;
+            const pesananSelesai = allPesanan.filter(p => p.status === 'selesai' || p.status === 'stor').length;
+            const pesananPending = allPesanan.filter(p => p.status === 'pending' || p.status === 'belum_stor').length;
+            const totalRevenue = allPesanan.reduce((sum, p) => sum + p.total, 0);
+
+            document.getElementById('total-pesanan').textContent = totalPesanan;
+            document.getElementById('pesanan-lunas').textContent = pesananSelesai;
+            document.getElementById('pesanan-verifikasi').textContent = pesananPending;
+            document.getElementById('total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
         }
 
         // Close modal when clicking outside

@@ -19,6 +19,13 @@ class Pesanan extends Model
         'metode_pengambilan',
         'status_bayar',
         'total_bayar',
+        'metode_pembayaran',
+        'status_pembayaran',
+        'bukti_transfer',
+        'catatan_pesanan',
+        'tgl_delivery',
+        'alamat_delivery',
+        'tgl_verifikasi',
     ];
 
     public function pelanggan()

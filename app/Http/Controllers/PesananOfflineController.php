@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pesanan;
 use App\Services\PesananSyncService;
 use Illuminate\Http\Request;
 
@@ -20,10 +21,14 @@ class PesananOfflineController extends Controller
                 'nama_pelanggan' => 'required_if:tipe_pesanan,pelanggan|string',
                 'id_pelanggan' => 'nullable|integer|exists:pelanggans,id_pelanggan',
                 'no_tlp' => 'required_if:tipe_pesanan,pelanggan|regex:/^[0-9]+$/',
-                'metode' => 'required_if:tipe_pesanan,pelanggan|in:delivery,pickup',
-                'alamat' => 'required_if:metode,delivery|string',
+                'metode_pengambilan' => 'required_if:tipe_pesanan,pelanggan|in:delivery,pickup',
+                'alamat_delivery' => 'required_if:metode_pengambilan,delivery|string',
+                'tgl_delivery' => 'required_if:metode_pengambilan,delivery|date',
                 'tgl_pesan' => 'required|date',
-                'status_bayar' => 'in:belum_lunas,lunas',
+                'metode_pembayaran' => 'required_if:tipe_pesanan,pelanggan|in:cash,transfer',
+                'status_pembayaran' => 'in:lunas,menunggu_verifikasi,belum_bayar',
+                'bukti_transfer' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+                'catatan_pesanan' => 'nullable|string',
                 'total_bayar' => 'required|numeric|min:0',
                 'products' => 'required|array|min:1',
                 'products.*.id_produk' => 'required|integer|exists:produks,id_produk',
@@ -135,6 +140,38 @@ class PesananOfflineController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus pesanan: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Verifikasi pembayaran pesanan offline
+     */
+    public function verifyPayment($id_pesanan)
+    {
+        try {
+            $pesanan = Pesanan::findOrFail($id_pesanan);
+            
+            // Update status pembayaran menjadi lunas
+            $pesanan->update([
+                'status_pembayaran' => 'lunas',
+                'tgl_verifikasi' => now(),
+            ]);
+
+            // Trigger sinkronisasi dashboard
+            PesananSyncService::updatePesanan($id_pesanan, [
+                'status_pembayaran' => 'lunas'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran berhasil diverifikasi',
+                'data' => $pesanan,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memverifikasi pembayaran: ' . $e->getMessage(),
             ], 400);
         }
     }

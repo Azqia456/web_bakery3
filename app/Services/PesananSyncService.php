@@ -108,7 +108,13 @@ class PesananSyncService
             'id_karyawan' => $karyawan->id_karyawan,
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
             'sumber_pesanan' => $data['sumber_pesanan'] ?? 'online',
-            'metode_pengambilan' => $data['metode'] ?? 'pickup',
+            'metode_pengambilan' => $data['metode_pengambilan'] ?? $data['metode'] ?? 'pickup',
+            'alamat_delivery' => $data['alamat_delivery'] ?? null,
+            'tgl_delivery' => $data['tgl_delivery'] ?? null,
+            'metode_pembayaran' => $data['metode_pembayaran'] ?? 'cash',
+            'status_pembayaran' => $data['status_pembayaran'] ?? self::getDefaultPaymentStatus($data['metode_pembayaran'] ?? 'cash'),
+            'bukti_transfer' => $data['bukti_transfer'] ?? null,
+            'catatan_pesanan' => $data['catatan_pesanan'] ?? null,
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
             'total_bayar' => $data['total_bayar'] ?? 0,
         ]);
@@ -121,6 +127,17 @@ class PesananSyncService
         }
 
         return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans']);
+    }
+
+    /**
+     * Get default payment status berdasarkan metode pembayaran
+     */
+    private static function getDefaultPaymentStatus($metode)
+    {
+        if ($metode === 'transfer') {
+            return 'menunggu_verifikasi';
+        }
+        return 'lunas'; // cash adalah lunas langsung
     }
 
     /**
@@ -179,6 +196,27 @@ class PesananSyncService
             }
             if (isset($data['tgl_pesan'])) {
                 $updateData['tgl_pesan'] = $data['tgl_pesan'];
+            }
+            if (isset($data['metode_pembayaran'])) {
+                $updateData['metode_pembayaran'] = $data['metode_pembayaran'];
+            }
+            if (isset($data['status_pembayaran'])) {
+                $updateData['status_pembayaran'] = $data['status_pembayaran'];
+            }
+            if (isset($data['bukti_transfer'])) {
+                $updateData['bukti_transfer'] = $data['bukti_transfer'];
+            }
+            if (isset($data['catatan_pesanan'])) {
+                $updateData['catatan_pesanan'] = $data['catatan_pesanan'];
+            }
+            if (isset($data['alamat_delivery'])) {
+                $updateData['alamat_delivery'] = $data['alamat_delivery'];
+            }
+            if (isset($data['tgl_delivery'])) {
+                $updateData['tgl_delivery'] = $data['tgl_delivery'];
+            }
+            if (isset($data['tgl_verifikasi'])) {
+                $updateData['tgl_verifikasi'] = $data['tgl_verifikasi'];
             }
 
             if (!empty($updateData)) {

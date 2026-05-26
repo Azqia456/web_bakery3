@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('users', App\Http\Controllers\UserController::class);
 Route::apiResource('pelanggans', App\Http\Controllers\PelangganController::class);
+Route::get('pelanggans-autocomplete', [App\Http\Controllers\PelangganController::class, 'autocomplete']);
+Route::post('pelanggans/find-or-create', [App\Http\Controllers\PelangganController::class, 'findOrCreate']);
+Route::get('pelanggans-stats', [App\Http\Controllers\PelangganController::class, 'stats']);
 Route::apiResource('karyawans', App\Http\Controllers\KaryawanController::class);
 Route::apiResource('produks', App\Http\Controllers\ProdukController::class);
 Route::apiResource('pesanans', App\Http\Controllers\PesananController::class);
@@ -37,6 +40,7 @@ Route::prefix('pesanan-offline')->group(function () {
     Route::post('/', [App\Http\Controllers\PesananOfflineController::class, 'store']);
     Route::put('/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'update']);
     Route::delete('/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'destroy']);
+    Route::post('/{id_pesanan}/verify', [App\Http\Controllers\PesananOfflineController::class, 'verifyPayment']);
     Route::get('/type/{type}', [App\Http\Controllers\PesananOfflineController::class, 'getByType']);
 });
 

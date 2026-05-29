@@ -1283,18 +1283,36 @@
                             </label>
                         </div>
                     </div>
-                    <div class="form-group" id="tanggalDeliveryGroup" style="display: none;">
-                        <label class="form-label">Tanggal Delivery</label>
-                        <input type="date" class="form-control" id="tanggalDelivery">
-                    </div>
-                    <div class="form-group delivery-fields" id="alamatDeliveryGroup">
+                    <div class="form-group" id="alamatDeliveryGroup" style="display: none;">
                         <label class="form-label">Alamat Lengkap <span style="color: var(--red);">*</span></label>
                         <textarea class="form-control textarea" id="alamatDelivery" placeholder="Masukkan alamat lengkap pelanggan"></textarea>
                         <div class="form-error" id="errorAlamatPelanggan"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="tanggalDeliveryGroup" style="display: none;">
+                        <label class="form-label">Tanggal Delivery <span style="color: var(--red);">*</span></label>
+                        <input type="date" class="form-control" id="tanggalDelivery">
+                    </div>
+                    <div class="form-group" id="tanggalPickupGroup">
                         <label class="form-label">Tanggal Pickup <span style="color: var(--red);">*</span></label>
                         <input type="date" class="form-control" id="tanggalPickupPelanggan">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Metode Pembayaran <span style="color: var(--red);">*</span></label>
+                        <div style="display: flex; gap: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metodePayment" value="cash" onchange="changePaymentMethod()" checked>
+                                Cash
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metodePayment" value="transfer" onchange="changePaymentMethod()">
+                                Transfer
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="buktiBayarGroup" style="display: none;">
+                        <label class="form-label">Upload Bukti Transfer <span style="color: var(--red);">*</span></label>
+                        <input type="file" class="form-control" id="buktiBayar" accept=".jpg,.jpeg,.png,.pdf">
+                        <div class="form-error" id="errorBuktiBayar"></div>
                     </div>
                 </div>
 
@@ -1430,7 +1448,12 @@
             document.getElementById('productList').innerHTML = '';
             document.getElementById('totalPesanan').textContent = 'Rp 0';
             document.querySelector('input[name="tipePesanan"][value="karyawan"]').checked = true;
+            document.querySelector('input[name="metodeMetode"][value="pickup"]').checked = true;
+            document.querySelector('input[name="metodePayment"][value="cash"]').checked = true;
+            document.getElementById('buktiBayar').value = '';
             changePesananType();
+            changeMetode();
+            changePaymentMethod();
         }
 
         function closeModal(modalId) {
@@ -1452,12 +1475,28 @@
         function changeMetode() {
             const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
             const alamatGroup = document.getElementById('alamatDeliveryGroup');
+            const tanggalDeliveryGroup = document.getElementById('tanggalDeliveryGroup');
+            const tanggalPickupGroup = document.getElementById('tanggalPickupGroup');
+            
             if (metode === 'delivery') {
-                document.getElementById('tanggalDeliveryGroup').style.display = 'block';
-                alamatGroup.classList.add('is-visible');
+                alamatGroup.style.display = 'block';
+                tanggalDeliveryGroup.style.display = 'block';
+                tanggalPickupGroup.style.display = 'none';
             } else {
-                document.getElementById('tanggalDeliveryGroup').style.display = 'none';
-                alamatGroup.classList.remove('is-visible');
+                alamatGroup.style.display = 'none';
+                tanggalDeliveryGroup.style.display = 'none';
+                tanggalPickupGroup.style.display = 'block';
+            }
+        }
+
+        function changePaymentMethod() {
+            const method = document.querySelector('input[name="metodePayment"]:checked').value;
+            const buktiBayarGroup = document.getElementById('buktiBayarGroup');
+            
+            if (method === 'transfer') {
+                buktiBayarGroup.style.display = 'block';
+            } else {
+                buktiBayarGroup.style.display = 'none';
             }
         }
 
@@ -1524,8 +1563,25 @@
                 newPesanan.tanggal_pickup = document.getElementById('tanggalPickupKaryawan').value;
                 pesananData.karyawan.push(newPesanan);
             } else {
+                const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
+                const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
+                
+                newPesanan.metode_pengambilan = metode;
+                newPesanan.metode_pembayaran = metodePayment;
                 newPesanan.pembayaran = 'belum_lunas';
-                newPesanan.tanggal_pickup = document.getElementById('tanggalPickupPelanggan').value;
+                
+                if (metode === 'delivery') {
+                    newPesanan.alamat_delivery = document.getElementById('alamatDelivery').value;
+                    newPesanan.tanggal_delivery = document.getElementById('tanggalDelivery').value;
+                } else {
+                    newPesanan.tanggal_pickup = document.getElementById('tanggalPickupPelanggan').value;
+                }
+                
+                if (metodePayment === 'transfer') {
+                    const buktiBayarFile = document.getElementById('buktiBayar').files[0];
+                    newPesanan.bukti_transfer = buktiBayarFile ? buktiBayarFile.name : '';
+                }
+                
                 pesananData.pelanggan.push(newPesanan);
             }
 

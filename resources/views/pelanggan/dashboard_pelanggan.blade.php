@@ -1415,9 +1415,9 @@
                             <i class="fas fa-user"></i>
                         </button>
                         <div class="profile-dropdown" id="profileDropdown">
-                            <a href="{{ route('profile.edit') }}">
+                            <a href="{{ route('pelanggan.profile.edit') }}">
                                 <i class="fas fa-user"></i>
-                                Profil
+                                Profil Saya
                             </a>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

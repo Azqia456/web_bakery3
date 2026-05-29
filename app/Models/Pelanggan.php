@@ -18,6 +18,7 @@ class Pelanggan extends Model
         'email',
         'alamat',
         'status',
+        'bio',
     ];
 
     public function user()

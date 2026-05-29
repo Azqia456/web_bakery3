@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\PelangganProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,6 +75,8 @@ Route::middleware('auth')->group(function () {
 
     // PELANGGAN
     Route::get('/pelanggan/dashboard_pelanggan', [DashboardController::class, 'pelanggan'])->middleware('role:pelanggan')->name('pelanggan.dashboard');
+    Route::get('/pelanggan/profile', [PelangganProfileController::class, 'edit'])->middleware('role:pelanggan')->name('pelanggan.profile.edit');
+    Route::patch('/pelanggan/profile', [PelangganProfileController::class, 'update'])->middleware('role:pelanggan')->name('pelanggan.profile.update');
 
     // API
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->middleware('role:owner');

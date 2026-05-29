@@ -1188,11 +1188,10 @@
                             </div>
                             <div style="display: flex; gap: 12px; align-items: center;">
                                 <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
-                                <select class="form-control" id="filterPelanggan" onchange="filterTable()" style="max-width: 200px; padding: 8px 12px;">
+                                <select class="form-control" id="filterPelanggan" onchange="filterTable('pelanggan')" style="max-width: 200px; padding: 8px 12px;">
                                     <option value="">Semua Status</option>
-                                    <option value="lunas">Lunas</option>
-                                    <option value="menunggu_verifikasi">Menunggu Verifikasi</option>
-                                    <option value="belum_bayar">Belum Bayar</option>
+                                    <option value="diproses">Diproses</option>
+                                    <option value="selesai">Selesai</option>
                                 </select>
                             </div>
                         </div>
@@ -1201,10 +1200,10 @@
                                 <tr>
                                     <th style="width: 40px;">No</th>
                                     <th>Nama Pelanggan</th>
-                                    <th>Jenis Pesanan</th>
+                                    <th>No HP</th>
+                                    <th>Metode Pengambilan</th>
                                     <th>Total Bayar</th>
-                                    <th>Metode Pembayaran</th>
-                                    <th>Status Pembayaran</th>
+                                    <th>Status Pesanan</th>
                                     <th>Tanggal</th>
                                     <th style="width: 120px;">Aksi</th>
                                 </tr>
@@ -1429,7 +1428,33 @@
                 return;
             }
 
-            // ...existing code pelanggan table...
+            tbody.innerHTML = pesananData.pelanggan.map((item, index) => `
+                <tr data-status="${item.status || 'diproses'}">
+                    <td>${item.id}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.no_hp || '-'}</td>
+                    <td>${item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</td>
+                    <td>Rp ${(item.total).toLocaleString('id-ID')}</td>
+                    <td><span class="status-badge ${item.status === 'selesai' ? 'selesai' : 'diproses'}">${item.status === 'selesai' ? 'Selesai' : 'Diproses'}</span></td>
+                    <td>${item.tanggal_pesan}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="showDetail('pelanggan', ${index})" title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" onclick="showEdit('pelanggan', ${index})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="deletePesanan('pelanggan', ${index})" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn-icon" onclick="markComplete('pelanggan', ${index})" title="Selesai">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         // Tab Switching
@@ -1553,7 +1578,7 @@
             const newPesanan = {
                 id: type === 'karyawan' ? 'K' + String(pesananData.karyawan.length + 1).padStart(3, '0') : 'P' + String(pesananData.pelanggan.length + 1).padStart(3, '0'),
                 nama: type === 'karyawan' ? document.getElementById('namaKaryawan').value : document.getElementById('namaPelanggan').value,
-                status: type === 'karyawan' ? 'belum_stor' : 'pending',
+                status: type === 'karyawan' ? 'belum_stor' : 'diproses',
                 tanggal_pesan: new Date().toISOString().split('T')[0],
                 total: parseInt(document.getElementById('totalPesanan').textContent.replace(/\D/g, '')) || 0,
                 produk: []
@@ -1566,6 +1591,7 @@
                 const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
                 const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
                 
+                newPesanan.no_hp = document.getElementById('noHpPelanggan').value;
                 newPesanan.metode_pengambilan = metode;
                 newPesanan.metode_pembayaran = metodePayment;
                 newPesanan.pembayaran = 'belum_lunas';
@@ -1615,7 +1641,7 @@
             if (type === 'karyawan') {
                 pesanan.status = pesanan.status === 'stor' ? 'belum_stor' : 'stor';
             } else {
-                pesanan.status = pesanan.status === 'selesai' ? 'pending' : 'selesai';
+                pesanan.status = pesanan.status === 'selesai' ? 'diproses' : 'selesai';
             }
             renderTables();
         }

@@ -55,10 +55,18 @@
         </div>
 
         <div class="sidebar-menu-item">
-            <a href="/laporan" class="{{ Request::is('laporan') ? 'active' : '' }}" style="justify-content: flex-start; gap: 12px;">
+            <button class="sidebar-menu-toggle {{ Request::is('laporan*') ? 'active' : '' }}" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
                 <i class="fas fa-chart-line"></i>
                 <span style="font-weight:700;">Laporan</span>
-            </a>
+                <i class="fas fa-chevron-down toggle-arrow {{ Request::is('laporan*') ? 'open' : '' }}"></i>
+            </button>
+            <div class="sidebar-submenu {{ Request::is('laporan*') ? 'open' : '' }}">
+                <a href="/laporan-penjualan" class="sidebar-submenu-item {{ Request::is('laporan-penjualan') ? 'active' : '' }}">Laporan Penjualan</a>
+                <a href="/laporan-pesanan-online" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-online') ? 'active' : '' }}">Laporan Pesanan Online</a>
+                <a href="/laporan-pesanan-offline" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-offline') ? 'active' : '' }}">Laporan Pesanan Offline</a>
+                <a href="/laporan-pembayaran" class="sidebar-submenu-item {{ Request::is('laporan-pembayaran') ? 'active' : '' }}">Laporan Pembayaran</a>
+                <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item {{ Request::is('laporan-setoran-karyawan') ? 'active' : '' }}">Laporan Setoran Karyawan</a>
+            </div>
         </div>
     </nav>
 </aside>

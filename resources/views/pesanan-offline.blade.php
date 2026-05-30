@@ -1072,10 +1072,18 @@
                     </div>
                 </div>
                 <div class="sidebar-menu-item">
-                    <a href="/laporan" style="justify-content: flex-start; gap: 12px;">
+                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
                         <i class="fas fa-chart-line"></i>
                         <span style="font-weight:700;">Laporan</span>
-                    </a>
+                        <i class="fas fa-chevron-down toggle-arrow"></i>
+                    </button>
+                    <div class="sidebar-submenu">
+                        <a href="/laporan-penjualan" class="sidebar-submenu-item">Laporan Penjualan</a>
+                        <a href="/laporan-pesanan-online" class="sidebar-submenu-item">Laporan Pesanan Online</a>
+                        <a href="/laporan-pesanan-offline" class="sidebar-submenu-item">Laporan Pesanan Offline</a>
+                        <a href="/laporan-pembayaran" class="sidebar-submenu-item">Laporan Pembayaran</a>
+                        <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item">Laporan Setoran Karyawan</a>
+                    </div>
                 </div>
             </nav>
         </aside>

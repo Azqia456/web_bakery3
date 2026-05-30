@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Karyawan;
 
 class DashboardController extends Controller
 {
@@ -237,7 +238,13 @@ class DashboardController extends Controller
 
     public function dataKaryawan()
     {
-        return view('data-karyawan');
+        $karyawans = Karyawan::paginate(10);
+        
+        $total = Karyawan::count();
+        $aktif = Karyawan::where('status', 'Aktif')->count();
+        $nonaktif = Karyawan::where('status', 'Nonaktif')->count();
+        
+        return view('data-karyawan', compact('karyawans', 'total', 'aktif', 'nonaktif'));
     }
 
     public function dataPelanggan()

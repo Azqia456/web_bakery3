@@ -18,6 +18,7 @@ class KaryawanController extends Controller
             'nama' => 'required|string|max:255',
             'no_tlp' => 'required|string|max:50',
             'alamat' => 'required|string',
+            'status' => 'sometimes|in:Aktif,Nonaktif',
         ]);
 
         return Karyawan::create($validated);
@@ -36,6 +37,7 @@ class KaryawanController extends Controller
             'nama' => 'string|max:255',
             'no_tlp' => 'string|max:50',
             'alamat' => 'string',
+            'status' => 'sometimes|in:Aktif,Nonaktif',
         ]);
 
         $karyawan->update($validated);

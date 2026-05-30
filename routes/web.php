@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\PelangganProfileController;
+use App\Http\Controllers\KaryawanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -100,6 +101,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/pelanggans-autocomplete', [DataPelangganController::class, 'autocomplete'])->name('pelanggans.autocomplete');
     Route::post('/api/pelanggans/find-or-create', [DataPelangganController::class, 'findOrCreateForOfflineOrder'])->name('pelanggans.findOrCreate');
     Route::get('/api/pelanggans-stats', [DataPelangganController::class, 'statistics'])->name('pelanggans.statistics');
+
+    // KARYAWAN AJAX ENDPOINTS
+    Route::post('/api/karyawans', [KaryawanController::class, 'store'])->name('karyawans.store');
+    Route::get('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'show'])->name('karyawans.show');
+    Route::put('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'update'])->name('karyawans.update');
+    Route::delete('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'destroy'])->name('karyawans.destroy');
 
     // PRODUK
     Route::get('/produk', [DashboardController::class, 'produk'])->name('produk');

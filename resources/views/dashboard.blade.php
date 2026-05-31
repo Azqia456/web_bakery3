@@ -734,12 +734,12 @@
                 <div class="sidebar-menu-item">
                     <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
                         <i class="fas fa-credit-card"></i>
-                        <span style="font-weight:700;">Pembayaran</span>
+                        <span style="font-weight:700;">Transaksi</span>
                         <i class="fas fa-chevron-down toggle-arrow"></i>
                     </button>
                     <div class="sidebar-submenu">
-                        <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
-                        <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi Pelanggan</a>
+                        <a href="/riwayat-transaksi" class="sidebar-submenu-item">Riwayat Transaksi</a>
+                         <a href="/stor-karyawan" class="sidebar-submenu-item">Stor Karyawan</a>
                     </div>
                 </div>
 

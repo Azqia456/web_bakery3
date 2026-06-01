@@ -90,7 +90,8 @@
         .sidebar-menu-toggle {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 12px;
             padding: 12px 16px;
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;

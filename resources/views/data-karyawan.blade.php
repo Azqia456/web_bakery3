@@ -105,10 +105,6 @@
 <div class="dashboard-content">
     <!-- Page Header -->
     <div class="page-header">
-        <div class="page-header-left">
-            <h1>Data Karyawan</h1>
-            <p>Kelola data karyawan Three D Bakery</p>
-        </div>
         <div class="page-header-right">
             <div class="search-input">
                 <input type="text" id="searchInput" placeholder="Cari karyawan...">

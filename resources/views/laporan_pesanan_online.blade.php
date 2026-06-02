@@ -367,14 +367,6 @@
 
             <div class="page-container">
                 <!-- Header Section -->
-                <div style="margin-bottom: 32px;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                        <i class="fas fa-shopping-bag" style="font-size: 28px; color: #0d6efd;"></i>
-                        <h2 style="margin: 0; color: #333; font-weight: 700; font-size: 28px;">Laporan Pesanan Online</h2>
-                    </div>
-                    <p style="margin: 0; color: #6c757d; font-size: 14px;">📍 Monitoring data pesanan pelanggan secara online</p>
-                </div>
-
                 <!-- Statistics Cards -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 28px;">
                     <!-- Card 1: Total Pesanan -->

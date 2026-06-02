@@ -497,15 +497,6 @@
 
         <main class="dashboard-content">
             <div class="max-w-7xl mx-auto">
-                <div class="mb-8 md:mb-10">
-                    <h2 class="text-3xl md:text-4xl font-bold text-[#42352A] mb-2">
-                        Katalog Produk
-                    </h2>
-                    <p class="text-[#8B7355] text-base md:text-lg font-light">
-                        Kelola semua produk roti dan varian rasa
-                    </p>
-                </div>
-
                 <div class="flex flex-col gap-4 md:flex-row md:gap-6 md:items-center md:justify-between mb-10">
                     <div class="flex gap-2 items-center flex-wrap">
                         <button class="filter-badge active" data-filter="semua">

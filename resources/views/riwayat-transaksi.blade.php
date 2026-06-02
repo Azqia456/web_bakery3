@@ -785,7 +785,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon orange">
-                            <i class="fas fa-arrow-trending-up"></i>
+                            <i class="fas fa-money-bill-wave"></i>
                         </div>
                         <div class="stat-card-label">Pemasukan Hari Ini</div>
                         <div class="stat-card-value" id="pemasukan-hari-ini">Rp 0</div>
@@ -799,7 +799,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon purple">
-                            <i class="fas fa-boxes"></i>
+                            <i class="fas fa-hand-holding-dollar"></i>
                         </div>
                         <div class="stat-card-label">Stor Karyawan</div>
                         <div class="stat-card-value" id="stor-karyawan">0</div>
@@ -814,13 +814,8 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="searchTransaksi" placeholder="Cari nama pelanggan, karyawan, ID transaksi...">
                         </div>
-                        <div class="filter-group">
-                            <label>Waktu:</label>
-                            <select class="form-control" id="filterWaktu" onchange="filterTable()">
-                                <option value="">Semua</option>
-                                <option value="today">Hari Ini</option>
-                                <option value="week">Minggu Ini</option>
-                            </select>
+                        <div class="filter-group" style="margin-left: auto;">
+                            <label style="margin: 0; font-weight: 600; color: var(--primary-brown);">📅 Transaksi Hari Ini</label>
                         </div>
                     </div>
                     <div class="table-toolbar" style="padding: 12px 24px;">
@@ -1207,7 +1202,6 @@ Status: Lunas
         // Filter Table
         function filterTable() {
             const searchValue = document.getElementById('searchTransaksi').value.toLowerCase();
-            const filterWaktu = document.getElementById('filterWaktu').value;
             const filterTipe = document.getElementById('filterTipe').value;
             const filterSumber = document.getElementById('filterSumber').value;
             const filterMetode = document.getElementById('filterMetode').value;
@@ -1217,7 +1211,6 @@ Status: Lunas
 
             let hasVisibleRows = false;
             const today = new Date().toISOString().split('T')[0];
-            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
             for (let i = 0; i < rows.length; i++) {
                 if (rows[i].textContent.includes('Belum ada riwayat')) continue;
@@ -1229,14 +1222,8 @@ Status: Lunas
                 const tanggal = rows[i].getAttribute('data-tanggal');
 
                 let show = text.includes(searchValue);
-
-                if (filterWaktu) {
-                    if (filterWaktu === 'today') {
-                        show = show && tanggal === today;
-                    } else if (filterWaktu === 'week') {
-                        show = show && tanggal >= weekAgo && tanggal <= today;
-                    }
-                }
+                // Filter HANYA transaksi hari ini (DATE(tanggal_transaksi) = CURRENT_DATE)
+                show = show && tanggal === today;
 
                 if (filterTipe) show = show && tipe === filterTipe;
                 if (filterSumber) show = show && sumber === filterSumber;
@@ -1267,13 +1254,13 @@ Status: Lunas
 
         // Update Stats
         function updateStats() {
-            const totalTransaksi = transaksiData.length;
             const today = new Date().toISOString().split('T')[0];
-            const pemasukan = transaksiData
-                .filter(t => t.tanggal_transaksi === today)
-                .reduce((sum, t) => sum + t.total, 0);
-            const transaksiPelanggan = transaksiData.filter(t => t.tipe === 'pelanggan').length;
-            const storKaryawan = transaksiData.filter(t => t.tipe === 'karyawan').length;
+            // Hanya hitung transaksi HARI INI (WHERE DATE(tanggal_transaksi) = CURRENT_DATE)
+            const todayTransaksi = transaksiData.filter(t => t.tanggal_transaksi === today);
+            const totalTransaksi = todayTransaksi.length;
+            const pemasukan = todayTransaksi.reduce((sum, t) => sum + t.total, 0);
+            const transaksiPelanggan = todayTransaksi.filter(t => t.tipe === 'pelanggan').length;
+            const storKaryawan = todayTransaksi.filter(t => t.tipe === 'karyawan').length;
 
             document.getElementById('total-transaksi').textContent = totalTransaksi;
             document.getElementById('pemasukan-hari-ini').textContent = 'Rp ' + pemasukan.toLocaleString('id-ID');

@@ -436,6 +436,28 @@
             letter-spacing: 0.3px;
         }
 
+        /* Status badges untuk Pelanggan */
+        .status-badge.diproses {
+            background: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+        }
+
+        .status-badge.selesai {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        /* Status badges untuk Karyawan */
+        .status-badge.belum_setor {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+
+        .status-badge.sudah_setor {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
         .status-badge.lunas {
             background: rgba(34, 197, 94, 0.1);
             color: #22C55E;
@@ -1115,18 +1137,18 @@
                         <div class="stat-card-value" id="total-pesanan">0</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-card-icon orange">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-card-label">Pesanan Diproses</div>
+                        <div class="stat-card-value" id="pesanan-diproses">0</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-card-icon green">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="stat-card-label">Pesanan Lunas</div>
-                        <div class="stat-card-value" id="pesanan-lunas">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-card-icon orange">
-                            <i class="fas fa-hourglass-half"></i>
-                        </div>
-                        <div class="stat-card-label">Menunggu Verifikasi</div>
-                        <div class="stat-card-value" id="pesanan-verifikasi">0</div>
+                        <div class="stat-card-label">Pesanan Selesai</div>
+                        <div class="stat-card-value" id="pesanan-selesai">0</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon purple">
@@ -1139,65 +1161,26 @@
 
                 <!-- Tabs -->
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab(this, 'karyawan')">
-                        <i class="fas fa-users"></i> Pesanan Karyawan
-                    </button>
-                    <button class="tab" onclick="switchTab(this, 'pelanggan')">
+                    <button class="tab active" onclick="switchTab(this, 'pelanggan')">
                         <i class="fas fa-user"></i> Pesanan Pelanggan
                     </button>
-                </div>
-
-                <!-- Pesanan Karyawan Tab -->
-                <div id="tab-karyawan" class="tab-content active">
-                    <div class="table-section">
-                        <div class="table-toolbar">
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" id="searchKaryawan" placeholder="Cari nama karyawan, ID pesanan...">
-                            </div>
-                            <div class="filter-group">
-                                <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
-                                <select class="form-control" id="filterKaryawan" onchange="filterTable('karyawan')">
-                                    <option value="">Semua Status</option>
-                                    <option value="stor">Stor</option>
-                                    <option value="belum_stor">Belum Stor</option>
-                                </select>
-                            </div>
-                        </div>
-                        <table id="tableKaryawan">
-                            <thead>
-                                <tr>
-                                    <th>ID Pesanan</th>
-                                    <th>Nama Karyawan</th>
-                                    <th>Status</th>
-                                    <th>Total</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bodyKaryawan">
-                                <tr>
-                                    <td colspan="5" style="text-align: center; color: var(--dark-gray);">
-                                        <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
-                                        Belum ada pesanan karyawan
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <button class="tab" onclick="switchTab(this, 'karyawan')">
+                        <i class="fas fa-users"></i> Pesanan Karyawan
+                    </button>
                 </div>
 
                 <!-- Pesanan Pelanggan Tab -->
-                <div id="tab-pelanggan" class="tab-content">
+                <div id="tab-pelanggan" class="tab-content active">
                     <div class="table-section">
                         <div class="table-toolbar">
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="searchPelanggan" placeholder="Cari nama pelanggan, ID pesanan...">
+                                <input type="text" id="searchPelanggan" placeholder="Cari nama pelanggan, No HP...">
                             </div>
                             <div style="display: flex; gap: 12px; align-items: center;">
                                 <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
                                 <select class="form-control" id="filterPelanggan" onchange="filterTable('pelanggan')" style="max-width: 200px; padding: 8px 12px;">
-                                    <option value="">Semua Status</option>
+                                    <option value="">Semua</option>
                                     <option value="diproses">Diproses</option>
                                     <option value="selesai">Selesai</option>
                                 </select>
@@ -1209,18 +1192,57 @@
                                     <th style="width: 40px;">No</th>
                                     <th>Nama Pelanggan</th>
                                     <th>No HP</th>
-                                    <th>Metode Pengambilan</th>
+                                    <th>Pickup / Delivery</th>
                                     <th>Total Bayar</th>
                                     <th>Status Pesanan</th>
-                                    <th>Tanggal</th>
-                                    <th style="width: 120px;">Aksi</th>
+                                    <th style="width: 100px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="bodyPelanggan">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                                    <td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                                         <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                                         Belum ada pesanan pelanggan
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pesanan Karyawan Tab -->
+                <div id="tab-karyawan" class="tab-content">
+                    <div class="table-section">
+                        <div class="table-toolbar">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchKaryawan" placeholder="Cari nama karyawan, ID pesanan...">
+                            </div>
+                            <div class="filter-group">
+                                <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
+                                <select class="form-control" id="filterKaryawan" onchange="filterTable('karyawan')">
+                                    <option value="">Semua</option>
+                                    <option value="belum_setor">Belum Setor</option>
+                                    <option value="sudah_setor">Sudah Setor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table id="tableKaryawan">
+                            <thead>
+                                <tr>
+                                    <th>ID Pesanan</th>
+                                    <th>Nama Karyawan</th>
+                                    <th>Total Barang</th>
+                                    <th>Status Setor</th>
+                                    <th>Tanggal Ambil</th>
+                                    <th style="width: 100px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyKaryawan">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                                        <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                                        Belum ada pesanan karyawan
                                     </td>
                                 </tr>
                             </tbody>
@@ -1373,7 +1395,7 @@
             karyawan: [],
             pelanggan: []
         };
-        let currentTab = 'karyawan';
+        let currentTab = 'pelanggan';
         let productCount = 0;
 
         // Inisialisasi
@@ -1393,76 +1415,82 @@
         function renderKaryawanTable() {
             const tbody = document.getElementById('bodyKaryawan');
             if (pesananData.karyawan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan karyawan
                 </td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = pesananData.karyawan.map(item => `
-                <tr>
+            tbody.innerHTML = pesananData.karyawan.map(item => {
+                const totalBarang = item.produk ? item.produk.reduce((sum, p) => sum + (p.qty || 0), 0) : 0;
+                const statusBadge = item.status === 'sudah_setor' ? 'sudah_setor' : 'belum_setor';
+                const statusText = item.status === 'sudah_setor' ? 'Sudah Setor' : 'Belum Setor';
+                
+                return `
+                <tr data-status="${item.status || 'belum_setor'}">
                     <td>${item.id}</td>
                     <td>${item.nama}</td>
-                    <td><span class="status-badge ${item.status}">${item.status === 'stor' ? 'Stor' : 'Belum Stor'}</span></td>
-                    <td>Rp ${(item.total).toLocaleString('id-ID')}</td>
+                    <td>${totalBarang}</td>
+                    <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                    <td>${item.tanggal_pickup || '-'}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="showDetail('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Detail">
+                            <button class="btn-icon" onclick="showDetail('karyawan', '${item.id}')" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-icon" onclick="showEdit('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon delete" onclick="deletePesanan('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="btn-icon" onclick="markComplete('karyawan', ${pesananData.karyawan.indexOf(item)})" title="Selesai">
+                            <button class="btn-icon" onclick="markComplete('karyawan', '${item.id}')" title="Checklist Setor">
                                 <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-icon" onclick="downloadInvoice('karyawan', '${item.id}')" title="Download Invoice">
+                                <i class="fas fa-file-invoice"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         function renderPelangganTable() {
             const tbody = document.getElementById('bodyPelanggan');
             if (pesananData.pelanggan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan pelanggan
                 </td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = pesananData.pelanggan.map((item, index) => `
+            tbody.innerHTML = pesananData.pelanggan.map((item, index) => {
+                const statusBadge = item.status === 'selesai' ? 'selesai' : 'diproses';
+                const statusText = item.status === 'selesai' ? 'Selesai' : 'Diproses';
+                const pickupDeliveryDate = item.metode_pengambilan === 'delivery' ? 
+                    (item.tanggal_delivery || '-') : 
+                    (item.tanggal_pickup || '-');
+                
+                return `
                 <tr data-status="${item.status || 'diproses'}">
-                    <td>${item.id}</td>
+                    <td>${index + 1}</td>
                     <td>${item.nama}</td>
                     <td>${item.no_hp || '-'}</td>
                     <td>${item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</td>
                     <td>Rp ${(item.total).toLocaleString('id-ID')}</td>
-                    <td><span class="status-badge ${item.status === 'selesai' ? 'selesai' : 'diproses'}">${item.status === 'selesai' ? 'Selesai' : 'Diproses'}</span></td>
-                    <td>${item.tanggal_pesan}</td>
+                    <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="showDetail('pelanggan', ${index})" title="Detail">
+                            <button class="btn-icon" onclick="showDetail('pelanggan', '${item.id}')" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-icon" onclick="showEdit('pelanggan', ${index})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon delete" onclick="deletePesanan('pelanggan', ${index})" title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="btn-icon" onclick="markComplete('pelanggan', ${index})" title="Selesai">
+                            <button class="btn-icon" onclick="markComplete('pelanggan', '${item.id}')" title="Checklist Selesai">
                                 <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-icon" onclick="downloadInvoice('pelanggan', '${item.id}')" title="Download Invoice">
+                                <i class="fas fa-file-invoice"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
 
         // Tab Switching
@@ -1583,75 +1611,293 @@
 
         function savePesanan() {
             const type = document.querySelector('input[name="tipePesanan"]:checked').value;
-            const newPesanan = {
-                id: type === 'karyawan' ? 'K' + String(pesananData.karyawan.length + 1).padStart(3, '0') : 'P' + String(pesananData.pelanggan.length + 1).padStart(3, '0'),
-                nama: type === 'karyawan' ? document.getElementById('namaKaryawan').value : document.getElementById('namaPelanggan').value,
-                status: type === 'karyawan' ? 'belum_stor' : 'diproses',
-                tanggal_pesan: new Date().toISOString().split('T')[0],
-                total: parseInt(document.getElementById('totalPesanan').textContent.replace(/\D/g, '')) || 0,
-                produk: []
-            };
+            const productCount = document.querySelectorAll('.product-item').length;
+            
+            if (productCount === 0) {
+                showToast('Silakan tambahkan minimal 1 produk', 'error');
+                return;
+            }
 
+            // Collect products
+            const produk = [];
+            document.querySelectorAll('.product-item').forEach(p => {
+                const select = p.querySelector('select');
+                const input = p.querySelector('input[type="number"]');
+                if (select.value && input.value) {
+                    const [name, price] = select.value.split('|');
+                    produk.push({
+                        nama: name,
+                        harga: parseInt(price),
+                        qty: parseInt(input.value)
+                    });
+                }
+            });
+
+            const totalAmount = produk.reduce((sum, p) => sum + (p.harga * p.qty), 0);
+            
             if (type === 'karyawan') {
-                newPesanan.tanggal_pickup = document.getElementById('tanggalPickupKaryawan').value;
+                const newPesanan = {
+                    id: 'K' + String(pesananData.karyawan.length + 1).padStart(3, '0'),
+                    nama: document.getElementById('namaKaryawan').value,
+                    status: 'belum_setor',
+                    tanggal_pesan: new Date().toISOString().split('T')[0],
+                    tanggal_pickup: document.getElementById('tanggalPickupKaryawan').value,
+                    tanggal_setor: null,
+                    total: totalAmount,
+                    produk: produk
+                };
+                
+                if (!newPesanan.nama || !newPesanan.tanggal_pickup) {
+                    showToast('Silakan isi semua field yang wajib', 'error');
+                    return;
+                }
+                
                 pesananData.karyawan.push(newPesanan);
+                showToast('Pesanan karyawan berhasil dibuat', 'success');
             } else {
                 const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
                 const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
                 
-                newPesanan.no_hp = document.getElementById('noHpPelanggan').value;
-                newPesanan.metode_pengambilan = metode;
-                newPesanan.metode_pembayaran = metodePayment;
-                newPesanan.pembayaran = 'belum_lunas';
-                
+                const newPesanan = {
+                    id: 'P' + String(pesananData.pelanggan.length + 1).padStart(3, '0'),
+                    nama: document.getElementById('namaPelanggan').value,
+                    no_hp: document.getElementById('noHpPelanggan').value,
+                    status: 'diproses',
+                    tgl_transaksi: new Date().toISOString().split('T')[0],
+                    metode_pengambilan: metode,
+                    metode_pembayaran: metodePayment,
+                    total: totalAmount,
+                    produk: produk
+                };
+
                 if (metode === 'delivery') {
                     newPesanan.alamat_delivery = document.getElementById('alamatDelivery').value;
                     newPesanan.tanggal_delivery = document.getElementById('tanggalDelivery').value;
+                    if (!newPesanan.alamat_delivery || !newPesanan.tanggal_delivery) {
+                        showToast('Silakan isi alamat dan tanggal delivery', 'error');
+                        return;
+                    }
                 } else {
                     newPesanan.tanggal_pickup = document.getElementById('tanggalPickupPelanggan').value;
+                    if (!newPesanan.tanggal_pickup) {
+                        showToast('Silakan isi tanggal pickup', 'error');
+                        return;
+                    }
                 }
-                
-                if (metodePayment === 'transfer') {
-                    const buktiBayarFile = document.getElementById('buktiBayar').files[0];
-                    newPesanan.bukti_transfer = buktiBayarFile ? buktiBayarFile.name : '';
+
+                if (!newPesanan.nama || !newPesanan.no_hp) {
+                    showToast('Silakan isi nama dan nomor HP pelanggan', 'error');
+                    return;
                 }
                 
                 pesananData.pelanggan.push(newPesanan);
+                showToast('Pesanan pelanggan berhasil dibuat (Status: Lunas)', 'success');
             }
 
             renderTables();
+            updateStats();
             closeModal('modalAddPesanan');
-            alert('Pesanan berhasil disimpan!');
         }
 
-        function showDetail(type, index) {
-            // ...implementasi detail modal sesuai kebutuhan...
-        }
-
-        function showEdit(type, index) {
-            // ...implementasi edit modal sesuai kebutuhan...
-        }
-
-        function deletePesanan(type, index) {
-            if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
-                if (type === 'karyawan') {
-                    pesananData.karyawan.splice(index, 1);
-                } else {
-                    pesananData.pelanggan.splice(index, 1);
-                }
-                renderTables();
-                alert('Pesanan berhasil dihapus!');
-            }
-        }
-
-        function markComplete(type, index) {
-            const pesanan = type === 'karyawan' ? pesananData.karyawan[index] : pesananData.pelanggan[index];
-            if (type === 'karyawan') {
-                pesanan.status = pesanan.status === 'stor' ? 'belum_stor' : 'stor';
+        function showDetail(type, pesananId) {
+            const detailContent = document.getElementById('detailContent');
+            
+            if (type === 'pelanggan') {
+                const pesanan = pesananData.pelanggan.find(p => p.id === pesananId);
+                if (!pesanan) return;
+                
+                const metodePickup = pesanan.metode_pengambilan === 'delivery' ? 
+                    pesanan.tanggal_delivery : pesanan.tanggal_pickup;
+                
+                let produkHTML = pesanan.produk.map(p => `
+                    <tr>
+                        <td>${p.nama}</td>
+                        <td style="text-align: center;">${p.qty}</td>
+                        <td style="text-align: right;">Rp ${(p.harga * p.qty).toLocaleString('id-ID')}</td>
+                    </tr>
+                `).join('');
+                
+                detailContent.innerHTML = `
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DATA PELANGGAN</h4>
+                        <div class="detail-row">
+                            <div class="detail-label">Nama</div>
+                            <div class="detail-value">${pesanan.nama}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">No HP</div>
+                            <div class="detail-value">${pesanan.no_hp || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Alamat</div>
+                            <div class="detail-value">${pesanan.metode_pengambilan === 'delivery' ? pesanan.alamat_delivery || '-' : '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL TRANSAKSI</h4>
+                        <div class="detail-row">
+                            <div class="detail-label">Metode Pembayaran</div>
+                            <div class="detail-value">${pesanan.metode_pembayaran === 'cash' ? 'Cash' : 'Transfer'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Tanggal Transaksi</div>
+                            <div class="detail-value">${pesanan.tgl_transaksi || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Tanggal ${pesanan.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</div>
+                            <div class="detail-value">${metodePickup || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value"><span class="status-badge ${pesanan.status === 'selesai' ? 'selesai' : 'diproses'}">${pesanan.status === 'selesai' ? 'Selesai' : 'Diproses'}</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL PRODUK</h4>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--medium-gray);">
+                                    <th style="text-align: left; padding: 8px 0; font-weight: 600;">Produk</th>
+                                    <th style="text-align: center; padding: 8px 0; font-weight: 600; width: 80px;">Qty</th>
+                                    <th style="text-align: right; padding: 8px 0; font-weight: 600; width: 150px;">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${produkHTML}
+                            </tbody>
+                            <tfoot style="border-top: 2px solid var(--medium-gray);">
+                                <tr>
+                                    <td colspan="2" style="padding: 12px 0; text-align: right; font-weight: 600;">Total Bayar:</td>
+                                    <td style="text-align: right; padding: 12px 0; font-weight: 600; color: var(--primary-brown);">Rp ${pesanan.total.toLocaleString('id-ID')}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                `;
             } else {
-                pesanan.status = pesanan.status === 'selesai' ? 'diproses' : 'selesai';
+                const pesanan = pesananData.karyawan.find(p => p.id === pesananId);
+                if (!pesanan) return;
+                
+                let produkHTML = pesanan.produk.map(p => `
+                    <tr>
+                        <td>${p.nama}</td>
+                        <td style="text-align: center;">${p.qty}</td>
+                        <td style="text-align: right;">Rp ${(p.harga * p.qty).toLocaleString('id-ID')}</td>
+                    </tr>
+                `).join('');
+                
+                const totalBarang = pesanan.produk.reduce((sum, p) => sum + p.qty, 0);
+                
+                detailContent.innerHTML = `
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DATA KARYAWAN</h4>
+                        <div class="detail-row">
+                            <div class="detail-label">Nama Karyawan</div>
+                            <div class="detail-value">${pesanan.nama}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL PRODUK</h4>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--medium-gray);">
+                                    <th style="text-align: left; padding: 8px 0; font-weight: 600;">Produk</th>
+                                    <th style="text-align: center; padding: 8px 0; font-weight: 600; width: 80px;">Qty</th>
+                                    <th style="text-align: right; padding: 8px 0; font-weight: 600; width: 150px;">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${produkHTML}
+                            </tbody>
+                            <tfoot style="border-top: 2px solid var(--medium-gray);">
+                                <tr>
+                                    <td style="padding: 12px 0; text-align: left; font-weight: 600;">Total Barang:</td>
+                                    <td colspan="2" style="text-align: right; padding: 12px 0; font-weight: 600; color: var(--primary-brown);">${totalBarang} Item</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">STATUS SETORAN</h4>
+                        <div class="detail-row">
+                            <div class="detail-label">Tanggal Ambil</div>
+                            <div class="detail-value">${pesanan.tanggal_pickup || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Tanggal Setor</div>
+                            <div class="detail-value">${pesanan.tanggal_setor || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status Setor</div>
+                            <div class="detail-value"><span class="status-badge ${pesanan.status === 'sudah_setor' ? 'sudah_setor' : 'belum_setor'}">${pesanan.status === 'sudah_setor' ? 'Sudah Setor' : 'Belum Setor'}</span></div>
+                        </div>
+                    </div>
+                `;
             }
+            
+            document.getElementById('modalDetail').classList.add('show');
+        }
+
+        function downloadInvoice(type, pesananId) {
+            const pesanan = type === 'pelanggan' ? 
+                pesananData.pelanggan.find(p => p.id === pesananId) :
+                pesananData.karyawan.find(p => p.id === pesananId);
+            
+            if (!pesanan) return;
+            
+            // Implementasi sederhana - dalam praktik nyata gunakan library seperti jsPDF
+            let invoiceContent = `
+            Invoice ${type === 'pelanggan' ? 'Pelanggan' : 'Karyawan'}
+            ================================
+            ID: ${pesanan.id}
+            Nama: ${pesanan.nama}
+            ${type === 'pelanggan' ? 'No HP: ' + pesanan.no_hp + '\n' : ''}
+            Tanggal: ${type === 'pelanggan' ? pesanan.tgl_transaksi : pesanan.tanggal_pickup}
+            
+            Produk:
+            ${pesanan.produk.map(p => `${p.nama} x${p.qty} = Rp ${(p.harga * p.qty).toLocaleString('id-ID')}`).join('\n')}
+            
+            Total: Rp ${pesanan.total.toLocaleString('id-ID')}
+            `;
+            
+            const blob = new Blob([invoiceContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Invoice_${pesanan.id}.txt`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            
+            showToast('Invoice berhasil diunduh', 'success');
+        }
+
+        function markComplete(type, pesananId) {
+            if (type === 'pelanggan') {
+                const pesanan = pesananData.pelanggan.find(p => p.id === pesananId);
+                if (!pesanan) return;
+                
+                pesanan.status = pesanan.status === 'selesai' ? 'diproses' : 'selesai';
+                showToast(pesanan.status === 'selesai' ? 'Pesanan marked as Selesai' : 'Pesanan marked as Diproses', 'success');
+            } else {
+                const pesanan = pesananData.karyawan.find(p => p.id === pesananId);
+                if (!pesanan) return;
+                
+                pesanan.status = pesanan.status === 'sudah_setor' ? 'belum_setor' : 'sudah_setor';
+                if (pesanan.status === 'sudah_setor') {
+                    pesanan.tanggal_setor = new Date().toISOString().split('T')[0];
+                    showToast('Pesanan marked as Sudah Setor - Otomatis masuk laporan', 'success');
+                } else {
+                    pesanan.tanggal_setor = null;
+                    showToast('Pesanan marked as Belum Setor', 'success');
+                }
+            }
+            
             renderTables();
+            updateStats();
         }
 
         // Search Functions
@@ -1664,8 +1910,30 @@
             });
         }
 
+        // Toast Notifications
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fas fa-info-circle';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-exclamation-circle';
+            
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="${icon}"></i></div>
+                <div class="toast-text">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
         function filterTable(type) {
-            if (!type) type = 'pelanggan';
+            if (!type) type = currentTab;
             const searchValue = type === 'karyawan' ? 
                 document.getElementById('searchKaryawan').value.toLowerCase() : 
                 document.getElementById('searchPelanggan').value.toLowerCase();
@@ -1679,22 +1947,34 @@
             const rows = tbody.getElementsByTagName('tr');
 
             let hasVisibleRows = false;
+            const noResultsRow = rows[0]; // Track first row for empty state
 
-            for (let row of rows) {
-                const text = row.textContent.toLowerCase();
-                const status = row.getAttribute('data-status') || '';
+            for (let i = 0; i < rows.length; i++) {
+                // Skip if it's the empty state row
+                if (rows[i].textContent.includes('Belum ada pesanan')) continue;
+                
+                const text = rows[i].textContent.toLowerCase();
+                const status = rows[i].getAttribute('data-status') || '';
                 
                 let show = text.includes(searchValue);
                 if (filterValue) {
                     show = show && status === filterValue;
                 }
 
-                row.style.display = show ? '' : 'none';
+                rows[i].style.display = show ? '' : 'none';
                 if (show) hasVisibleRows = true;
             }
 
-            if (!hasVisibleRows && pesananData[type].length > 0) {
-                tbody.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 5 : 8}" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+            // If no results found, show appropriate message
+            if (!hasVisibleRows && noResultsRow && noResultsRow.textContent.includes('Belum ada pesanan')) {
+                noResultsRow.style.display = '';
+            } else if (!hasVisibleRows) {
+                // Hide the empty state and show search result message
+                noResultsRow.style.display = 'none';
+                const tbody2 = type === 'karyawan' ? 
+                    document.getElementById('bodyKaryawan') : 
+                    document.getElementById('bodyPelanggan');
+                tbody2.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 6 : 7}" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-search" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Pesanan tidak ditemukan
                 </td></tr>`;
@@ -1712,15 +1992,23 @@
 
         // Update Stats
         function updateStats() {
-            const allPesanan = [...pesananData.karyawan, ...pesananData.pelanggan];
-            const totalPesanan = allPesanan.length;
-            const pesananSelesai = allPesanan.filter(p => p.status === 'selesai' || p.status === 'stor').length;
-            const pesananPending = allPesanan.filter(p => p.status === 'pending' || p.status === 'belum_stor').length;
-            const totalRevenue = allPesanan.reduce((sum, p) => sum + p.total, 0);
+            // Total Pesanan = semua pesanan (pelanggan + karyawan)
+            const totalPesanan = pesananData.pelanggan.length + pesananData.karyawan.length;
+            
+            // Pesanan Diproses = pelanggan diproses + karyawan belum setor
+            const pesananDiproses = pesananData.pelanggan.filter(p => p.status === 'diproses').length + 
+                                    pesananData.karyawan.filter(p => p.status === 'belum_setor').length;
+            
+            // Pesanan Selesai = pelanggan selesai + karyawan sudah setor
+            const pesananSelesai = pesananData.pelanggan.filter(p => p.status === 'selesai').length + 
+                                   pesananData.karyawan.filter(p => p.status === 'sudah_setor').length;
+            
+            // Total Revenue = hanya dari pelanggan yang selesai/lunas (selalu lunas saat dibuat)
+            const totalRevenue = pesananData.pelanggan.reduce((sum, p) => sum + (p.total || 0), 0);
 
             document.getElementById('total-pesanan').textContent = totalPesanan;
-            document.getElementById('pesanan-lunas').textContent = pesananSelesai;
-            document.getElementById('pesanan-verifikasi').textContent = pesananPending;
+            document.getElementById('pesanan-diproses').textContent = pesananDiproses;
+            document.getElementById('pesanan-selesai').textContent = pesananSelesai;
             document.getElementById('total-revenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
         }
 

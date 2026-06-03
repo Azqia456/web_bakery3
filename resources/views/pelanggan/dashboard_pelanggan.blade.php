@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Three D Bakery - Dashboard Pelanggan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -468,6 +469,673 @@
             border-radius: var(--border-radius-xl);
         }
 
+        .payment-modal {
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .payment-modal .modal-content {
+            max-width: 1020px;
+            width: min(1020px, 100%);
+            max-height: calc(100vh - 48px);
+            height: auto;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 90px rgba(25, 20, 15, 0.28);
+            animation: paymentPopIn 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes paymentPopIn {
+            from {
+                transform: scale(0.98) translateY(12px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .payment-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 100%);
+        }
+
+        .payment-modal-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .payment-modal-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.12) 0%, rgba(201, 168, 119, 0.2) 100%);
+            color: var(--primary-brown);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .payment-modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .payment-modal-header p {
+            font-size: 13px;
+            color: var(--dark-gray);
+        }
+
+        .payment-security-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #f3faf4;
+            color: #2f6f43;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .payment-modal-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            min-height: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .payment-panel {
+            padding: 24px;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        .payment-panel.methods {
+            border-right: 1px solid rgba(229, 231, 235, 0.9);
+            background: linear-gradient(180deg, #ffffff 0%, #fcfbf8 100%);
+        }
+
+        .payment-panel.summary {
+            background: #f8f8fd;
+        }
+
+        .payment-panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 14px;
+        }
+
+        .payment-section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-brown);
+            margin: 12px 0 10px;
+        }
+
+        .payment-section-label::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--primary-brown);
+        }
+
+        .payment-method-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payment-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 14px;
+            background: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+        }
+
+        .payment-option:hover {
+            border-color: rgba(139, 111, 71, 0.35);
+            box-shadow: 0 10px 24px rgba(139, 111, 71, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .payment-option.active {
+            border-color: #8a63ff;
+            box-shadow: 0 14px 30px rgba(117, 75, 255, 0.12);
+        }
+
+        .payment-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .payment-option-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        .payment-option-icon.qris {
+            background: linear-gradient(135deg, #111827 0%, #374151 100%);
+        }
+
+        .payment-option-icon.dana {
+            background: linear-gradient(135deg, #1d9bf0 0%, #1266d8 100%);
+        }
+
+        .payment-option-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .payment-option-copy strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .payment-option-copy span {
+            display: block;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .payment-option-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(139, 111, 71, 0.12);
+            color: var(--primary-brown);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .payment-summary-card,
+        .payment-detail-card,
+        .payment-assurance-card,
+        .payment-help-card {
+            background: var(--white);
+            border: 1px solid rgba(229, 231, 235, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+        }
+
+        .payment-summary-card {
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .payment-summary-card h3,
+        .payment-detail-card h3,
+        .payment-assurance-card h3,
+        .payment-help-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .payment-summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--dark-gray);
+            padding: 9px 0;
+        }
+
+        .payment-summary-row + .payment-summary-row {
+            border-top: 1px solid #f1f3f5;
+        }
+
+        .payment-summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            margin-top: 8px;
+            border-top: 1px solid #eceef3;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-brown);
+        }
+
+        .payment-order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payment-order-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid #eef0f4;
+        }
+
+        .payment-item-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f4ece2 0%, #ece4d8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .payment-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .payment-item-info strong {
+            display: block;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .payment-item-info span {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .payment-item-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .payment-assurance-card {
+            padding: 14px;
+            margin-top: 14px;
+            border-color: rgba(139, 111, 71, 0.18);
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+
+        .payment-assurance-card p,
+        .payment-help-card p {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .payment-trust-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 14px 0 2px;
+        }
+
+        .trust-chip {
+            background: #fff;
+            border: 1px solid #edf0f4;
+            border-radius: 14px;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dark);
+        }
+
+        .trust-chip i {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: var(--primary-brown);
+        }
+
+        .payment-help-card {
+            padding: 14px;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .payment-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(139, 111, 71, 0.1);
+            color: var(--primary-brown);
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .payment-note {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin: 8px 0 14px;
+        }
+
+        .bank-card {
+            border: 1px solid rgba(139, 111, 71, 0.14);
+            border-radius: 16px;
+            background: linear-gradient(135deg, #fff8ec 0%, #fffdf8 100%);
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .bank-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bank-card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-brown);
+            box-shadow: 0 6px 14px rgba(139, 111, 71, 0.08);
+        }
+
+        .bank-card-copy strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .bank-card-copy span,
+        .bank-card-number,
+        .bank-card-owner {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .bank-card-number {
+            margin-top: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--primary-brown);
+        }
+
+        .bank-card-owner {
+            margin-top: 4px;
+        }
+
+        .bank-card-list {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .bank-mini-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #eef0f4;
+            border-radius: 14px;
+            background: var(--white);
+        }
+
+        .bank-mini-card i {
+            color: var(--primary-brown);
+            margin-top: 2px;
+        }
+
+        .bank-mini-card strong {
+            display: block;
+            font-size: 12px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .bank-mini-card span {
+            font-size: 11px;
+            color: var(--dark-gray);
+        }
+
+        .upload-dropzone {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 16px;
+            border: 1.5px dashed #d8c7b0;
+            border-radius: 16px;
+            background: #fcfaf5;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-dropzone:hover {
+            border-color: var(--primary-brown);
+            background: #fffdf8;
+        }
+
+        .upload-dropzone.has-file {
+            border-style: solid;
+            background: linear-gradient(135deg, rgba(139, 111, 71, 0.07) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+
+        .upload-dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-dropzone-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: rgba(139, 111, 71, 0.1);
+            color: var(--primary-brown);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .upload-dropzone-copy {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .upload-dropzone-copy strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .upload-dropzone-copy span {
+            display: block;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .payment-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #faf7f2;
+            border: 1px solid #eee2d1;
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--text-dark);
+        }
+
+        .payment-check input {
+            margin-top: 3px;
+            accent-color: var(--primary-brown);
+        }
+
+        .payment-form .form-input {
+            background: var(--white);
+        }
+
+        .payment-summary-note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .payment-help-card a {
+            color: var(--primary-brown);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .payment-modal-footer {
+            padding: 16px 24px 24px;
+            border-top: 1px solid rgba(229, 231, 235, 0.9);
+            background: #fff;
+            display: flex;
+            gap: 14px;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .payment-modal-footer .btn {
+            min-width: 180px;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 14px;
+        }
+
+        .payment-modal-footer .btn-primary {
+            background: linear-gradient(135deg, #7b4fe9 0%, #5b35d3 100%);
+            box-shadow: 0 14px 28px rgba(91, 53, 211, 0.18);
+        }
+
+        .payment-modal-footer .btn-primary:hover {
+            background: linear-gradient(135deg, #6d41dc 0%, #4f2cc4 100%);
+        }
+
+        .payment-modal-footer .btn-secondary {
+            background: #f5f6f9;
+        }
+
+        @media (max-width: 920px) {
+            .payment-modal {
+                padding: 14px;
+            }
+
+            .payment-modal .modal-content {
+                max-height: calc(100vh - 28px);
+            }
+
+            .payment-modal-grid {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+
+            .payment-panel.methods {
+                border-right: none;
+                border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+            }
+
+            .payment-modal-footer {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .payment-modal-footer .btn {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .payment-modal-header,
+            .payment-panel,
+            .payment-modal-footer {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .payment-modal-header {
+                flex-direction: column;
+            }
+
+            .payment-security-note {
+                width: 100%;
+                justify-content: flex-start;
+                text-align: left;
+            }
+
+            .payment-option {
+                align-items: flex-start;
+                padding-right: 12px;
+            }
+
+            .payment-option-tag {
+                align-self: center;
+            }
+
+            .payment-trust-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .qty-picker {
             display: flex;
             align-items: center;
@@ -639,7 +1307,7 @@
         .payment-form {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 0;
         }
 
         .form-group {
@@ -1674,52 +2342,150 @@
     </div>
 
     <!-- Payment Modal -->
-    <div class="modal" id="paymentModal">
+    <div class="modal payment-modal" id="paymentModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-credit-card"></i>
-                    Pembayaran
-                </h2>
-                <button class="modal-close" id="paymentModalClose">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="cart-summary" style="margin-bottom: 20px;">
-                    <div class="summary-row">
-                        <span>Total Belanja:</span>
-                        <span id="paymentTotal">Rp 0</span>
+            <div class="payment-modal-header">
+                <div class="payment-modal-title-wrap">
+                    <div class="payment-modal-icon">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div>
+                        <h2>Konfirmasi Pembayaran</h2>
+                        <p>Silakan transfer lalu unggah bukti pembayaran agar pesanan diproses.</p>
                     </div>
                 </div>
-                <form class="payment-form" id="paymentForm">
-                    <div class="form-group">
-                        <label class="form-label">Metode Pembayaran</label>
-                        <select class="form-select" name="payment_method" required>
-                            <option value="">Pilih metode pembayaran</option>
-                            <option value="bank_transfer">Transfer Bank</option>
-                            <option value="e_wallet">E-Wallet</option>
-                            <option value="cod">Bayar di Tempat</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-input" name="full_name" required placeholder="Masukkan nama lengkap">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nomor Telepon</label>
-                        <input type="tel" class="form-input" name="phone" required placeholder="Masukkan nomor telepon">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Alamat Pengiriman</label>
-                        <textarea class="form-input" name="address" required placeholder="Masukkan alamat lengkap" rows="3"></textarea>
-                    </div>
-                </form>
+                <div class="payment-security-note">
+                    <i class="fas fa-shield-alt"></i>
+                    Verifikasi manual toko
+                </div>
+                <button class="modal-close" id="paymentModalClose" aria-label="Tutup modal">&times;</button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="submitPaymentBtn">
-                    <i class="fas fa-check"></i> Konfirmasi Pembayaran
+
+            <div class="payment-modal-grid">
+                <div class="payment-panel methods">
+                    <div class="payment-panel-title">Informasi Pembayaran</div>
+                    <p class="payment-note">Bayar melalui rekening di bawah ini, lalu kirim bukti transfer untuk diverifikasi oleh tim kami.</p>
+
+                    <div class="bank-card">
+                        <div class="bank-card-header">
+                            <div class="bank-card-icon"><i class="fas fa-landmark"></i></div>
+                            <div class="bank-card-copy">
+                                <strong>BCA</strong>
+                                <span>Rekening tujuan Three D Bakery</span>
+                            </div>
+                        </div>
+                        <div class="bank-card-number">1234 5678 90</div>
+                        <div class="bank-card-owner">a.n. Three D Bakery</div>
+                    </div>
+
+                    <div class="bank-card-list">
+                        <div class="bank-mini-card">
+                            <i class="fas fa-circle-info"></i>
+                            <div>
+                                <strong>Wajib sesuai nominal</strong>
+                                <span>Transfer harus sama dengan total tagihan agar cepat diverifikasi.</span>
+                            </div>
+                        </div>
+                        <div class="bank-mini-card">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Verifikasi manual</strong>
+                                <span>Bukti pembayaran akan dicek oleh admin pada jam operasional.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="payment-form" id="paymentForm" enctype="multipart/form-data" data-payment-endpoint="{{ route('pelanggan.pembayaran.konfirmasi') }}">
+                        <input type="hidden" name="items" id="paymentItemsInput">
+                        <input type="hidden" name="order_reference" id="paymentOrderReferenceInput">
+
+                        <label class="upload-dropzone" id="proofDropzone" for="buktiTransferInput">
+                            <input type="file" name="bukti_transfer" id="buktiTransferInput" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <div class="upload-dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <div class="upload-dropzone-copy">
+                                <strong id="proofFileLabel">Pilih File</strong>
+                                <span>JPG, PNG, atau PDF. Maksimal 2 MB.</span>
+                            </div>
+                        </label>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nama Pengirim</label>
+                                <input class="form-input" type="text" name="nama_pengirim" id="namaPengirimInput" placeholder="Masukkan nama pengirim">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bank / E-Wallet Pengirim</label>
+                                <input class="form-input" type="text" name="bank_pengirim" id="bankPengirimInput" placeholder="Contoh: BCA, Mandiri, ShopeePay">
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nominal Transfer</label>
+                                <input class="form-input" type="number" name="nominal_transfer" id="nominalTransferInput" min="0" readonly>
+                                <div class="payment-summary-note">Sesuai total tagihan yang tampil di ringkasan.</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Catatan (Opsional)</label>
+                                <input class="form-input" type="text" name="catatan_pembayaran" id="catatanPembayaranInput" placeholder="Contoh: transfer pagi, atas nama saya">
+                            </div>
+                        </div>
+
+                        <label class="payment-check">
+                            <input type="checkbox" id="paymentConfirmCheckbox">
+                            <span>Saya telah melakukan transfer sesuai total tagihan dan mengunggah bukti pembayaran yang valid.</span>
+                        </label>
+                    </form>
+                </div>
+
+                <div class="payment-panel summary">
+                    <div class="payment-summary-card">
+                        <h3>Ringkasan Pesanan</h3>
+                        <div class="payment-status-pill"><i class="fas fa-hourglass-half"></i> Menunggu verifikasi</div>
+                        <div class="payment-summary-row">
+                            <span>Order ID</span>
+                            <strong id="paymentOrderId">#TRX-0000</strong>
+                        </div>
+                        <div class="payment-summary-row">
+                            <span>Total Belanja</span>
+                            <strong id="paymentSubtotal">Rp 0</strong>
+                        </div>
+                        <div class="payment-summary-total">
+                            <span>Total Pembayaran</span>
+                            <strong id="paymentTotal">Rp 0</strong>
+                        </div>
+                    </div>
+
+                    <div class="payment-detail-card">
+                        <h3>Detail Pesanan</h3>
+                        <div class="payment-order-list" id="paymentOrderItems">
+                            <div style="font-size: 13px; color: var(--dark-gray);">Belum ada item di keranjang</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-assurance-card">
+                        <h3>Keamanan & Verifikasi</h3>
+                        <p>Bukti pembayaran disimpan dengan aman dan hanya digunakan untuk pengecekan manual oleh admin toko.</p>
+                        <div class="payment-trust-row">
+                            <div class="trust-chip"><i class="fas fa-shield-alt"></i>Data Aman</div>
+                            <div class="trust-chip"><i class="fas fa-bolt"></i>Respon Cepat</div>
+                            <div class="trust-chip"><i class="fas fa-user-check"></i>Verifikasi Manual</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-help-card">
+                        <h3>Butuh bantuan?</h3>
+                        <p>Hubungi kami di 0822-xxxx-xxxx atau email <a href="mailto:support@threedbakery.com">support@threedbakery.com</a> jika bukti transfer bermasalah.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-modal-footer">
+                <button class="btn btn-secondary" id="backToCartBtn">
+                    <i class="fas fa-arrow-left"></i> Kembali Belanja
                 </button>
-                <button class="btn btn-secondary" id="backToCartBtn" style="margin-top: 8px;">
-                    <i class="fas fa-arrow-left"></i> Kembali
+                <button class="btn btn-primary" id="submitPaymentBtn" type="button">
+                    <i class="fas fa-paper-plane"></i> Kirim Bukti Pembayaran
                 </button>
             </div>
         </div>
@@ -2264,6 +3030,11 @@
             const paymentModalClose = document.getElementById('paymentModalClose');
             const backToCartBtn = document.getElementById('backToCartBtn');
             const submitPaymentBtn = document.getElementById('submitPaymentBtn');
+            const paymentForm = document.getElementById('paymentForm');
+            const proofInput = document.getElementById('buktiTransferInput');
+            const proofDropzone = document.getElementById('proofDropzone');
+            const proofFileLabel = document.getElementById('proofFileLabel');
+            const paymentConfirmCheckbox = document.getElementById('paymentConfirmCheckbox');
 
             paymentModalClose.addEventListener('click', () => {
                 paymentModal.classList.remove('show');
@@ -2282,10 +3053,40 @@
                 }
             });
 
+            if (proofInput && proofFileLabel && proofDropzone) {
+                const updateProofLabel = () => {
+                    const selectedFile = proofInput.files && proofInput.files[0];
+                    proofFileLabel.textContent = selectedFile ? selectedFile.name : 'Pilih File';
+                    proofDropzone.classList.toggle('has-file', !!selectedFile);
+                };
+
+                proofInput.addEventListener('change', updateProofLabel);
+                updateProofLabel();
+            }
+
             submitPaymentBtn.addEventListener('click', () => {
-                const form = document.getElementById('paymentForm');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
+                if (!proofInput || !proofInput.files || !proofInput.files[0]) {
+                    showNotification('Bukti pembayaran wajib diunggah.', 'error');
+                    proofInput?.focus();
+                    return;
+                }
+
+                const proofFile = proofInput.files[0];
+                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                const maxSize = 2 * 1024 * 1024;
+
+                if (!allowedTypes.includes(proofFile.type)) {
+                    showNotification('Format bukti pembayaran harus JPG, PNG, atau PDF.', 'error');
+                    return;
+                }
+
+                if (proofFile.size > maxSize) {
+                    showNotification('Ukuran bukti pembayaran maksimal 2 MB.', 'error');
+                    return;
+                }
+
+                if (paymentConfirmCheckbox && !paymentConfirmCheckbox.checked) {
+                    showNotification('Silakan centang konfirmasi pembayaran.', 'error');
                     return;
                 }
 
@@ -2295,54 +3096,125 @@
 
         function updatePaymentTotal() {
             const total = cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0);
-            document.getElementById('paymentTotal').textContent = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
+            const formattedTotal = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
+            document.getElementById('paymentTotal').textContent = formattedTotal;
+            document.getElementById('paymentSubtotal').textContent = formattedTotal;
+            document.getElementById('nominalTransferInput').value = Math.max(0, Math.round(total));
+
+            const orderDate = new Date();
+            const datePart = orderDate.toISOString().slice(0, 10);
+            const orderSuffix = String(Math.floor(Math.random() * 9000) + 1000);
+            const orderReference = `#TRX-${datePart}-${orderSuffix}`;
+            document.getElementById('paymentOrderId').textContent = orderReference;
+            document.getElementById('paymentOrderReferenceInput').value = orderReference;
+
+            const paymentItemsInput = document.getElementById('paymentItemsInput');
+            paymentItemsInput.value = JSON.stringify(cart.map(item => ({
+                id_produk: item.id_produk,
+                nama_produk: item.nama_produk,
+                harga_produk: Number(item.harga_produk),
+                quantity: Number(item.quantity || 1),
+            })));
+
+            const paymentOrderItems = document.getElementById('paymentOrderItems');
+            if (!paymentOrderItems) {
+                return;
+            }
+
+            if (cart.length === 0) {
+                paymentOrderItems.innerHTML = '<div style="font-size: 13px; color: var(--dark-gray);">Belum ada item di keranjang</div>';
+                return;
+            }
+
+            paymentOrderItems.innerHTML = cart.map(item => {
+                const itemImage = item.image || getProductImagePath(item.nama_produk);
+                const quantity = item.quantity || 1;
+                const itemTotal = item.harga_produk * quantity;
+
+                return `
+                    <div class="payment-order-item">
+                        <div class="payment-item-thumb">
+                            <img src="${itemImage}" alt="${item.nama_produk}" onerror="this.style.display='none';" />
+                        </div>
+                        <div class="payment-item-info">
+                            <strong>${item.nama_produk}</strong>
+                            <span>${quantity} x Rp ${parseInt(item.harga_produk).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="payment-item-price">Rp ${parseInt(itemTotal).toLocaleString('id-ID')}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function submitPayment() {
             try {
                 const form = document.getElementById('paymentForm');
                 const formData = new FormData(form);
+                formData.set('items', JSON.stringify(cart.map(item => ({
+                    id_produk: item.id_produk,
+                    nama_produk: item.nama_produk,
+                    harga_produk: Number(item.harga_produk),
+                    quantity: Number(item.quantity || 1),
+                }))));
 
-                const paymentData = {
-                    items: cart,
-                    payment_method: formData.get('payment_method'),
-                    full_name: formData.get('full_name'),
-                    phone: formData.get('phone'),
-                    address: formData.get('address'),
-                    total: cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0)
-                };
-
-                const response = await fetch('/api/pesanans', {
+                const response = await fetch(form.dataset.paymentEndpoint || '/pelanggan/pembayaran/konfirmasi', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
-                    body: JSON.stringify(paymentData)
+                    body: formData,
                 });
 
-                if (!response.ok) throw new Error('Gagal memproses pembayaran');
+                const contentType = response.headers.get('content-type') || '';
+                const result = contentType.includes('application/json')
+                    ? await response.json()
+                    : { message: await response.text() };
 
-                const result = await response.json();
-                
-                // Clear cart
-                cart = [];
-                saveCart();
-                updateCartBadge();
+                if (!response.ok) {
+                    throw new Error(result.message || 'Gagal mengirim bukti pembayaran');
+                }
 
-                // Close modal
-                document.getElementById('paymentModal').classList.remove('show');
-
-                // Show success message
-                showNotification('Pesanan berhasil dibuat! Silakan tunggu konfirmasi dari toko.', 'success');
-
-                // Reload orders
-                setTimeout(() => {
-                    loadOrders();
-                }, 1000);
-
+                finalizeManualPayment(result.message || 'Bukti pembayaran berhasil dikirim. Pesanan menunggu verifikasi.', 'success');
             } catch (error) {
                 console.error('Error submitting payment:', error);
-                showNotification('Gagal memproses pembayaran: ' + error.message, 'error');
+                showNotification('Gagal mengirim bukti pembayaran: ' + error.message, 'error');
+            }
+        }
+
+        function finalizeManualPayment(message, type) {
+            cart = [];
+            saveCart();
+            updateCartBadge();
+            renderCart();
+            resetPaymentForm();
+            document.getElementById('paymentModal').classList.remove('show');
+            showNotification(message, type);
+            setTimeout(() => {
+                loadOrders();
+            }, 1000);
+        }
+
+        function resetPaymentForm() {
+            const form = document.getElementById('paymentForm');
+            const proofInput = document.getElementById('buktiTransferInput');
+            const proofDropzone = document.getElementById('proofDropzone');
+            const proofFileLabel = document.getElementById('proofFileLabel');
+
+            if (form) {
+                form.reset();
+            }
+
+            if (proofInput) {
+                proofInput.value = '';
+            }
+
+            if (proofDropzone) {
+                proofDropzone.classList.remove('has-file');
+            }
+
+            if (proofFileLabel) {
+                proofFileLabel.textContent = 'Pilih File';
             }
         }
 

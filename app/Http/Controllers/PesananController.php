@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pesanan;
 use App\Services\PesananSyncService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PesananController extends Controller
 {
@@ -77,5 +79,83 @@ class PesananController extends Controller
     public function online()
     {
         return view('pesanan-online');
+    }
+
+    public function confirmPaymentProof(Request $request)
+    {
+        $validated = $request->validate([
+            'order_reference' => 'nullable|string|max:100',
+            'nama_pengirim' => 'nullable|string|max:255',
+            'bank_pengirim' => 'nullable|string|max:100',
+            'nominal_transfer' => 'nullable|numeric|min:0',
+            'bukti_transfer' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'catatan_pembayaran' => 'nullable|string|max:1000',
+            'items' => 'nullable|string',
+        ]);
+
+        $customer = Auth::user()?->pelanggan;
+
+        if (! $customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pelanggan tidak ditemukan untuk akun ini.',
+            ], 422);
+        }
+
+        $items = json_decode($validated['items'] ?? '[]', true);
+        $expectedTotal = (int) round((float) ($validated['nominal_transfer'] ?? 0));
+        $products = [];
+
+        if (is_array($items)) {
+            foreach ($items as $item) {
+                $productId = (int) ($item['id_produk'] ?? 0);
+                $quantity = max(1, (int) ($item['quantity'] ?? 1));
+
+                if ($productId <= 0) {
+                    continue;
+                }
+
+                $products[] = [
+                    'id_produk' => $productId,
+                    'jumlah_pesan' => $quantity,
+                ];
+            }
+        }
+
+        $buktiPath = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
+        $catatan = trim(implode(' | ', array_filter([
+            'Referensi: ' . ($validated['order_reference'] ?? '-'),
+            'Pengirim: ' . ($validated['nama_pengirim'] ?? '-'),
+            'Bank: ' . ($validated['bank_pengirim'] ?? '-'),
+            'Nominal: ' . ($validated['nominal_transfer'] ?? 0),
+            $validated['catatan_pembayaran'] ?? null,
+        ])));
+
+        $pesanan = PesananSyncService::createPesananPelanggan([
+            'id_pelanggan' => $customer->id_pelanggan,
+            'nama_pelanggan' => $customer->nama,
+            'no_tlp' => $customer->no_tlp ?? $customer->no_hp ?? null,
+            'id_karyawan' => null,
+            'tgl_pesan' => now(),
+            'sumber_pesanan' => 'online',
+            'metode_pengambilan' => 'pickup',
+            'metode_pembayaran' => 'transfer',
+            'status_pembayaran' => 'menunggu_verifikasi',
+            'bukti_transfer' => $buktiPath,
+            'catatan_pesanan' => $catatan,
+            'status_bayar' => 'belum_lunas',
+            'total_bayar' => $expectedTotal,
+            'products' => $products,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bukti pembayaran berhasil dikirim. Pesanan menunggu verifikasi.',
+            'data' => [
+                'id_pesanan' => $pesanan->id_pesanan,
+                'total_bayar' => $expectedTotal,
+                'bukti_transfer_url' => Storage::url($buktiPath),
+            ],
+        ]);
     }
 }

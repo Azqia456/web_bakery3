@@ -404,14 +404,10 @@
                     </a>
                 </div>
                 <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle @if(request()->is('stor*') || request()->is('riwayat*')) active @endif" onclick="toggleMenu(this)">
-                        <span><i class="fas fa-money-bill-wave"></i> Pembayaran</span>
-                        <i class="fas fa-chevron-down toggle-arrow @if(request()->is('stor*') || request()->is('riwayat*')) open @endif"></i>
-                    </button>
-                    <div class="sidebar-submenu @if(request()->is('stor*') || request()->is('riwayat*')) open @endif">
-                        <a href="/stor-karyawan" class="sidebar-submenu-item @if(request()->path() === 'stor-karyawan') active @endif">Stor Karyawan</a>
-                        <a href="/riwayat-transaksi" class="sidebar-submenu-item @if(request()->path() === 'riwayat-transaksi') active @endif">Riwayat Transaksi</a>
-                    </div>
+                    <a href="/riwayat-transaksi" class="@if(request()->path() === 'riwayat-transaksi') active @endif">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Riwayat Transaksi</span>
+                    </a>
                 </div>
                 <div class="sidebar-menu-item">
                     <button class="sidebar-menu-toggle @if(request()->is('laporan*')) active @endif" onclick="toggleMenu(this)">

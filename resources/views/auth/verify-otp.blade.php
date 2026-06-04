@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three D Bakery - Buat Password Baru</title>
+    <title>Three D Bakery - Verifikasi OTP</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -150,6 +150,7 @@
         .form-header {
             margin-bottom: 40px;
             animation: fade-in 0.8s ease-out;
+            text-align: center;
         }
 
         .form-header h2 {
@@ -167,6 +168,21 @@
             line-height: 1.5;
         }
 
+        .email-info {
+            background: rgba(198, 156, 109, 0.08);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .email-info .email {
+            font-weight: 600;
+            color: var(--soft-brown);
+        }
+
         .form-group {
             margin-bottom: 25px;
             animation: fade-in 0.8s ease-out;
@@ -174,14 +190,6 @@
 
         .form-group:nth-child(1) {
             animation-delay: 0.1s;
-        }
-
-        .form-group:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .form-group:nth-child(3) {
-            animation-delay: 0.3s;
         }
 
         label {
@@ -207,6 +215,9 @@
             color: var(--text-dark);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: inset 0 2px 8px rgba(107, 95, 84, 0.05);
+            letter-spacing: 2px;
+            text-align: center;
+            font-weight: 600;
         }
 
         input[type="email"]:focus,
@@ -224,6 +235,8 @@
         input::placeholder {
             color: var(--text-light);
             opacity: 0.6;
+            letter-spacing: normal;
+            font-weight: 400;
         }
 
         .alert {
@@ -253,23 +266,32 @@
             display: block;
         }
 
-        .submit-btn {
-            width: 100%;
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            animation: fade-in 0.8s ease-out 0.2s backwards;
+        }
+
+        .submit-btn,
+        .resend-btn {
+            flex: 1;
             padding: 15px;
             border: none;
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            background: linear-gradient(135deg, var(--soft-brown) 0%, #B8935F 100%);
-            color: white;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             letter-spacing: 0.5px;
-            box-shadow: var(--shadow-soft);
             text-transform: uppercase;
-            margin-bottom: 15px;
-            animation: fade-in 0.8s ease-out 0.3s backwards;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--soft-brown) 0%, #B8935F 100%);
+            color: white;
+            box-shadow: var(--shadow-soft);
         }
 
         .submit-btn:hover {
@@ -286,6 +308,22 @@
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .resend-btn {
+            background: transparent;
+            color: var(--soft-brown);
+            border: 2px solid var(--soft-brown);
+        }
+
+        .resend-btn:hover {
+            background: rgba(198, 156, 109, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .resend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* Auth Links */
@@ -320,53 +358,14 @@
             width: 100%;
         }
 
-        .password-requirements {
-            background: rgba(198, 156, 109, 0.05);
-            padding: 14px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .timer {
+            text-align: center;
             font-size: 0.85rem;
-            color: var(--text-dark);
-        }
-
-        .password-requirements h4 {
-            margin-bottom: 8px;
-            color: var(--soft-brown);
-            font-weight: 600;
-        }
-
-        .password-requirements ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .password-requirements li {
-            padding: 4px 0;
-        }
-
-        .requirement {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .requirement-check {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #ddd;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .requirement-check.met {
-            background: #4CAF50;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(198, 156, 109, 0.05);
+            border-radius: 8px;
         }
 
         /* Animations */
@@ -398,15 +397,19 @@
                 font-size: 1.5rem;
             }
 
+            .button-group {
+                flex-direction: column;
+            }
+
+            .submit-btn,
+            .resend-btn {
+                width: 100%;
+            }
+
             input[type="email"],
             input[type="password"],
             input[type="text"] {
                 padding: 12px 16px;
-                font-size: 0.9rem;
-            }
-
-            .submit-btn {
-                padding: 13px;
                 font-size: 0.9rem;
             }
 
@@ -495,8 +498,12 @@
         <div class="reset-section">
             <div class="form-container">
                 <div class="form-header">
-                    <h2>Buat Password Baru</h2>
-                    <p>Silahkan masukkan password baru yang aman untuk akun Anda.</p>
+                    <h2>Verifikasi OTP</h2>
+                    <p>Masukkan kode OTP 6 digit yang telah dikirim ke email Anda.</p>
+                </div>
+
+                <div class="email-info">
+                    Kode OTP dikirim ke <span class="email">{{ $email }}</span>
                 </div>
 
                 @if ($errors->any())
@@ -515,86 +522,63 @@
                 </div>
                 @endif
 
-                <form id="resetPasswordForm" method="POST" action="{{ route('password.reset') }}">
+                <form id="verifyOtpForm" method="POST" action="{{ route('password.verify-otp') }}">
                     @csrf
 
                     <div class="form-group">
-                        <label for="password">Password Baru</label>
-                        <input type="password" id="password" name="password" placeholder="Masukkan password baru" required autofocus value="{{ old('password') }}">
-                        @error('password')
+                        <label for="otp">Kode OTP</label>
+                        <input type="text" id="otp" name="otp" placeholder="000000" maxlength="6" inputmode="numeric" required pattern="\d{6}" autofocus value="{{ old('otp') }}">
+                        @error('otp')
                             <span class="error-message">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="password_confirmation">Konfirmasi Password</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi password" required value="{{ old('password_confirmation') }}">
-                        @error('password_confirmation')
-                            <span class="error-message">{{ $message }}</span>
-                        @enderror
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn">Verifikasi</button>
+                        <button type="button" class="resend-btn" onclick="document.getElementById('resendOtpForm').submit();">Kirim Ulang</button>
                     </div>
-
-                    <div class="password-requirements">
-                        <h4>Persyaratan Password:</h4>
-                        <ul>
-                            <li class="requirement">
-                                <span class="requirement-check" id="length-check">✓</span>
-                                <span id="length-text">Minimal 8 karakter</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Simpan Password Baru</button>
                 </form>
 
+                <form id="resendOtpForm" method="POST" action="{{ route('password.resend-otp') }}" style="display: none;">
+                    @csrf
+                </form>
+
+                <div class="timer">
+                    Kode OTP berlaku selama 10 menit
+                </div>
+
                 <div class="auth-links">
-                    <a href="{{ route('login') }}">Kembali ke Login</a>
+                    <a href="{{ route('forgot-password') }}">Mulai Dari Awal</a>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const passwordInput = document.getElementById('password');
-        const confirmInput = document.getElementById('password_confirmation');
-        const lengthCheck = document.getElementById('length-check');
-        const form = document.getElementById('resetPasswordForm');
-
-        // Check password requirements
-        passwordInput.addEventListener('input', function() {
-            if (this.value.length >= 8) {
-                lengthCheck.classList.add('met');
-            } else {
-                lengthCheck.classList.remove('met');
+        // Only allow numbers
+        document.getElementById('otp').addEventListener('keypress', function(e) {
+            if (!/^\d$/.test(e.key)) {
+                e.preventDefault();
             }
+        });
+
+        // Auto-format input
+        document.getElementById('otp').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').slice(0, 6);
         });
 
         // Form submission handling
-        form.addEventListener('submit', function(e) {
-            if (passwordInput.value !== confirmInput.value) {
-                e.preventDefault();
-                alert('Password tidak sesuai dengan konfirmasi password');
-                return false;
-            }
-
-            if (passwordInput.value.length < 8) {
-                e.preventDefault();
-                alert('Password minimal 8 karakter');
-                return false;
-            }
-
-            const btn = this.querySelector('.submit-btn');
-            if (btn) {
-                btn.style.opacity = '0.8';
-                btn.style.pointerEvents = 'none';
-                btn.textContent = 'Menyimpan...';
-            }
-        });
-
-        // Smooth page load animation
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.style.animation = 'fade-in 0.8s ease-out';
-        });
+        const form = document.getElementById('verifyOtpForm');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const btn = this.querySelector('.submit-btn');
+                if (btn) {
+                    btn.style.opacity = '0.8';
+                    btn.style.pointerEvents = 'none';
+                    btn.textContent = 'Verifikasi...';
+                }
+            });
+        }
     </script>
 </body>
 

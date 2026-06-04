@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\PelangganProfileController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\PasswordResetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,17 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+    // Password Reset Routes (OTP-based)
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('forgot-password');
+    Route::post('/forgot-password', [PasswordResetController::class, 'requestPasswordReset'])->name('password.email');
+    
+    Route::get('/verify-otp', [PasswordResetController::class, 'showVerifyOtpForm'])->name('verify-otp');
+    Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('password.verify-otp');
+    Route::post('/resend-otp', [PasswordResetController::class, 'resendOtp'])->name('password.resend-otp');
+    
+    Route::get('/reset-password', [PasswordResetController::class, 'showResetPasswordForm'])->name('reset-password');
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.reset');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])
@@ -66,6 +78,10 @@ Route::middleware('auth')->group(function () {
         ->name('verification.send');
 
     Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
+
+    // Email verification via OTP (custom endpoints)
+    Route::post('/email/send-otp', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'sendOtp'])->name('email.send-otp');
+    Route::post('/email/verify-otp', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'verifyOtp'])->name('email.verify-otp');
 });
 
 // Protected Routes

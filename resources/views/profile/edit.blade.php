@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Three D Bakery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -519,6 +520,31 @@
             animation: spin 0.6s linear infinite;
         }
 
+        /* Sub cards (verification / password) */
+        .bottom-cards {
+            display: flex;
+            gap: 20px;
+            margin-top: 24px;
+            align-items: flex-start;
+        }
+
+        .card-small {
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+            flex: 1;
+        }
+
+        .badge-verified {
+            background: rgba(16,185,129,0.12);
+            color: var(--success);
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -830,6 +856,81 @@
                     </div>
                 </div>
             </form>
+
+            <!-- Bottom Cards: Verifikasi Email & Ubah Password -->
+            <div class="bottom-cards">
+                <div class="card-small">
+                    <h3 style="margin-bottom:12px;">Verifikasi Email</h3>
+                    @if($user->email_verified_at)
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span class="badge-verified">Terverifikasi</span>
+                            <div style="color:var(--dark-gray);">Email Anda telah terverifikasi pada {{ \Carbon\Carbon::parse($user->email_verified_at)->translatedFormat('d F Y H:i') }}</div>
+                        </div>
+                    @else
+                        <p style="color:var(--dark-gray);margin-bottom:12px;">Email Anda: <strong>{{ $user->email }}</strong></p>
+                        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+                            <button type="button" class="btn-primary" id="sendOtpBtn" onclick="sendVerificationOtp()">Kirim OTP</button>
+                            <button type="button" class="btn-secondary" id="resendOtpBtn" style="display:none;" onclick="sendVerificationOtp(true)">Kirim Ulang</button>
+                        </div>
+
+                        <div id="otpSection" style="display:none;margin-top:12px;">
+                            <div class="form-input-group">
+                                <label for="verifyOtpInput">Masukkan Kode OTP</label>
+                                <input type="text" id="verifyOtpInput" maxlength="6" placeholder="6 digit kode OTP">
+                            </div>
+                            <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
+                                <button type="button" class="btn-secondary" onclick="document.getElementById('verifyOtpInput').value='';">Batal</button>
+                                <button type="button" class="btn-primary" onclick="verifyEmailOtp()">Verifikasi</button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="card-small">
+                    <h3 style="margin-bottom:12px;">Ubah Password</h3>
+                    @if(session('status') === 'password-updated')
+                        <div class="alert alert-success"><i class="fas fa-check-circle"></i> Kata sandi berhasil diperbarui.</div>
+                    @endif
+
+                    @if($errors->updatePassword->any())
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>
+                                <strong>Terjadi kesalahan!</strong>
+                                <ul style="margin-top: 4px; margin-left: 20px;">
+                                    @foreach($errors->updatePassword->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('password.update') }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-input-group">
+                            <label for="current_password">Password Saat Ini</label>
+                            <input type="password" name="current_password" id="current_password" placeholder="Masukkan password saat ini" required>
+                        </div>
+
+                        <div class="form-input-group">
+                            <label for="password">Password Baru</label>
+                            <input type="password" name="password" id="password" placeholder="Masukkan password baru" required>
+                        </div>
+
+                        <div class="form-input-group">
+                            <label for="password_confirmation">Konfirmasi Password Baru</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Konfirmasi password baru" required>
+                        </div>
+
+                        <div style="display:flex;justify-content:flex-end;margin-top:12px;gap:8px;">
+                            <button type="submit" class="btn-primary">Simpan Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -896,6 +997,83 @@
                 });
             }
         });
+
+        // Email verification OTP
+        const sendOtpUrl = "{{ route('email.send-otp') }}";
+        const verifyOtpUrl = "{{ route('email.verify-otp') }}";
+
+        function getCsrfToken() {
+            const m = document.querySelector('meta[name="csrf-token"]');
+            return m ? m.getAttribute('content') : '';
+        }
+
+        async function sendVerificationOtp(resend = false) {
+            const sendBtn = document.getElementById('sendOtpBtn');
+            const resendBtn = document.getElementById('resendOtpBtn');
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Mengirim...';
+            }
+
+            try {
+                const res = await fetch(sendOtpUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ resend })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Gagal mengirim OTP');
+
+                // show otp input
+                const otpSection = document.getElementById('otpSection');
+                if (otpSection) otpSection.style.display = 'block';
+                if (resendBtn) resendBtn.style.display = 'inline-flex';
+                alert(data.message || 'Kode OTP dikirim');
+            } catch (err) {
+                alert(err.message || 'Gagal mengirim OTP');
+            } finally {
+                if (sendBtn) {
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Kirim OTP';
+                }
+            }
+        }
+
+        async function verifyEmailOtp() {
+            const input = document.getElementById('verifyOtpInput');
+            if (!input) return;
+            const otp = input.value.trim();
+            if (otp.length !== 6) {
+                alert('Masukkan kode OTP 6 digit');
+                return;
+            }
+
+            try {
+                const res = await fetch(verifyOtpUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCsrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ otp })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Verifikasi gagal');
+
+                alert(data.message || 'Email berhasil diverifikasi');
+                // Reload to reflect verified badge
+                window.location.reload();
+            } catch (err) {
+                alert(err.message || 'Verifikasi gagal');
+            }
+        }
     </script>
 </body>
 </html>

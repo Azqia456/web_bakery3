@@ -661,7 +661,7 @@
                             <input type="checkbox" id="remember" name="remember" value="1">
                             <label for="remember">Ingat saya</label>
                         </div>
-                        <a href="#" class="forgot-password" onclick="alert('Fitur lupa password sedang dikembangkan'); return false;">Lupa Kata Sandi?</a>
+                        <a href="{{ route('forgot-password') }}" class="forgot-password">Lupa Kata Sandi?</a>
                     </div>
 
                     <button type="submit" class="login-btn">Masuk</button>

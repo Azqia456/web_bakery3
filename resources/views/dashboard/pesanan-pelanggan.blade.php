@@ -396,25 +396,7 @@
         </aside>
 
         <main class="main-content">
-            <header class="header">
-                <div>
-                    <h1 class="header-title">Pesanan Pelanggan</h1>
-                    <p class="header-subtitle">Halaman daftar pesanan dan konfirmasi pembayaran</p>
-                </div>
-
-                <div class="profile-menu">
-                    <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                        <div class="profile-avatar">P</div>
-                    </button>
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <a href="{{ route('profile.edit') }}"><i class="fas fa-user"></i>Profil</a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="logout-action"><i class="fas fa-right-from-bracket"></i>Logout</button>
-                        </form>
-                    </div>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => 'Pesanan Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
 
             <section class="content">
                 <div class="card">

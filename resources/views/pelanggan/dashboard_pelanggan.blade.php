@@ -2062,43 +2062,7 @@
 </head>
 <body>
     <div class="dashboard">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-container">
-                <a href="{{ route('pelanggan.dashboard') }}" class="header-logo">
-                    <i class="fas fa-bread-slice"></i>
-                    <span>Three D Bakery</span>
-                </a>
-                <div class="header-right">
-                    <button class="notification-btn" type="button" aria-label="Notifikasi">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">1</span>
-                    </button>
-                    <button class="cart-btn" id="cartBtn" type="button" aria-label="Keranjang">
-                        <i class="fas fa-shopping-basket"></i>
-                        <span class="cart-badge" id="cartBadge">0</span>
-                    </button>
-                    <div class="profile-menu">
-                        <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                            <i class="fas fa-user"></i>
-                        </button>
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <a href="{{ route('pelanggan.profile.edit') }}">
-                                <i class="fas fa-user"></i>
-                                Profil Saya
-                            </a>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="logout-action">
-                                    <i class="fas fa-right-from-bracket"></i>
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', ['title' => 'Dashboard Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 1])
 
         <div class="dashboard-layout">
             <aside class="sidebar">

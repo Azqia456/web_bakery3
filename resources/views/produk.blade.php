@@ -453,50 +453,7 @@
     </aside>
 
     <div class="main-content">
-        <header class="header">
-            <div class="header-left">
-                <h1 class="header-title">Produk</h1>
-            </div>
-
-            <div class="header-right">
-                <button class="notification-btn" type="button" aria-label="Notifikasi">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 01-6 0" />
-                    </svg>
-                    <span class="notification-badge">3</span>
-                </button>
-                <div class="profile-menu">
-                    @php
-                        $userName = Auth::user()->name ?? 'User';
-                        $parts = preg_split('/\s+/', trim($userName));
-                        $initials = '';
-                        foreach ($parts as $part) {
-                            if ($part !== '') {
-                                $initials .= strtoupper(substr($part, 0, 1));
-                            }
-                        }
-                        $initials = substr($initials, 0, 2);
-                    @endphp
-                    <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                        <div class="profile-avatar">{{ $initials }}</div>
-                        <span class="profile-name">{{ $userName }}</span>
-                    </button>
-
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <a href="{{ route('profile.edit') }}"> <i class="fas fa-user"></i>
-                            Profil
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="logout-action">
-                                <i class="fas fa-right-from-bracket"></i>
-                                Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', ['title' => 'Produk', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 3])
 
         <main class="dashboard-content">
             <div class="max-w-7xl mx-auto">

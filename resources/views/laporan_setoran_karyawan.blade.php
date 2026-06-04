@@ -347,18 +347,7 @@
 
         <!-- MAIN CONTENT -->
         <div class="main-content">
-            <header class="header">
-                <h1 class="header-title">👥 Laporan Setoran Karyawan</h1>
-                <div class="header-right">
-                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="logout-btn">
-                            <i class="fas fa-right-from-bracket"></i>
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => '👥 Laporan Setoran Karyawan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
 
             <div class="page-container">
                 <!-- Header Section -->

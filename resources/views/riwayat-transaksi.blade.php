@@ -760,12 +760,7 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1 class="header-title">Riwayat Transaksi</h1>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => 'Riwayat Transaksi', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
 
             <!-- Content -->
             <div class="content">

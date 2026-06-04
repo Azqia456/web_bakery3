@@ -320,20 +320,7 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1 class="header-title">Data Karyawan</h1>
-                </div>
-                <div class="header-right">
-                    <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">0</span>
-                    </button>
-                    <button class="profile-btn">
-                        <div class="profile-avatar">AD</div>
-                    </button>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => 'Data Karyawan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">

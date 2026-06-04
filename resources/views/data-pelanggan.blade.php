@@ -1192,47 +1192,8 @@
     </aside>
 
     <div class="main-content">
-        <header class="header">
-            <div class="header-left">
-                <h1 class="header-title">Data Pelanggan</h1>
-            </div>
-            <div class="header-right">
-                <button class="notification-btn" type="button" aria-label="Notifikasi">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">0</span>
-                </button>
-                <div class="profile-menu">
-                    @php
-                        $userName = Auth::user()->name ?? 'Admin';
-                        $parts = preg_split('/\s+/', trim($userName));
-                        $initials = '';
-                        foreach ($parts as $part) {
-                            if ($part !== '') {
-                                $initials .= strtoupper(substr($part, 0, 1));
-                            }
-                        }
-                        $initials = substr($initials, 0, 2);
-                    @endphp
-                    <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                        <div class="profile-avatar">{{ $initials }}</div>
-                    </button>
-
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <a href="{{ route('profile.edit') }}">
-                            <i class="fas fa-user"></i>
-                            Profil
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="logout-action">
-                                <i class="fas fa-right-from-bracket"></i>
-                                Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </header>
+        @include('layouts.header', ['title' => 'Data Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
+        
 
         <main class="dashboard-content">
             <section class="page-hero">

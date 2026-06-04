@@ -281,17 +281,11 @@
             justify-content: center;
         }
 
-        .profile-avatar {
+        .profile-avatar-img {
             width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-green), #81C784);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
+             height: 32px;
+             border-radius: 50%;
+             object-fit: cover;
         }
 
         .profile-dropdown {
@@ -756,42 +750,7 @@
         </aside>
 
         <div class="main-content">
-            <header class="header">
-                <div class="header-left">
-                    <h1 class="header-title">Dashboard</h1>
-                </div>
-
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari pesanan, pelanggan, produk...">
-                </div>
-
-                <div class="header-right">
-                    <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">0</span>
-                    </button>
-                    <div class="profile-menu">
-                        <button type="button" class="profile-btn" id="profileMenuButton" aria-haspopup="true" aria-expanded="false" title="Akun">
-                            <div class="profile-avatar">AD</div>
-                        </button>
-
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <a href="{{ route('profile.edit') ?? '#' }}">
-                                <i class="fas fa-user"></i>
-                                Profil
-                            </a>
-                            <form action="{{ route('logout') ?? '#' }}" method="POST">
-                                @csrf
-                                <button type="submit" class="logout-action">
-                                    <i class="fas fa-right-from-bracket"></i>
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => 'Dashboard', 'showSearch' => true, 'showAddButton' => false, 'totalNotifikasi' => 0])
 
             <main class="dashboard-content">
                 <section class="summary-cards" id="summary-cards">

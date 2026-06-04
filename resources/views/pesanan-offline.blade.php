@@ -206,6 +206,101 @@
             gap: 16px;
         }
 
+.profile-menu {
+            position: relative;
+        }
+
+        .notification-btn,
+        .profile-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--dark-gray);
+        }
+
+        .notification-btn:hover,
+        .profile-btn:hover {
+            background: var(--medium-gray);
+            transform: scale(1.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar-img {
+            width: 32px;
+             height: 32px;
+             border-radius: 50%;
+             object-fit: cover;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 180px;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-dropdown a,
+        .profile-dropdown button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
+            background: var(--light-gray);
+        }
+
+        .profile-dropdown .logout-action {
+            color: #EF4444;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary-brown), #D4A574);
             color: var(--white);
@@ -1107,18 +1202,7 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <h1 class="header-title">Pesanan Offline</h1>
-                </div>
-                <div class="header-right">
-                    <button class="btn-primary" onclick="openAddModal()">
-                        <i class="fas fa-plus"></i>
-                        Tambah Pesanan
-                    </button>
-                </div>
-            </header>
+            @include('layouts.header', ['title' => 'Pesanan Offline', 'showSearch' => false, 'showAddButton' => true, 'totalNotifikasi' => 3])
 
             <!-- Content -->
             <div class="content">
@@ -2013,6 +2097,33 @@
                 e.target.classList.remove('show');
             }
         });
+
+const profileMenuButton = document.getElementById('profileMenuButton');
+const profileDropdown = document.getElementById('profileDropdown');
+
+if (profileMenuButton && profileDropdown) {
+    const closeProfileDropdown = () => {
+        profileDropdown.classList.remove('show');
+        profileMenuButton.setAttribute('aria-expanded', 'false');
+    };
+
+    profileMenuButton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        const isOpen = profileDropdown.classList.toggle('show');
+        profileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    profileDropdown.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
+    document.addEventListener('click', closeProfileDropdown);
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeProfileDropdown();
+        }
+    });
+}
     </script>
 </body>
 </html>

@@ -52,7 +52,7 @@ class PasswordResetController extends Controller
             ]);
 
             // Send OTP via email
-            Mail::to($validated['email'])->send(new SendOtpMail($otp, $user->username));
+            Mail::to($validated['email'])->send(new SendOtpMail($otp, $user->username, 'Kode OTP Reset Kata Sandi - Three D Bakery', 'reset'));
 
             // Store email in session for next step
             session(['password_reset_email' => $validated['email']]);
@@ -240,7 +240,7 @@ class PasswordResetController extends Controller
             ]);
 
             // Send OTP via email
-            Mail::to($email)->send(new SendOtpMail($otp, $user->username));
+            Mail::to($email)->send(new SendOtpMail($otp, $user->username, 'Kode OTP Reset Kata Sandi - Three D Bakery', 'reset'));
 
             return back()
                 ->with('success', 'Kode OTP baru telah dikirim ke email Anda.');

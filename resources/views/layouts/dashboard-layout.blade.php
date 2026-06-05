@@ -80,6 +80,9 @@
 
         .sidebar-menu {
             padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 100px);
         }
 
         .sidebar-menu-item {
@@ -421,6 +424,11 @@
                         <a href="/laporan-pembayaran" class="sidebar-submenu-item @if(request()->path() === 'laporan-pembayaran') active @endif">Laporan Pembayaran</a>
                         <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item @if(request()->path() === 'laporan-setoran-karyawan') active @endif">Laporan Setoran Karyawan</a>
                     </div>
+                </div>
+                <div class="sidebar-menu-item" style="margin-top: auto;">
+                    <x-logout-form buttonClass="sidebar-menu-toggle" style="width:100%;">
+                        <span>Logout</span>
+                    </x-logout-form>
                 </div>
             </nav>
         </aside>

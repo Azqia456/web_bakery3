@@ -2123,6 +2123,12 @@
                     </a>
                     <div class="user-email" style="margin-top: 8px;">08:00 - 20:00 WIB</div>
                 </div>
+
+                <div style="margin-top: auto;">
+                    <x-logout-form buttonClass="nav-tab" style="width:100%;">
+                        <span>Logout</span>
+                    </x-logout-form>
+                </div>
             </aside>
 
             <!-- Main Content -->

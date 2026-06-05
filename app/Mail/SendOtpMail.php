@@ -19,6 +19,8 @@ class SendOtpMail extends Mailable
     public function __construct(
         public string $otp,
         public string $userName,
+        public string $subjectText = 'Kode OTP - Three D Bakery',
+        public string $purpose = 'verification',
     ) {}
 
     /**
@@ -27,7 +29,7 @@ class SendOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Kode OTP Reset Kata Sandi - Three D Bakery',
+            subject: $this->subjectText,
         );
     }
 
@@ -41,6 +43,7 @@ class SendOtpMail extends Mailable
             with: [
                 'otp' => $this->otp,
                 'userName' => $this->userName,
+                'purpose' => $this->purpose,
             ],
         );
     }

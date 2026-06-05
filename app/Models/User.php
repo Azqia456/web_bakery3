@@ -30,6 +30,7 @@ class User extends Authenticatable
         'foto_profil',
         'no_telpon',
         'alamat',
+        'email_verified_at',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
+        'email_verified_at' => 'datetime',
     ];
 
     public function pelanggan()

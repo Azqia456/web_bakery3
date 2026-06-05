@@ -3,7 +3,7 @@
         <h1>🍞 Three D Bakery</h1>
         <p>Management System</p>
     </div>
-    <nav class="sidebar-menu">
+    <nav class="sidebar-menu" style="display: flex; flex-direction: column; height: calc(100% - 100px);">
         <div class="sidebar-menu-item">
             <a href="/dashboard" class="{{ Request::is('dashboard') ? 'active' : '' }}" style="justify-content: flex-start; gap: 12px;">
                 <i class="fas fa-tachometer-alt"></i>
@@ -67,6 +67,12 @@
                 <a href="/laporan-pembayaran" class="sidebar-submenu-item {{ Request::is('laporan-pembayaran') ? 'active' : '' }}">Laporan Pembayaran</a>
                 <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item {{ Request::is('laporan-setoran-karyawan') ? 'active' : '' }}">Laporan Setoran Karyawan</a>
             </div>
+        </div>
+
+        <div class="sidebar-menu-item" style="margin-top: auto;">
+            <x-logout-form buttonClass="sidebar-menu-toggle" style="width:100%;">
+                <span style="font-weight:700;">Logout</span>
+            </x-logout-form>
         </div>
     </nav>
 </aside>

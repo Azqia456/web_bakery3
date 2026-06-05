@@ -39,7 +39,7 @@ class EmailVerificationOtpController extends Controller
         ]);
 
         try {
-            Mail::to($user->email)->send((new SendOtpMail($otp, $user->username))->subject('Kode OTP Verifikasi Email - Three D Bakery'));
+            Mail::to($user->email)->send(new SendOtpMail($otp, $user->username, 'Kode OTP Verifikasi Email - Three D Bakery', 'verification'));
         } catch (\Exception $e) {
             Log::error('Failed to send verification OTP: ' . $e->getMessage());
             return response()->json(['message' => 'Gagal mengirim email OTP.'], 500);

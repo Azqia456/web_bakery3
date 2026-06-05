@@ -24,6 +24,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
 
+    // Email Verification after Registration
+    Route::get('/register/verify', [AuthController::class, 'showVerifyEmailRegistration'])->name('register.verify');
+    Route::post('/register/verify', [AuthController::class, 'verifyEmailRegistration'])->name('register.verify.submit');
+    Route::post('/register/verify/resend', [AuthController::class, 'resendRegisterOtp'])->name('register.verify.resend');
+
     // Password Reset Routes (OTP-based)
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('forgot-password');
     Route::post('/forgot-password', [PasswordResetController::class, 'requestPasswordReset'])->name('password.email');

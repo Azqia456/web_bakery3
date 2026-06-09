@@ -26,7 +26,7 @@ class PesananController extends Controller
                 'nama' => $user->username,
                 'email' => $user->email,
                 'no_tlp' => $user->no_telpon,
-                'status' => 'Aktif',
+                'status' => 'Online',
             ]);
         }
 
@@ -383,7 +383,7 @@ class PesananController extends Controller
                 'nama' => $user->username,
                 'email' => $user->email,
                 'no_tlp' => $validated['no_hp'],
-                'status' => 'Aktif',
+                'status' => 'Online',
             ]);
         } else {
             $pelanggan->update([

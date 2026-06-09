@@ -117,7 +117,7 @@ class AuthController extends Controller
             'id_user' => $user->id_user,
             'nama' => $validated['username'],
             'email' => $validated['email'],
-            'status' => 'Aktif',
+            'status' => 'Online',
         ]);
 
         try {

@@ -559,6 +559,84 @@
                 </div>
 
                 <div class="orders-grid" id="ordersGrid">
+                    @forelse($pesanans ?? [] as $order)
+                        @php
+                            $status = $order->status_pesanan ?: 'menunggu_konfirmasi';
+                            $statusLabel = match($status) {
+                                'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                                'diproses' => 'Diproses',
+                                'siap_diambil' => 'Siap Diambil',
+                                'dikirim' => 'Dikirim',
+                                'selesai' => 'Selesai',
+                                default => ucfirst($status),
+                            };
+                            $statusClass = match($status) {
+                                'menunggu_konfirmasi' => 'menunggu',
+                                'diproses' => 'diproses',
+                                'siap_diambil' => 'siap',
+                                'dikirim' => 'dikirim',
+                                'selesai' => 'selesai',
+                                default => 'menunggu',
+                            };
+                            $steps = ['Menunggu', 'Diproses', 'Siap', 'Dikirim', 'Selesai'];
+                            $stepMap = ['menunggu_konfirmasi'=>0, 'diproses'=>1, 'siap_diambil'=>2, 'dikirim'=>3, 'selesai'=>4];
+                            $currentStep = $stepMap[$status] ?? 0;
+                            $isDone = $status === 'selesai';
+                            $tgl = $order->tgl_pesan ? $order->tgl_pesan->locale('id')->isoFormat('D MMM YYYY') : '-';
+                        @endphp
+                        <div class="order-card" data-status="{{ $status }}">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-code">#ORD-{{ $order->id_pesanan }}</div>
+                                    <div class="order-date"><i class="far fa-calendar-alt"></i> {{ $tgl }}</div>
+                                </div>
+                                <span class="order-status-badge {{ $statusClass }}">
+                                    <i class="fas {{ $status === 'selesai' ? 'fa-check-circle' : ($status === 'dikirim' ? 'fa-truck' : ($status === 'diproses' ? 'fa-spinner' : 'fa-clock')) }}"></i>
+                                    {{ $statusLabel }}
+                                </span>
+                            </div>
+                            <div class="order-items">
+                                @foreach($order->detailPesanans as $item)
+                                    <div class="order-item">
+                                        <div class="order-item-icon">
+                                            <span>🍞</span>
+                                        </div>
+                                        <div>
+                                            <div class="order-item-name">{{ $item->produk->nama_produk ?? 'Produk' }}</div>
+                                            <div class="order-item-qty">{{ $item->jumlah_pesan ?? 1 }} item</div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="order-total">
+                                <span class="order-total-label">Total Pesanan</span>
+                                <span class="order-total-value">Rp {{ number_format($order->total_bayar ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="timeline-container">
+                                <div class="timeline-steps">
+                                    @foreach($steps as $i => $step)
+                                        @php $completed = $isDone ? $i <= $currentStep : $i < $currentStep; @endphp
+                                        <div class="timeline-step">
+                                            <div class="timeline-dot {{ $completed ? 'completed' : ($i === $currentStep ? 'active' : '') }}">
+                                                {{ $completed ? '✓' : $i + 1 }}
+                                            </div>
+                                            <div class="timeline-label">{{ $step }}</div>
+                                            @if(!$loop->last)
+                                            <div class="timeline-line-wrapper">
+                                                <div class="timeline-line {{ $completed || $i === $currentStep ? 'active' : '' }}"></div>
+                                            </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state" style="display:block; grid-column: 1 / -1;">
+                            <i class="fas fa-inbox"></i>
+                            <p>Belum ada pesanan</p>
+                        </div>
+                    @endforelse
                 </div>
                 <div class="empty-state" id="ordersEmptyState" style="display:none;">
                     <i class="fas fa-inbox"></i>
@@ -683,7 +761,7 @@
 
 @push('scripts')
 <script>
-    let allOrders = [];
+    let allOrders = @json($pesanans ?? []);
     let currentFilter = 'all';
 
     const statusLabels = {
@@ -822,7 +900,7 @@
 
     async function loadOrders() {
         try {
-            const response = await fetch('/api/pesanans');
+            const response = await fetch('/pelanggan/pesanan/data');
             if (!response.ok) throw new Error('Failed to load orders');
             const data = await response.json();
             allOrders = Array.isArray(data) ? data : (data.data || []);
@@ -873,20 +951,23 @@
         }
 
         try {
-            const response = await fetch('/api/pelanggans/find-or-create', {
+            const response = await fetch('/pelanggan/pesanan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
-                body: JSON.stringify({ nama, no_tlp: noHp, alamat: 'Online Order' }),
+                body: JSON.stringify({ nama, no_hp: noHp, produk, catatan }),
             });
-            const pelangganData = await response.json();
-            const idPelanggan = pelangganData.pelanggan?.id_pelanggan || pelangganData.id_pelanggan;
-
-            alert('Pesanan berhasil dibuat! Pesanan Anda akan segera diproses.');
-            closeOrderModal();
-            loadOrders();
+            const result = await response.json();
+            if (result.success) {
+                alert(result.message);
+                closeOrderModal();
+                location.reload();
+            } else {
+                alert(result.message || 'Gagal membuat pesanan');
+            }
         } catch (error) {
             console.error('Error submitting order:', error);
             alert('Gagal membuat pesanan. Silakan coba lagi.');

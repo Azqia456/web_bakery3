@@ -17,13 +17,51 @@ class PesananController extends Controller
 
     public function pelangganView()
     {
-        return view('dashboard.pesanan-pelanggan');
+        $user = Auth::user();
+        $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
+
+        if (!$pelanggan) {
+            $pelanggan = \App\Models\Pelanggan::create([
+                'id_user' => $user->id_user,
+                'nama' => $user->username,
+                'email' => $user->email,
+                'no_tlp' => $user->no_telpon,
+                'status' => 'Aktif',
+            ]);
+        }
+
+        $pesanans = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+            ->where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->orderBy('tgl_pesan', 'desc')
+            ->get();
+
+        return view('dashboard.pesanan-pelanggan', compact('pelanggan', 'pesanans'));
     }
 
     public function index()
     {
-        // Dapatkan semua pesanan yang sudah tersinkronkan
+        $user = Auth::user();
+
+        if ($user && $user->role === 'pelanggan') {
+            $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
+            if ($pelanggan) {
+                return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+                    ->where('id_pelanggan', $pelanggan->id_pelanggan)
+                    ->orderBy('tgl_pesan', 'desc')
+                    ->get();
+            }
+            return [];
+        }
+
         return PesananSyncService::getAllPesanan();
+    }
+
+    public function pelangganOrders()
+    {
+        return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+            ->where('id_pelanggan', \App\Models\Pelanggan::where('id_user', Auth::user()->id_user)->first()->id_pelanggan)
+            ->orderBy('tgl_pesan', 'desc')
+            ->get();
     }
 
     public function store(Request $request)
@@ -324,6 +362,62 @@ class PesananController extends Controller
                 'total_bayar' => $expectedTotal,
                 'bukti_transfer_url' => Storage::url($buktiPath),
             ],
+        ]);
+    }
+
+    public function createPelangganOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_hp' => 'required|string|max:20',
+            'produk' => 'required|string|max:255',
+            'catatan' => 'nullable|string|max:1000',
+        ]);
+
+        $user = Auth::user();
+        $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
+
+        if (!$pelanggan) {
+            $pelanggan = \App\Models\Pelanggan::create([
+                'id_user' => $user->id_user,
+                'nama' => $user->username,
+                'email' => $user->email,
+                'no_tlp' => $validated['no_hp'],
+                'status' => 'Aktif',
+            ]);
+        } else {
+            $pelanggan->update([
+                'nama' => $validated['nama'],
+                'no_tlp' => $validated['no_hp'],
+            ]);
+        }
+
+        $produk = \App\Models\Produk::where('nama_produk', 'like', '%' . $validated['produk'] . '%')->first();
+
+        if (!$produk) {
+            return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan.'], 422);
+        }
+
+        $pesanan = PesananSyncService::createPesananPelanggan([
+            'id_pelanggan' => $pelanggan->id_pelanggan,
+            'id_karyawan' => null,
+            'tgl_pesan' => now(),
+            'sumber_pesanan' => 'online',
+            'metode_pengambilan' => 'pickup',
+            'metode_pembayaran' => 'transfer',
+            'status_pembayaran' => 'belum_bayar',
+            'catatan_pesanan' => $validated['catatan'] ?? null,
+            'status_bayar' => 'belum_lunas',
+            'total_bayar' => $produk->harga_produk ?? 0,
+            'products' => [
+                ['id_produk' => $produk->id_produk, 'jumlah_pesan' => 1],
+            ],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pesanan berhasil dibuat!',
+            'data' => ['id_pesanan' => $pesanan->id_pesanan],
         ]);
     }
 }

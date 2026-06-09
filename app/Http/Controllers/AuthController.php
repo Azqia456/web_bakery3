@@ -112,6 +112,14 @@ class AuthController extends Controller
             'role' => 'pelanggan',
         ]);
 
+        // Buat record Pelanggan yang terhubung dengan user
+        \App\Models\Pelanggan::create([
+            'id_user' => $user->id_user,
+            'nama' => $validated['username'],
+            'email' => $validated['email'],
+            'status' => 'Aktif',
+        ]);
+
         try {
             // Generate 6 digit OTP
             $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);

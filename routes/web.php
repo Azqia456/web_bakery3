@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\PelangganProfileController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PasswordResetController;
+use App\Models\Pesanan;
 
 Route::get('/', function () {
     return view('welcome');
@@ -109,6 +110,8 @@ Route::middleware('auth')->group(function () {
 
     // PESANAN
     Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView'])->middleware('role:pelanggan');
+    Route::get('/pelanggan/pesanan/data', [PesananController::class, 'pelangganOrders'])->middleware('role:pelanggan');
+    Route::post('/pelanggan/pesanan', [PesananController::class, 'createPelangganOrder'])->middleware('role:pelanggan')->name('pelanggan.pesanan.store');
     Route::get('/pesanan', [PesananController::class, 'view'])->middleware('role:owner')->name('pesanan');
     Route::get('/pesanan-offline', [PesananController::class, 'offline'])->name('pesanan-offline');
     Route::post('/pesanan-offline', [App\Http\Controllers\PesananOfflineController::class, 'store'])->middleware('role:owner');
@@ -159,4 +162,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-setoran-karyawan', function () {
         return view('laporan_setoran_karyawan');
     })->name('laporan-setoran-karyawan');
+});
+
+Route::get('test-aja', function () {
+    return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+        ->where('id_pelanggan', \App\Models\Pelanggan::where('id_user', 7)->first()->id_pelanggan)
+        ->orderBy('tgl_pesan', 'desc')
+        ->get();
+
 });

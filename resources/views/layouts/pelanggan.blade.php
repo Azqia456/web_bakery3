@@ -2285,6 +2285,31 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">Metode Pengambilan</label>
+                            <div style="display: flex; gap: 16px; margin-top: 4px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                    <input type="radio" name="metode_pengambilan" value="pickup" onchange="toggleMetodePengambilan()" checked>
+                                    Pickup
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                    <input type="radio" name="metode_pengambilan" value="delivery" onchange="toggleMetodePengambilan()">
+                                    Delivery
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="deliveryFields" style="display: none;" data-alamat="{{ auth()->user()->pelanggan->alamat ?? '' }}">
+                            <div class="form-group">
+                                <label class="form-label">Alamat Delivery</label>
+                                <input class="form-input" type="text" name="alamat_delivery" id="alamatDeliveryInput" placeholder="Masukkan alamat lengkap pengiriman">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tanggal Delivery</label>
+                                <input class="form-input" type="date" name="tgl_delivery" id="tglDeliveryInput">
+                            </div>
+                        </div>
+
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label">Nominal Transfer</label>

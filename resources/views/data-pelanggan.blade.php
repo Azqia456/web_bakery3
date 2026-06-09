@@ -1018,7 +1018,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="inputEmail">Email (Opsional)</label>
+                    <label for="inputEmail">Email</label>
                     <input type="email" id="inputEmail" name="email" placeholder="nama@example.com">
                 </div>
 

@@ -406,6 +406,7 @@
                 setTimeout(() => {
                     document.getElementById('paymentModal').classList.add('show');
                     updatePaymentTotal();
+                    resetMetodePengambilan();
                 }, 300);
             });
         }
@@ -558,6 +559,25 @@
 
         function saveCart() {
             localStorage.setItem('bakery_cart', JSON.stringify(cart));
+        }
+
+        function toggleMetodePengambilan() {
+            const metode = document.querySelector('input[name="metode_pengambilan"]:checked');
+            const deliveryFields = document.getElementById('deliveryFields');
+            const alamatInput = document.getElementById('alamatDeliveryInput');
+            if (deliveryFields) {
+                const isDelivery = metode && metode.value === 'delivery';
+                deliveryFields.style.display = isDelivery ? 'block' : 'none';
+                if (isDelivery && alamatInput && !alamatInput.value.trim()) {
+                    alamatInput.value = deliveryFields.dataset.alamat || '';
+                }
+            }
+        }
+
+        function resetMetodePengambilan() {
+            const pickupRadio = document.querySelector('input[name="metode_pengambilan"][value="pickup"]');
+            if (pickupRadio) pickupRadio.checked = true;
+            toggleMetodePengambilan();
         }
 
         // Payment Modal

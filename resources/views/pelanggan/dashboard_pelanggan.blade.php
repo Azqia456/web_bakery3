@@ -2062,7 +2062,7 @@
 </head>
 <body>
     <div class="dashboard">
-        @include('layouts.header', ['title' => 'Dashboard Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 1])
+        {{-- @include('layouts.header', ['title' => 'Dashboard Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 1]) --}}
 
         <div class="dashboard-layout">
             <aside class="sidebar">

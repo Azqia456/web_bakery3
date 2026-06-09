@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use App\Models\Pesanan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DataPelangganController extends Controller
 {
@@ -104,7 +107,34 @@ class DataPelangganController extends Controller
             'status' => 'required|in:Online,Offline',
         ]);
 
-        $validated['id_user'] = auth()->id();
+        $username = Str::slug($validated['nama']) . '_' . substr($validated['no_tlp'], -4);
+        $baseUsername = $username;
+        $counter = 1;
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        $userEmail = $validated['email'] ?? $username . '@offline.threedbakery.com';
+        if ($validated['email']) {
+            $existingUser = User::where('email', $validated['email'])->first();
+            if ($existingUser) {
+                $validated['id_user'] = $existingUser->id_user;
+            }
+        }
+
+        if (!isset($validated['id_user'])) {
+            $user = User::create([
+                'username' => $username,
+                'email' => $userEmail,
+                'password' => Hash::make('password'),
+                'role' => 'pelanggan',
+                'no_telpon' => $validated['no_tlp'],
+                'alamat' => $validated['alamat'],
+            ]);
+            $validated['id_user'] = $user->id_user;
+        }
+
         $pelanggan = Pelanggan::create($validated);
 
         if ($request->ajax()) {
@@ -188,7 +218,7 @@ class DataPelangganController extends Controller
         $pelanggans = Pelanggan::where('nama', 'LIKE', "%{$search}%")
                               ->orWhere('no_tlp', 'LIKE', "%{$search}%")
                               ->limit(10)
-                              ->get(['id_pelanggan', 'nama', 'no_tlp', 'email', 'status'])
+                              ->get(['id_pelanggan', 'nama', 'no_tlp', 'email', 'alamat', 'status'])
                               ->map(function ($pelanggan) {
                                   return [
                                       'id' => $pelanggan->id_pelanggan,
@@ -196,6 +226,7 @@ class DataPelangganController extends Controller
                                       'nama' => $pelanggan->nama,
                                       'no_tlp' => $pelanggan->no_tlp,
                                       'email' => $pelanggan->email,
+                                      'alamat' => $pelanggan->alamat,
                                       'status' => $pelanggan->status,
                                   ];
                               });
@@ -228,9 +259,27 @@ class DataPelangganController extends Controller
             ]);
         }
 
-        // Create new customer with Offline status
+        // Create new customer with Offline status, also create user account
+        $username = Str::slug($validated['nama']) . '_' . substr($validated['no_tlp'], -4);
+        $baseUsername = $username;
+        $counter = 1;
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        $userEmail = $validated['email'] ?? $username . '@offline.threedbakery.com';
+        $user = User::create([
+            'username' => $username,
+            'email' => $userEmail,
+            'password' => Hash::make('password'),
+            'role' => 'pelanggan',
+            'no_telpon' => $validated['no_tlp'],
+            'alamat' => $validated['alamat'] ?? 'Offline Order',
+        ]);
+
         $pelanggan = Pelanggan::create([
-            'id_user' => auth()->id(),
+            'id_user' => $user->id_user,
             'nama' => $validated['nama'],
             'no_tlp' => $validated['no_tlp'],
             'email' => $validated['email'] ?? null,

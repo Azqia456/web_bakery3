@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class PelangganController extends Controller
 {
@@ -143,13 +146,32 @@ class PelangganController extends Controller
             ]);
         }
 
-        // Create new customer
+        // Create new customer with user account
+        $username = Str::slug($validated['nama']) . '_' . substr($validated['no_tlp'], -4);
+        $baseUsername = $username;
+        $counter = 1;
+        while (User::where('username', $username)->exists()) {
+            $username = $baseUsername . $counter;
+            $counter++;
+        }
+
+        $userEmail = $validated['email'] ?? $username . '@offline.threedbakery.com';
+        $user = User::create([
+            'username' => $username,
+            'email' => $userEmail,
+            'password' => Hash::make('password'),
+            'role' => 'pelanggan',
+            'no_telpon' => $validated['no_tlp'],
+            'alamat' => $validated['alamat'],
+        ]);
+
         $pelanggan = Pelanggan::create([
             'nama' => $validated['nama'],
             'no_tlp' => $validated['no_tlp'],
             'email' => $validated['email'] ?? null,
             'alamat' => $validated['alamat'],
             'status' => 'Offline',
+            'id_user' => $user->id_user,
         ]);
 
         return response()->json([

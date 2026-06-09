@@ -1010,7 +1010,7 @@
                 <!-- Tipe Pesanan: Karyawan -->
                 <div id="formKaryawan">
                     <div class="form-group">
-                        <label class="form-label">Nama Karyawan <span style="color: var(--red);">*</span></label>
+                        <label class="form-label">Nama Karyawan<span style="color: var(--red);">*</span></label>
                         <select class="form-control" id="namaKaryawan" style="width: 100%;">
                             <option value="">Cari nama karyawan...</option>
                         </select>
@@ -2216,10 +2216,12 @@
         $('#namaPelanggan').on('select2:select', function(e) {
             const data = e.params.data;
             document.getElementById('noHpPelanggan').value = data.no_tlp || '';
+            document.getElementById('alamatDelivery').value = data.alamat || '';
         });
 
         $('#namaPelanggan').on('select2:clear', function() {
             document.getElementById('noHpPelanggan').value = '';
+            document.getElementById('alamatDelivery').value = '';
         });
     });
 </script>

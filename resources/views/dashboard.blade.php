@@ -1,1026 +1,646 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three D Bakery - Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-green: #8B6F47;
-            --primary-brown: #8B6F47;
-            --light-green: #D4A574;
-            --light-brown: #D4A574;
-            --cream: #F7F3E9;
-            --white: #FFFFFF;
-            --light-gray: #F8F9FA;
-            --medium-gray: #E9ECEF;
-            --dark-gray: #6C757D;
-            --text-dark: #2D3748;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
-            --border-radius-xl: 16px;
-            --transition: all 0.3s ease;
-        }
+@extends('layouts.dashboard-layout', ['pageTitle' => 'Dashboard'])
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@section('additional-styles')
+<style>
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--cream);
-            color: var(--text-dark);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+    .summary-card {
+        background: var(--white);
+        padding: 24px;
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--medium-gray);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
 
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
+    .summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-green), #81C784);
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
-            color: var(--white);
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            overflow-y: auto;
-        }
+    .summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
 
-        .sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
+    .summary-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
 
-        .sidebar-header h1 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: -0.025em;
-        }
+    .summary-card-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+    .summary-card-icon.green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+    .summary-card-icon.orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
+    .summary-card-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333EA; }
 
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.8;
-            font-weight: 500;
-        }
+    .summary-card-title {
+        font-size: 14px;
+        color: var(--dark-gray);
+        font-weight: 500;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-        .sidebar-menu {
-            padding: 16px 0;
-        }
+    .summary-card-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+    }
 
-        .sidebar-menu-item {
-            margin: 4px 16px;
-        }
+    .summary-card-change {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--dark-gray);
+    }
 
-        .sidebar-menu-item > a,
-        .sidebar-menu-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-weight: 600;
-            font-size: 14px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            letter-spacing: 0.3px;
-        }
+    .summary-card-change i {
+        margin-right: 4px;
+    }
 
-        .sidebar-menu-item > a:hover,
-        .sidebar-menu-item > a.active,
-        .sidebar-menu-toggle:hover,
-        .sidebar-menu-toggle.active {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-        }
+    .empty-state {
+        padding: 24px;
+        text-align: center;
+        color: var(--dark-gray);
+        font-size: 14px;
+    }
 
-        .sidebar-menu-item > a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
+    .charts-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+    }
 
-        .sidebar-menu-item i,
-        .sidebar-menu-toggle i {
-            width: 20px;
-            min-width: 20px;
-            margin-right: 12px;
-            text-align: center;
-            font-size: 16px;
-        }
+    .chart-card {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--medium-gray);
+        overflow: hidden;
+    }
 
-        .sidebar-menu-item .toggle-arrow {
-            font-size: 12px;
-            transition: transform 0.3s ease;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
+    .chart-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--medium-gray);
+        background: var(--light-gray);
+    }
 
-        .sidebar-menu-item .toggle-arrow.open {
-            transform: rotate(180deg);
-        }
+    .chart-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
 
-        .sidebar-submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: var(--border-radius);
-            margin: 0 8px;
-        }
+    .chart-title i {
+        margin-right: 8px;
+        color: var(--primary-green);
+    }
 
-        .sidebar-submenu.open {
-            max-height: 500px;
-        }
+    .chart-content {
+        padding: 24px;
+        height: 300px;
+    }
 
-        .sidebar-submenu-item {
-            padding: 10px 16px 10px 48px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            font-weight: 400;
-            transition: var(--transition);
-        }
+    .customers-panel {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--medium-gray);
+        overflow: hidden;
+    }
 
-        .sidebar-submenu-item:hover,
-        .sidebar-submenu-item.active {
-            color: var(--white);
-            padding-left: 52px;
-        }
+    .customers-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--medium-gray);
+        background: var(--light-gray);
+    }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            background-color: var(--cream);
-        }
+    .customers-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
 
-        /* Header */
-        .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--medium-gray);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
+    .customers-title i {
+        margin-right: 8px;
+        color: var(--primary-green);
+    }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+    .customers-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
 
-        .header-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 0;
-        }
+    .bottom-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
 
-        .search-bar {
-            position: relative;
-            width: 320px;
-        }
+    .deposits-panel {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--medium-gray);
+        overflow: hidden;
+    }
 
-        .search-bar input {
-            width: 100%;
-            padding: 10px 16px 10px 40px;
-            border: 1px solid var(--medium-gray);
-            border-radius: var(--border-radius-xl);
-            background: var(--light-gray);
-            font-size: 14px;
-            transition: var(--transition);
-        }
+    .deposits-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--medium-gray);
+        background: var(--light-gray);
+    }
 
-        .search-bar input:focus {
-            outline: none;
-            border-color: var(--primary-green);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(168, 218, 220, 0.1);
-        }
+    .deposits-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
 
-        .search-bar i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--dark-gray);
-            font-size: 14px;
-        }
+    .deposits-title i {
+        margin-right: 8px;
+        color: var(--primary-green);
+    }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+    .deposits-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
 
-        .profile-menu {
-            position: relative;
-        }
+    .statistics-panel {
+        background: var(--white);
+        border-radius: var(--border-radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--medium-gray);
+        overflow: hidden;
+    }
 
-        .notification-btn,
-        .profile-btn {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--light-gray);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            color: var(--dark-gray);
-        }
+    .statistics-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--medium-gray);
+        background: var(--light-gray);
+    }
 
-        .notification-btn:hover,
-        .profile-btn:hover {
-            background: var(--medium-gray);
-            transform: scale(1.05);
-        }
+    .statistics-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
 
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 18px;
-            height: 18px;
-            background: #EF4444;
-            color: white;
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .statistics-title i {
+        margin-right: 8px;
+        color: var(--primary-green);
+    }
 
-        .profile-avatar-img {
-            width: 32px;
-             height: 32px;
-             border-radius: 50%;
-             object-fit: cover;
-        }
+    .statistics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 24px;
+    }
 
-        .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            min-width: 180px;
-            background: var(--white);
-            border: 1px solid var(--medium-gray);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            padding: 8px;
-            display: none;
-            z-index: 1001;
-        }
+    .statistic-item {
+        text-align: center;
+        padding: 20px;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--medium-gray);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
 
-        .profile-dropdown.show {
-            display: block;
-        }
+    .statistic-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
 
-        .profile-dropdown a,
-        .profile-dropdown button {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 10px;
-            background: transparent;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: left;
-            transition: var(--transition);
-        }
+    .statistic-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin: 0 auto 12px;
+    }
 
-        .profile-dropdown a:hover,
-        .profile-dropdown button:hover {
-            background: var(--light-gray);
-        }
+    .statistic-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+    .statistic-icon.green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+    .statistic-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333EA; }
+    .statistic-icon.orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
 
-        .profile-dropdown .logout-action {
-            color: #EF4444;
-        }
+    .statistic-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-dark);
+        display: block;
+        margin-bottom: 4px;
+    }
 
-        /* Dashboard Content */
-        .dashboard-content {
-            padding: 24px;
-        }
+    .statistic-label {
+        font-size: 12px;
+        color: var(--dark-gray);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-        /* Summary Cards */
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
+    .customer-item, .deposit-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--medium-gray);
+        transition: var(--transition);
+    }
+    .customer-item:hover, .deposit-item:hover {
+        background: var(--light-gray);
+    }
+    .customer-item:last-child, .deposit-item:last-child {
+        border-bottom: none;
+    }
+    .customer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-green);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .customer-info, .deposit-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .customer-name, .deposit-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+    }
+    .customer-meta, .deposit-date {
+        font-size: 12px;
+        color: var(--dark-gray);
+    }
+    .deposit-amount {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-left: 8px;
+        white-space: nowrap;
+    }
 
-        .summary-card {
-            background: var(--white);
-            padding: 24px;
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--medium-gray);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-green), #81C784);
-        }
-
-        .summary-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .summary-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 16px;
-        }
-
-        .summary-card-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-        .summary-card-icon.green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
-        .summary-card-icon.orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
-        .summary-card-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333EA; }
-
-        .summary-card-title {
-            font-size: 14px;
-            color: var(--dark-gray);
-            font-weight: 500;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .summary-card-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-        }
-
-        .summary-card-change {
-            display: flex;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--dark-gray);
-        }
-
-        .summary-card-change i {
-            margin-right: 4px;
-        }
-
-        .empty-state {
-            padding: 24px;
-            text-align: center;
-            color: var(--dark-gray);
-            font-size: 14px;
-        }
-
-        /* Charts Section */
+    @media (max-width: 1024px) {
         .charts-section {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-            margin-bottom: 32px;
+            grid-template-columns: 1fr;
         }
 
-        .chart-card {
-            background: var(--white);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--medium-gray);
-            overflow: hidden;
-        }
-
-        .chart-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            background: var(--light-gray);
-        }
-
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .chart-title i {
-            margin-right: 8px;
-            color: var(--primary-green);
-        }
-
-        .chart-content {
-            padding: 24px;
-            height: 300px;
-        }
-
-        /* Customers Panel */
-        .customers-panel {
-            background: var(--white);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--medium-gray);
-            overflow: hidden;
-        }
-
-        .customers-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            background: var(--light-gray);
-        }
-
-        .customers-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .customers-title i {
-            margin-right: 8px;
-            color: var(--primary-green);
-        }
-
-        .customers-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        /* Bottom Section */
         .bottom-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            grid-template-columns: 1fr;
         }
+    }
 
-        /* Deposits Panel */
-        .deposits-panel {
-            background: var(--white);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--medium-gray);
-            overflow: hidden;
-        }
-
-        .deposits-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            background: var(--light-gray);
-        }
-
-        .deposits-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .deposits-title i {
-            margin-right: 8px;
-            color: var(--primary-green);
-        }
-
-        .deposits-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        /* Statistics */
-        .statistics-panel {
-            background: var(--white);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--medium-gray);
-            overflow: hidden;
-        }
-
-        .statistics-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid var(--medium-gray);
-            background: var(--light-gray);
-        }
-
-        .statistics-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .statistics-title i {
-            margin-right: 8px;
-            color: var(--primary-green);
+    @media (max-width: 768px) {
+        .summary-cards {
+            grid-template-columns: 1fr;
         }
 
         .statistics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 24px;
+            grid-template-columns: 1fr 1fr;
         }
+    }
 
-        .statistic-item {
-            text-align: center;
-            padding: 20px;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--medium-gray);
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-        }
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
 
-        .statistic-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
+    ::-webkit-scrollbar-track {
+        background: var(--light-gray);
+    }
 
-        .statistic-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin: 0 auto 12px;
-        }
+    ::-webkit-scrollbar-thumb {
+        background: var(--medium-gray);
+        border-radius: 3px;
+    }
 
-        .statistic-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-        .statistic-icon.green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
-        .statistic-icon.purple { background: rgba(147, 51, 234, 0.1); color: #9333EA; }
-        .statistic-icon.orange { background: rgba(249, 115, 22, 0.1); color: #F97316; }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--dark-gray);
+    }
+</style>
+@endsection
 
-        .statistic-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .statistic-label {
-            font-size: 12px;
-            color: var(--dark-gray);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .charts-section {
-                grid-template-columns: 1fr;
-            }
-
-            .bottom-section {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .header {
-                padding: 12px 16px;
-            }
-
-            .search-bar {
-                width: 200px;
-            }
-
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .statistics-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--light-gray);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--medium-gray);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--dark-gray);
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>🍞 Three D Bakery</h1>
-                <p>Management System</p>
+@section('content')
+<main class="dashboard-content">
+    <section class="summary-cards" id="summary-cards">
+        <div class="summary-card">
+            <div class="summary-card-icon blue">
+                <i class="fas fa-shopping-bag"></i>
             </div>
-            <nav class="sidebar-menu">
-                <div class="sidebar-menu-item">
-                    <a href="/dashboard" class="active" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span style="font-weight:700;">Dashboard</span>
-                    </a>
-                </div>
-
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span style="font-weight:700;">Pesanan</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
-                        <a href="/pesanan-offline" class="sidebar-submenu-item">Pesanan Offline</a>
-                    </div>
-                </div>
-
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-database"></i>
-                        <span style="font-weight:700;">Data</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
-                        <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
-                    </div>
-                </div>
-
-                <div class="sidebar-menu-item">
-                    <a href="/produk" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-box"></i>
-                        <span style="font-weight:700;">Produk</span>
-                    </a>
-                </div>
-
-                <div class="sidebar-menu-item">
-                    <a href="/riwayat-transaksi" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-credit-card"></i>
-                        <span style="font-weight:700;">Riwayat Transaksi</span>
-                    </a>
-                </div>
-
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-chart-line"></i>
-                        <span style="font-weight:700;">Laporan</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/laporan-penjualan" class="sidebar-submenu-item">Laporan Penjualan</a>
-                        <a href="/laporan-pesanan-online" class="sidebar-submenu-item">Laporan Pesanan Online</a>
-                        <a href="/laporan-pesanan-offline" class="sidebar-submenu-item">Laporan Pesanan Offline</a>
-                        <a href="/laporan-pembayaran" class="sidebar-submenu-item">Laporan Pembayaran</a>
-                        <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item">Laporan Setoran Karyawan</a>
-                    </div>
-                </div>
-            </nav>
-        </aside>
-
-        <div class="main-content">
-            @include('layouts.header', ['title' => 'Dashboard', 'showSearch' => true, 'showAddButton' => false, 'totalNotifikasi' => 0])
-
-            <main class="dashboard-content">
-                <section class="summary-cards" id="summary-cards">
-                    <div class="summary-card">
-                        <div class="summary-card-icon blue">
-                            <i class="fas fa-shopping-bag"></i>
-                        </div>
-                        <div class="summary-card-title">Total Pemesanan</div>
-                        <div class="summary-card-value">0</div>
-                        <div class="summary-card-change">
-                            <i class="fas fa-minus"></i>
-                            Belum ada data
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-icon green">
-                            <i class="fas fa-wallet"></i>
-                        </div>
-                        <div class="summary-card-title">Pendapatan Bulan Ini</div>
-                        <div class="summary-card-value">Rp 0</div>
-                        <div class="summary-card-change">
-                            <i class="fas fa-minus"></i>
-                            Belum ada data
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-icon orange">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="summary-card-title">Pesanan Belum Lunas</div>
-                        <div class="summary-card-value">0</div>
-                        <div class="summary-card-change">
-                            <i class="fas fa-minus"></i>
-                            Belum ada data
-                        </div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-icon purple">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </div>
-                        <div class="summary-card-title">Setoran Karyawan</div>
-                        <div class="summary-card-value">Rp 0</div>
-                        <div class="summary-card-change">
-                            <i class="fas fa-minus"></i>
-                            Belum ada data
-                        </div>
-                    </div>
-                </section>
-
-                <section class="charts-section">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">
-                                <i class="fas fa-chart-line"></i>
-                                Grafik Total Pemesanan
-                            </h3>
-                        </div>
-                        <div class="chart-content">
-                            <canvas id="ordersChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="customers-panel">
-                        <div class="customers-header">
-                            <h3 class="customers-title">
-                                <i class="fas fa-users"></i>
-                                Pelanggan yang Pesan
-                            </h3>
-                        </div>
-                        <div class="customers-list" id="customers-list">
-                            <div class="empty-state">Belum ada pelanggan.</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="bottom-section">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">
-                                <i class="fas fa-chart-bar"></i>
-                                Grafik Setor Karyawan
-                            </h3>
-                        </div>
-                        <div class="chart-content">
-                            <canvas id="depositsChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="deposits-panel">
-                        <div class="deposits-header">
-                            <h3 class="deposits-title">
-                                <i class="fas fa-coins"></i>
-                                Setoran Karyawan Terbaru
-                            </h3>
-                        </div>
-                        <div class="deposits-list" id="deposits-list">
-                            <div class="empty-state">Belum ada setoran terbaru.</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="statistics-panel">
-                    <div class="statistics-header">
-                        <h3 class="statistics-title">
-                            <i class="fas fa-chart-pie"></i>
-                            Statistik Umum
-                        </h3>
-                    </div>
-                    <div class="statistics-grid" id="statistics-grid">
-                        <div class="statistic-item">
-                            <div class="statistic-icon blue">
-                                <i class="fas fa-box-open"></i>
-                            </div>
-                            <div class="statistic-value">0</div>
-                            <div class="statistic-label">Total Produk</div>
-                        </div>
-                        <div class="statistic-item">
-                            <div class="statistic-icon green">
-                                <i class="fas fa-id-badge"></i>
-                            </div>
-                            <div class="statistic-value">0</div>
-                            <div class="statistic-label">Total Karyawan</div>
-                        </div>
-                    </div>
-                </section>
-            </main>
+            <div class="summary-card-title">Total Pemesanan</div>
+            <div class="summary-card-value">{{ number_format($totalPemesanan, 0, ',', '.') }}</div>
+            <div class="summary-card-change">
+                <i class="fas fa-chart-line"></i>
+                {{ $totalPemesanan > 0 ? 'Total keseluruhan' : 'Belum ada data' }}
+            </div>
         </div>
-    </div>
 
-    <script>
-        let ordersChart, depositsChart;
+        <div class="summary-card">
+            <div class="summary-card-icon green">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="summary-card-title">Pendapatan Bulan Ini</div>
+            <div class="summary-card-value">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</div>
+            <div class="summary-card-change">
+                <i class="fas fa-chart-line"></i>
+                {{ $pendapatanBulanIni > 0 ? 'Bulan ' . now()->isoFormat('MMMM YYYY') : 'Belum ada data' }}
+            </div>
+        </div>
 
-        // Initialize empty charts
-        function initCharts() {
-            // Orders Line Chart (Empty)
-            const ordersCtx = document.getElementById('ordersChart').getContext('2d');
-            ordersChart = new Chart(ordersCtx, {
-                type: 'line',
-                data: {
-                    labels: [], // Kosong
-                    datasets: [{
-                        label: 'Total Pemesanan',
-                        data: [], // Kosong
-                        borderColor: 'rgba(168, 218, 220, 1)',
-                        backgroundColor: 'rgba(168, 218, 220, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'rgba(168, 218, 220, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
+        <div class="summary-card">
+            <div class="summary-card-icon orange">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="summary-card-title">Pesanan Belum Lunas</div>
+            <div class="summary-card-value">{{ number_format($pesananBelumLunas, 0, ',', '.') }}</div>
+            <div class="summary-card-change">
+                <i class="fas fa-clock"></i>
+                {{ $pesananBelumLunas > 0 ? 'Perlu ditindaklanjuti' : 'Belum ada data' }}
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-card-icon purple">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="summary-card-title">Setoran Karyawan</div>
+            <div class="summary-card-value">Rp {{ number_format($setoranKaryawan, 0, ',', '.') }}</div>
+            <div class="summary-card-change">
+                <i class="fas fa-chart-line"></i>
+                {{ $setoranKaryawan > 0 ? 'Total keseluruhan' : 'Belum ada data' }}
+            </div>
+        </div>
+    </section>
+
+    <section class="charts-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="fas fa-chart-line"></i>
+                    Grafik Total Pemesanan
+                </h3>
+            </div>
+            <div class="chart-content">
+                <canvas id="ordersChart"></canvas>
+            </div>
+        </div>
+
+        <div class="customers-panel">
+            <div class="customers-header">
+                <h3 class="customers-title">
+                    <i class="fas fa-users"></i>
+                    Pelanggan yang Pesan
+                </h3>
+            </div>
+            <div class="customers-list" id="customers-list">
+                @if($topCustomers->count() > 0)
+                    @foreach($topCustomers as $customer)
+                    <div class="customer-item">
+                        <div class="customer-avatar">{{ strtoupper(substr($customer->nama, 0, 2)) }}</div>
+                        <div class="customer-info">
+                            <div class="customer-name">{{ $customer->nama }}</div>
+                            <div class="customer-meta">{{ $customer->pesanans_count }} pesanan</div>
+                        </div>
+                    </div>
+                    @endforeach
+                @else
+                    <div class="empty-state">Belum ada pelanggan.</div>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    <section class="bottom-section">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Grafik Setor Karyawan
+                </h3>
+            </div>
+            <div class="chart-content">
+                <canvas id="depositsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="deposits-panel">
+            <div class="deposits-header">
+                <h3 class="deposits-title">
+                    <i class="fas fa-coins"></i>
+                    Setoran Karyawan Terbaru
+                </h3>
+            </div>
+            <div class="deposits-list" id="deposits-list">
+                @if($recentDeposits->count() > 0)
+                    @foreach($recentDeposits as $deposit)
+                    <div class="deposit-item">
+                        <div class="deposit-info">
+                            <div class="deposit-name">{{ $deposit->karyawan->nama ?? 'Unknown' }}</div>
+                            <div class="deposit-date">{{ $deposit->tgl_pesan ? \Carbon\Carbon::parse($deposit->tgl_pesan)->format('d M Y') : '-' }}</div>
+                        </div>
+                        <div class="deposit-amount">Rp {{ number_format($deposit->total_bayar, 0, ',', '.') }}</div>
+                    </div>
+                    @endforeach
+                @else
+                    <div class="empty-state">Belum ada setoran terbaru.</div>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    <section class="statistics-panel">
+        <div class="statistics-header">
+            <h3 class="statistics-title">
+                <i class="fas fa-chart-pie"></i>
+                Statistik Umum
+            </h3>
+        </div>
+        <div class="statistics-grid" id="statistics-grid">
+            <div class="statistic-item">
+                <div class="statistic-icon blue">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <div class="statistic-value">{{ number_format($totalProduk, 0, ',', '.') }}</div>
+                <div class="statistic-label">Total Produk</div>
+            </div>
+            <div class="statistic-item">
+                <div class="statistic-icon green">
+                    <i class="fas fa-id-badge"></i>
+                </div>
+                <div class="statistic-value">{{ number_format($totalKaryawan, 0, ',', '.') }}</div>
+                <div class="statistic-label">Total Karyawan</div>
+            </div>
+            <div class="statistic-item">
+                <div class="statistic-icon purple">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="statistic-value">{{ number_format($totalPelanggan, 0, ',', '.') }}</div>
+                <div class="statistic-label">Total Pelanggan</div>
+            </div>
+            <div class="statistic-item">
+                <div class="statistic-icon orange">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="statistic-value">{{ number_format($pesananHariIni, 0, ',', '.') }}</div>
+                <div class="statistic-label">Pesanan Hari Ini</div>
+            </div>
+        </div>
+    </section>
+</main>
+@endsection
+
+@section('additional-scripts')
+<script>
+    let ordersChart, depositsChart;
+
+    // Initialize charts with data
+    function initCharts() {
+        // Orders Line Chart
+        const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+        ordersChart = new Chart(ordersCtx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($ordersChartLabels) !!},
+                datasets: [{
+                    label: 'Total Pemesanan',
+                    data: {!! json_encode($ordersChartData) !!},
+                    borderColor: 'rgba(168, 218, 220, 1)',
+                    backgroundColor: 'rgba(168, 218, 220, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(168, 218, 220, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
                         }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
                         }
                     }
                 }
-            });
-
-            // Deposits Bar Chart (Empty)
-            const depositsCtx = document.getElementById('depositsChart').getContext('2d');
-            depositsChart = new Chart(depositsCtx, {
-                type: 'bar',
-                data: {
-                    labels: [], // Kosong
-                    datasets: [{
-                        label: 'Setoran (Rp)',
-                        data: [], // Kosong
-                        backgroundColor: 'rgba(168, 218, 220, 0.8)',
-                        borderColor: 'rgba(168, 218, 220, 1)',
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        barThickness: 32
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return 'Rp ' + (value / 1000000).toFixed(1) + 'M';
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initCharts();
+            }
         });
 
-        // Toggle submenu function
-        function toggleSubmenu(button) {
-            const submenu = button.nextElementSibling;
-            const arrow = button.querySelector('.toggle-arrow');
-            
-            submenu.classList.toggle('open');
-            arrow.classList.toggle('open');
-            button.classList.toggle('active');
-        }
-
-        const profileMenuButton = document.getElementById('profileMenuButton');
-        const profileDropdown = document.getElementById('profileDropdown');
-
-        if (profileMenuButton && profileDropdown) {
-            const closeProfileDropdown = () => {
-                profileDropdown.classList.remove('show');
-                profileMenuButton.setAttribute('aria-expanded', 'false');
-            };
-
-            profileMenuButton.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const isOpen = profileDropdown.classList.toggle('show');
-                profileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            });
-
-            profileDropdown.addEventListener('click', function(event) {
-                event.stopPropagation();
-            });
-
-            document.addEventListener('click', closeProfileDropdown);
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeProfileDropdown();
+        // Deposits Bar Chart
+        const depositsCtx = document.getElementById('depositsChart').getContext('2d');
+        depositsChart = new Chart(depositsCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($depositsChartLabels) !!},
+                datasets: [{
+                    label: 'Setoran (Rp)',
+                    data: {!! json_encode($depositsChartData) !!},
+                    backgroundColor: 'rgba(168, 218, 220, 0.8)',
+                    borderColor: 'rgba(168, 218, 220, 1)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barThickness: 32
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) {
+                                    return 'Rp ' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                                return 'Rp ' + (value / 1000).toFixed(0) + 'K';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
                 }
-            });
-        }
-    </script>
-</body>
-</html>
+            }
+        });
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts();
+    });
+</script>
+@endsection

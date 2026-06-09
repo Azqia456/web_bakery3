@@ -11,6 +11,13 @@ class Pesanan extends Model
 
     protected $primaryKey = 'id_pesanan';
 
+    protected $casts = [
+        'tgl_pesan' => 'datetime',
+        'tgl_delivery' => 'date',
+        'tgl_verifikasi' => 'datetime',
+        'total_bayar' => 'decimal:2',
+    ];
+
     protected $fillable = [
         'id_pelanggan',
         'id_karyawan',
@@ -21,6 +28,7 @@ class Pesanan extends Model
         'total_bayar',
         'metode_pembayaran',
         'status_pembayaran',
+        'status_pesanan',
         'bukti_transfer',
         'catatan_pesanan',
         'tgl_delivery',

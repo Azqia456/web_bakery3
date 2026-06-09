@@ -19,7 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('users', App\Http\Controllers\UserController::class);
-Route::apiResource('pelanggans', App\Http\Controllers\PelangganController::class);
 Route::get('pelanggans-autocomplete', [App\Http\Controllers\PelangganController::class, 'autocomplete']);
 Route::post('pelanggans/find-or-create', [App\Http\Controllers\PelangganController::class, 'findOrCreate']);
 Route::get('pelanggans-stats', [App\Http\Controllers\PelangganController::class, 'stats']);

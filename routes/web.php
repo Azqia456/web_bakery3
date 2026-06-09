@@ -111,6 +111,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/pesanan', [PesananController::class, 'pelangganView'])->middleware('role:pelanggan');
     Route::get('/pesanan', [PesananController::class, 'view'])->middleware('role:owner')->name('pesanan');
     Route::get('/pesanan-offline', [PesananController::class, 'offline'])->name('pesanan-offline');
+    Route::post('/pesanan-offline', [App\Http\Controllers\PesananOfflineController::class, 'store'])->middleware('role:owner');
+    Route::put('/pesanan-offline/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'update'])->middleware('role:owner');
+    Route::delete('/pesanan-offline/{id_pesanan}', [App\Http\Controllers\PesananOfflineController::class, 'destroy'])->middleware('role:owner');
     Route::get('/pesanan-online', [PesananController::class, 'online'])->name('pesanan-online');
 
     // DATA
@@ -126,8 +129,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/pelanggans/find-or-create', [DataPelangganController::class, 'findOrCreateForOfflineOrder'])->name('pelanggans.findOrCreate');
     Route::get('/api/pelanggans-stats', [DataPelangganController::class, 'statistics'])->name('pelanggans.statistics');
 
+    // PESANAN AJAX ENDPOINTS
+    Route::get('/api/pesanan/{id_pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
+    Route::post('/api/pesanan/{id_pesanan}/submit', [PesananController::class, 'submitOrder'])->name('pesanan.submit');
+
     // KARYAWAN AJAX ENDPOINTS
     Route::post('/api/karyawans', [KaryawanController::class, 'store'])->name('karyawans.store');
+    Route::get('/api/karyawans-export', [KaryawanController::class, 'export'])->name('karyawans.export');
+    Route::get('/api/karyawans-autocomplete', [KaryawanController::class, 'autocomplete'])->name('karyawans.autocomplete');
     Route::get('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'show'])->name('karyawans.show');
     Route::put('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'update'])->name('karyawans.update');
     Route::delete('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'destroy'])->name('karyawans.destroy');

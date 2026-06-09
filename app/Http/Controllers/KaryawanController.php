@@ -52,4 +52,52 @@ class KaryawanController extends Controller
 
         return response()->noContent();
     }
+
+    public function autocomplete(Request $request)
+    {
+        $search = $request->query('q', '');
+
+        if (strlen($search) < 1) {
+            return response()->json(['results' => []]);
+        }
+
+        $karyawans = Karyawan::where('nama', 'LIKE', "%{$search}%")
+            ->orWhere('no_tlp', 'LIKE', "%{$search}%")
+            ->limit(10)
+            ->get(['id_karyawan', 'nama', 'no_tlp']);
+
+        return response()->json([
+            'results' => $karyawans->map(fn($k) => [
+                'id' => $k->id_karyawan,
+                'text' => $k->nama . ' (' . $k->no_tlp . ')',
+                'nama' => $k->nama,
+                'no_tlp' => $k->no_tlp,
+            ])
+        ]);
+    }
+
+    public function export()
+    {
+        $karyawans = Karyawan::all();
+        $filename = 'data-karyawan-' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($karyawans) {
+            $output = fopen('php://output', 'w');
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($output, ['No', 'Nama Karyawan', 'No HP', 'Alamat', 'Status']);
+
+            foreach ($karyawans as $i => $k) {
+                fputcsv($output, [$i + 1, $k->nama, $k->no_tlp, $k->alamat, $k->status]);
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

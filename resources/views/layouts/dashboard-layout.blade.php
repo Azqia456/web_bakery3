@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Three D Bakery - {{ $pageTitle ?? 'Dashboard' }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
             --primary-green: #8B6F47;
@@ -243,6 +245,7 @@
             gap: 16px;
         }
 
+        .notification-menu,
         .profile-menu {
             position: relative;
         }
@@ -344,6 +347,203 @@
             color: #EF4444;
         }
 
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 340px;
+            max-width: 380px;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dropdown-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .dropdown-badge {
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
+            color: var(--white);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--medium-gray);
+            margin: 0 16px;
+        }
+
+        .notification-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 20px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: var(--light-gray);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.bg-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+        .notification-icon.bg-orange { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+        .notification-icon.bg-green { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+        .notification-icon.bg-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-text {
+            font-size: 13px;
+            color: var(--text-dark);
+            margin: 0 0 4px 0;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .dropdown-footer {
+            display: block;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-brown);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .dropdown-footer:hover {
+            background: var(--light-gray);
+        }
+
+        /* Profile Dropdown Enhanced */
+        .profile-dropdown .dropdown-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .dropdown-user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .dropdown-user-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .dropdown-user-role {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-gray);
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            text-align: center;
+            color: var(--dark-gray);
+        }
+
+        .dropdown-item.logout-action {
+            color: #EF4444;
+        }
+
+        .dropdown-item.logout-action i {
+            color: #EF4444;
+        }
+
+        .dropdown-item-badge {
+            margin-left: auto;
+            background: #EF4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .dropdown-form {
+            margin: 0;
+            padding: 0;
+        }
+
         /* Dashboard Content */
         .dashboard-content {
             padding: 24px;
@@ -434,7 +634,12 @@
         </aside>
 
         <div class="main-content">
-            @include('layouts.header', ['title' => $pageTitle ?? 'Dashboard', 'showSearch' => isset($showSearchBar) ? $showSearchBar : false, 'showAddButton' => false, 'totalNotifikasi' => 0])
+            @include('layouts.header', [
+                'title' => $pageTitle ?? 'Dashboard',
+                'showSearch' => isset($showSearchBar) ? $showSearchBar : false,
+                'showAddButton' => $showAddButton ?? false,
+                'totalNotifikasi' => $totalNotifikasi ?? 0
+            ])
 
             <!-- Page Content -->
             @yield('content')
@@ -449,20 +654,6 @@
             submenu.classList.toggle('open');
             arrow.classList.toggle('open');
         }
-
-        // Profile menu toggle
-        document.getElementById('profileMenuButton')?.addEventListener('click', function() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('show');
-        });
-
-        // Close profile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const profileMenu = document.querySelector('.profile-menu');
-            if (profileMenu && !profileMenu.contains(event.target)) {
-                document.getElementById('profileDropdown')?.classList.remove('show');
-            }
-        });
     </script>
     @yield('additional-scripts')
 </body>

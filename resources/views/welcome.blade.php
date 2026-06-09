@@ -466,7 +466,7 @@
                         <a class="nav-link" href="#kontak">Kontak</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a href="{{ route('login') }}" class="btn btn-login-nav">Login Owner</a>
+                        <a href="{{ route('login') }}" class="btn btn-login-nav">Login</a>
                     </li>
                 </ul>
             </div>

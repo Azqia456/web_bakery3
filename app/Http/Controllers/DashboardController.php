@@ -4,12 +4,86 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Karyawan;
+use App\Models\Pesanan;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        return view('dashboard');
+        $today = Carbon::today();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        // Summary cards
+        $totalPemesanan = Pesanan::count();
+        $pendapatanBulanIni = Pesanan::whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])->sum('total_bayar') ?? 0;
+        $pesananBelumLunas = Pesanan::where('status_bayar', 'belum_lunas')->count();
+        $setoranKaryawan = Pesanan::whereNotNull('id_karyawan')
+            ->whereNull('id_pelanggan')
+            ->sum('total_bayar') ?? 0;
+
+        // Statistics
+        $totalProduk = \App\Models\Produk::where('status', 'Aktif')->count();
+        $totalKaryawan = Karyawan::where('status', 'Aktif')->count();
+        $totalPelanggan = \App\Models\Pelanggan::count();
+        $pesananHariIni = Pesanan::whereDate('tgl_pesan', $today)->count();
+
+        // Orders chart (last 7 days)
+        $ordersChartLabels = [];
+        $ordersChartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $ordersChartLabels[] = $date->isoFormat('ddd');
+            $ordersChartData[] = Pesanan::whereDate('tgl_pesan', $date)->count();
+        }
+
+        // Top customers (by order count)
+        $topCustomers = \App\Models\Pelanggan::withCount('pesanans')
+            ->orderBy('pesanans_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Deposits chart (top karyawan by setoran)
+        $topKaryawan = Karyawan::where('status', 'Aktif')
+            ->withSum('pesanans', 'total_bayar')
+            ->orderBy('pesanans_sum_total_bayar', 'desc')
+            ->limit(5)
+            ->get();
+
+        $depositsChartLabels = [];
+        $depositsChartData = [];
+        foreach ($topKaryawan as $karyawan) {
+            $depositsChartLabels[] = $karyawan->nama;
+            $depositsChartData[] = $karyawan->pesanans_sum_total_bayar ?? 0;
+        }
+
+        // Recent deposits
+        $recentDeposits = Pesanan::whereNotNull('id_karyawan')
+            ->whereNull('id_pelanggan')
+            ->with('karyawan')
+            ->orderBy('tgl_pesan', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('dashboard', compact(
+            'totalPemesanan',
+            'pendapatanBulanIni',
+            'pesananBelumLunas',
+            'setoranKaryawan',
+            'totalProduk',
+            'totalKaryawan',
+            'totalPelanggan',
+            'pesananHariIni',
+            'ordersChartLabels',
+            'ordersChartData',
+            'topCustomers',
+            'depositsChartLabels',
+            'depositsChartData',
+            'recentDeposits'
+        ));
     }
 
     public function pelanggan()
@@ -238,6 +312,7 @@ class DashboardController extends Controller
 
     public function dataKaryawan()
     {
+        // dd("masuk ke data karyawan");
         $karyawans = Karyawan::paginate(10);
         
         $total = Karyawan::count();
@@ -262,9 +337,62 @@ class DashboardController extends Controller
         return view('stor-karyawan');
     }
 
-    public function riwayatTransaksi()
+    public function riwayatTransaksi(Request $request)
     {
-        return view('riwayat-transaksi');
+        $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk'])
+            ->orderBy('tgl_pesan', 'desc');
+
+        // Filter by tipe (pelanggan/karyawan)
+        if ($request->filled('tipe')) {
+            if ($request->tipe === 'pelanggan') {
+                $query->whereNotNull('id_pelanggan');
+            } elseif ($request->tipe === 'karyawan') {
+                $query->whereNull('id_pelanggan')->whereNotNull('id_karyawan');
+            }
+        }
+
+        // Filter by sumber (online/offline)
+        if ($request->filled('sumber')) {
+            if ($request->sumber === 'setor') {
+                $query->whereNull('id_pelanggan')->whereNotNull('id_karyawan');
+            } else {
+                $query->where('sumber_pesanan', $request->sumber);
+            }
+        }
+
+        // Filter by metode pembayaran
+        if ($request->filled('metode')) {
+            $query->where('metode_pembayaran', $request->metode);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id_pesanan', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function ($pq) use ($search) {
+                      $pq->where('nama', 'like', "%{$search}%")
+                         ->orWhere('no_tlp', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('karyawan', function ($kq) use ($search) {
+                      $kq->where('nama', 'like', "%{$search}%")
+                         ->orWhere('no_tlp', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $pesanans = $query->paginate(15)->withQueryString();
+
+        // Calculate stats
+        $today = Carbon::today();
+        $stats = [
+            'total' => Pesanan::count(),
+            'pemasukan_hari_ini' => Pesanan::whereDate('tgl_pesan', $today)->sum('total_bayar') ?? 0,
+            'transaksi_pelanggan' => Pesanan::whereNotNull('id_pelanggan')->whereDate('tgl_pesan', $today)->count(),
+            'stor_karyawan' => Pesanan::whereNull('id_pelanggan')->whereNotNull('id_karyawan')->whereDate('tgl_pesan', $today)->count(),
+        ];
+
+        return view('riwayat-transaksi', compact('pesanans', 'stats'));
     }
 
     public function laporan()

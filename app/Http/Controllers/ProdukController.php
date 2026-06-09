@@ -23,6 +23,7 @@ class ProdukController extends Controller
             'harga_produk' => 'required|numeric|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'deskripsi' => 'nullable|string',
+            'status' => 'sometimes|in:Aktif,Nonaktif',
         ]);
 
         // Handle file upload
@@ -52,6 +53,7 @@ class ProdukController extends Controller
             'harga_produk' => 'numeric|min:0',
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'deskripsi' => 'nullable|string',
+            'status' => 'sometimes|in:Aktif,Nonaktif',
         ]);
 
         // Handle file upload

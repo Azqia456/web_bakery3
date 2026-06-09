@@ -16,6 +16,7 @@ class Produk extends Model
         'harga_produk',
         'gambar',
         'deskripsi',
+        'status',
     ];
 
     public function detailPesanans()

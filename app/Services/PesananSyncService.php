@@ -60,7 +60,7 @@ class PesananSyncService
             }
         }
 
-        return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans']);
+        return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans.produk']);
     }
 
     /**
@@ -68,21 +68,15 @@ class PesananSyncService
      */
     public static function createPesananPelanggan($data)
     {
-        // Cari atau buat pelanggan berdasarkan nomor HP
+        // Cari pelanggan berdasarkan ID (prefered, karena frontend Select2 kirim id_pelanggan)
         $pelanggan = null;
-        if (!empty($data['no_tlp'])) {
-            $pelanggan = Pelanggan::findOrCreateByPhoneNumber(
-                $data['no_tlp'],
-                $data['nama_pelanggan'],
-                $data['email'] ?? null,
-                $data['alamat'] ?? null,
-                $data['id_user'] ?? null,
-                'Offline'
-            );
+        if (isset($data['id_pelanggan'])) {
+            $pelanggan = Pelanggan::find($data['id_pelanggan']);
         }
 
-        if (!$pelanggan && isset($data['id_pelanggan'])) {
-            $pelanggan = Pelanggan::find($data['id_pelanggan']);
+        // Fallback: cari atau buat pelanggan berdasarkan nomor HP
+        if (!$pelanggan && !empty($data['no_tlp'])) {
+            $pelanggan = Pelanggan::where('no_tlp', $data['no_tlp'])->first();
         }
 
         if (!$pelanggan) {
@@ -126,7 +120,7 @@ class PesananSyncService
             }
         }
 
-        return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans']);
+        return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans.produk']);
     }
 
     /**
@@ -234,7 +228,7 @@ class PesananSyncService
                 }
             }
 
-            return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans']);
+            return $pesanan->load(['pelanggan', 'karyawan', 'detailPesanans.produk']);
         });
     }
 
@@ -253,11 +247,11 @@ class PesananSyncService
     public static function getPesananByType($type)
     {
         if ($type === 'karyawan') {
-            return Pesanan::with(['karyawan', 'detailPesanans'])
+            return Pesanan::with(['karyawan', 'detailPesanans.produk'])
                 ->whereNotNull('id_karyawan')
                 ->get();
         } elseif ($type === 'pelanggan') {
-            return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans'])
+            return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk'])
                 ->whereNotNull('id_pelanggan')
                 ->get();
         }

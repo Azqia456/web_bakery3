@@ -1,18 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pesanan Offline - Three D Bakery</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.dashboard-layout', ['pageTitle' => 'Pesanan Offline', 'showAddButton' => true, 'totalNotifikasi' => 3])
 
+@section('additional-styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<style>
         :root {
             --primary-brown: #8B6F47;
             --light-brown: #D4A574;
@@ -33,272 +23,6 @@
             --border-radius: 12px;
             --border-radius-xl: 16px;
             --transition: all 0.3s ease;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--cream);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
-            color: var(--white);
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .sidebar-header h1 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: -0.025em;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-
-        .sidebar-menu {
-            padding: 16px 0;
-        }
-
-        .sidebar-menu-item {
-            margin: 4px 16px;
-        }
-
-        .sidebar-menu-item > a,
-        .sidebar-menu-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-weight: 500;
-            font-size: 14px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-        }
-
-        .sidebar-menu-item > a:hover,
-        .sidebar-menu-item > a.active,
-        .sidebar-menu-toggle:hover,
-        .sidebar-menu-toggle.active {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-        }
-
-        .sidebar-menu-item > a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar-menu-item i,
-        .sidebar-menu-toggle i {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-            font-size: 16px;
-        }
-
-        .sidebar-menu-item .toggle-arrow {
-            font-size: 12px;
-            transition: transform 0.3s ease;
-            margin-left: auto;
-        }
-
-        .sidebar-menu-item .toggle-arrow.open {
-            transform: rotate(180deg);
-        }
-
-        .sidebar-submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: var(--border-radius);
-            margin: 0 8px;
-        }
-
-        .sidebar-submenu.open {
-            max-height: 500px;
-        }
-
-        .sidebar-submenu-item {
-            padding: 10px 16px 10px 48px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            font-weight: 400;
-            transition: var(--transition);
-        }
-
-        .sidebar-submenu-item:hover,
-        .sidebar-submenu-item.active {
-            color: var(--white);
-            padding-left: 52px;
-        }
-
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            background-color: var(--cream);
-        }
-
-        .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--medium-gray);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-.profile-menu {
-            position: relative;
-        }
-
-        .notification-btn,
-        .profile-btn {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--light-gray);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            color: var(--dark-gray);
-        }
-
-        .notification-btn:hover,
-        .profile-btn:hover {
-            background: var(--medium-gray);
-            transform: scale(1.05);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 18px;
-            height: 18px;
-            background: #EF4444;
-            color: white;
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .profile-avatar-img {
-            width: 32px;
-             height: 32px;
-             border-radius: 50%;
-             object-fit: cover;
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            min-width: 180px;
-            background: var(--white);
-            border: 1px solid var(--medium-gray);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            padding: 8px;
-            display: none;
-            z-index: 1001;
-        }
-
-        .profile-dropdown.show {
-            display: block;
-        }
-
-        .profile-dropdown a,
-        .profile-dropdown button {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 10px;
-            background: transparent;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: left;
-            transition: var(--transition);
-        }
-
-        .profile-dropdown a:hover,
-        .profile-dropdown button:hover {
-            background: var(--light-gray);
-        }
-
-        .profile-dropdown .logout-action {
-            color: #EF4444;
         }
 
         .btn-primary {
@@ -1005,13 +729,7 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
 
-            .main-content {
-                margin-left: 0;
-            }
 
             .form-row {
                 grid-template-columns: 1fr;
@@ -1132,77 +850,10 @@
         .autocomplete-wrapper {
             position: relative;
         }
-    </style>
-</head>
-<body>
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>🍞 Three D Bakery</h1>
-                <p>Management System</p>
-            </div>
-            <nav class="sidebar-menu">
-                <div class="sidebar-menu-item">
-                    <a href="/dashboard" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span style="font-weight:700;">Dashboard</span>
-                    </a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span style="font-weight:700;">Pesanan</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/pesanan-online" class="sidebar-submenu-item">Pesanan Online</a>
-                        <a href="/pesanan-offline" class="sidebar-submenu-item active">Pesanan Offline</a>
-                    </div>
-                </div>
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-database"></i>
-                        <span style="font-weight:700;">Data</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/data-karyawan" class="sidebar-submenu-item">Data Karyawan</a>
-                        <a href="/data-pelanggan" class="sidebar-submenu-item">Data Pelanggan</a>
-                    </div>
-                </div>
-                <div class="sidebar-menu-item">
-                    <a href="/produk" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-box"></i>
-                        <span style="font-weight:700;">Produk</span>
-                    </a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <a href="/riwayat-transaksi" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-credit-card"></i>
-                        <span style="font-weight:700;">Riwayat Transaksi</span>
-                    </a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <button class="sidebar-menu-toggle" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                        <i class="fas fa-chart-line"></i>
-                        <span style="font-weight:700;">Laporan</span>
-                        <i class="fas fa-chevron-down toggle-arrow"></i>
-                    </button>
-                    <div class="sidebar-submenu">
-                        <a href="/laporan-penjualan" class="sidebar-submenu-item">Laporan Penjualan</a>
-                        <a href="/laporan-pesanan-online" class="sidebar-submenu-item">Laporan Pesanan Online</a>
-                        <a href="/laporan-pesanan-offline" class="sidebar-submenu-item">Laporan Pesanan Offline</a>
-                        <a href="/laporan-pembayaran" class="sidebar-submenu-item">Laporan Pembayaran</a>
-                        <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item">Laporan Setoran Karyawan</a>
-                    </div>
-                </div>
-            </nav>
-        </aside>
+</style>
+@endsection
 
-        <!-- Main Content -->
-        <div class="main-content">
-            @include('layouts.header', ['title' => 'Pesanan Offline', 'showSearch' => false, 'showAddButton' => true, 'totalNotifikasi' => 3])
+@section('content')
 
             <!-- Content -->
             <div class="content">
@@ -1274,7 +925,7 @@
                                     <th>Pickup / Delivery</th>
                                     <th>Total Bayar</th>
                                     <th>Status Pesanan</th>
-                                    <th style="width: 100px;">Aksi</th>
+                                    <th style="min-width: 140px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="bodyPelanggan">
@@ -1286,6 +937,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div id="paginationPelanggan" class="pagination-container"></div>
                     </div>
                 </div>
 
@@ -1314,7 +966,7 @@
                                     <th>Total Barang</th>
                                     <th>Status Setor</th>
                                     <th>Tanggal Ambil</th>
-                                    <th style="width: 100px;">Aksi</th>
+                                    <th style="min-width: 140px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="bodyKaryawan">
@@ -1326,6 +978,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div id="paginationKaryawan" class="pagination-container"></div>
                     </div>
                 </div>
             </div>
@@ -1358,7 +1011,9 @@
                 <div id="formKaryawan">
                     <div class="form-group">
                         <label class="form-label">Nama Karyawan <span style="color: var(--red);">*</span></label>
-                        <input type="text" class="form-control" id="namaKaryawan" placeholder="Masukkan nama karyawan">
+                        <select class="form-control" id="namaKaryawan" style="width: 100%;">
+                            <option value="">Cari nama karyawan...</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tanggal Pickup <span style="color: var(--red);">*</span></label>
@@ -1370,12 +1025,13 @@
                 <div id="formPelanggan" style="display: none;">
                     <div class="form-group">
                         <label class="form-label">Nama Pelanggan <span style="color: var(--red);">*</span></label>
-                        <input type="text" class="form-control" id="namaPelanggan" placeholder="Masukkan nama pelanggan">
-                        <div class="form-error" id="errorNamaPelanggan"></div>
+                        <select class="form-control" id="namaPelanggan" style="width: 100%;">
+                            <option value="">Cari nama pelanggan...</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">No HP <span style="color: var(--red);">*</span></label>
-                        <input type="tel" class="form-control" id="noHpPelanggan" placeholder="08xxxxxxxxxx" inputmode="numeric">
+                        <input type="tel" class="form-control" id="noHpPelanggan" placeholder="Otomatis terisi" readonly>
                         <div class="form-error" id="errorNoHpPelanggan"></div>
                     </div>
                     <div class="form-group">
@@ -1468,7 +1124,64 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <script>
+    <!-- Pagination Styles -->
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-top: 1px solid var(--medium-gray);
+            margin-top: 8px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .pagination-info {
+            font-size: 13px;
+            color: var(--dark-gray);
+        }
+        .pagination-nav {
+            display: flex;
+            gap: 4px;
+        }
+        .pagination-nav .page-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border: 1px solid var(--medium-gray);
+            background: var(--white);
+            color: var(--text-dark);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .pagination-nav .page-btn:hover:not(.disabled):not(.active) {
+            background: var(--light-cream);
+            border-color: var(--light-brown);
+            color: var(--primary-brown);
+        }
+        .pagination-nav .page-btn.active {
+            background: var(--light-brown);
+            border-color: var(--light-brown);
+            color: var(--white);
+            cursor: default;
+        }
+        .pagination-nav .page-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
+@endsection
+
+@section('additional-scripts')
+<script>
         // Data structure untuk karyawan dan pelanggan
         let pesananData = {
             karyawan: [],
@@ -1476,9 +1189,44 @@
         };
         let currentTab = 'pelanggan';
         let productCount = 0;
+        const ITEMS_PER_PAGE = 10;
+        let paginationState = {
+            karyawan: { currentPage: 1, perPage: ITEMS_PER_PAGE },
+            pelanggan: { currentPage: 1, perPage: ITEMS_PER_PAGE }
+        };
+        let filteredData = {
+            karyawan: null,
+            pelanggan: null
+        };
+        let masterProduk = [];
+        let editingId = null;
+        let editingType = null;
+
+        function getData(type) {
+            return filteredData[type] || pesananData[type];
+        }
+
+        function formatHarga(num) {
+            return Number(num).toLocaleString('id-ID');
+        }
+
+        async function loadMasterProduk() {
+            try {
+                const res = await fetch('/api/produks');
+                const data = await res.json();
+                masterProduk = Array.isArray(data) ? data : (data.data || []);
+            } catch (e) {
+                console.error('Gagal load master produk:', e);
+            }
+        }
+
+        // Inisialisasi data dari server (database)
+        pesananData.karyawan = @json($karyawanItems);
+        pesananData.pelanggan = @json($pelangganItems);
 
         // Inisialisasi
         document.addEventListener('DOMContentLoaded', function() {
+            loadMasterProduk();
             renderTables();
             setupSearch();
             updateStats();
@@ -1493,19 +1241,30 @@
 
         function renderKaryawanTable() {
             const tbody = document.getElementById('bodyKaryawan');
-            if (pesananData.karyawan.length === 0) {
+            const pag = paginationState.karyawan;
+            const data = getData('karyawan');
+            const totalItems = data.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / pag.perPage));
+            if (pag.currentPage > totalPages) pag.currentPage = totalPages;
+
+            if (totalItems === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan karyawan
                 </td></tr>`;
+                document.getElementById('paginationKaryawan').innerHTML = '';
                 return;
             }
 
-            tbody.innerHTML = pesananData.karyawan.map(item => {
+            const start = (pag.currentPage - 1) * pag.perPage;
+            const end = start + pag.perPage;
+            const pageItems = data.slice(start, end);
+
+            tbody.innerHTML = pageItems.map(item => {
                 const totalBarang = item.produk ? item.produk.reduce((sum, p) => sum + (p.qty || 0), 0) : 0;
                 const statusBadge = item.status === 'sudah_setor' ? 'sudah_setor' : 'belum_setor';
                 const statusText = item.status === 'sudah_setor' ? 'Sudah Setor' : 'Belum Setor';
-                
+
                 return `
                 <tr data-status="${item.status || 'belum_setor'}">
                     <td>${item.id}</td>
@@ -1518,38 +1277,57 @@
                             <button class="btn-icon" onclick="showDetail('karyawan', '${item.id}')" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            <button class="btn-icon" onclick="openEditModal('karyawan', '${item.id}')" title="Edit Pesanan">
+                                <i class="fas fa-pen"></i>
+                            </button>
                             <button class="btn-icon" onclick="markComplete('karyawan', '${item.id}')" title="Checklist Setor">
                                 <i class="fas fa-check"></i>
                             </button>
                             <button class="btn-icon" onclick="downloadInvoice('karyawan', '${item.id}')" title="Download Invoice">
                                 <i class="fas fa-file-invoice"></i>
                             </button>
+                            <button class="btn-icon delete" onclick="deletePesanan('karyawan', '${item.id}')" title="Hapus Pesanan">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
             `}).join('');
+
+            renderPagination('paginationKaryawan', pag, totalItems, 'karyawan');
         }
 
         function renderPelangganTable() {
             const tbody = document.getElementById('bodyPelanggan');
-            if (pesananData.pelanggan.length === 0) {
+            const pag = paginationState.pelanggan;
+            const data = getData('pelanggan');
+            const totalItems = data.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / pag.perPage));
+            if (pag.currentPage > totalPages) pag.currentPage = totalPages;
+
+            if (totalItems === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan pelanggan
                 </td></tr>`;
+                document.getElementById('paginationPelanggan').innerHTML = '';
                 return;
             }
 
-            tbody.innerHTML = pesananData.pelanggan.map((item, index) => {
+            const start = (pag.currentPage - 1) * pag.perPage;
+            const end = start + pag.perPage;
+            const pageItems = data.slice(start, end);
+
+            tbody.innerHTML = pageItems.map((item, index) => {
                 const statusBadge = item.status === 'selesai' ? 'selesai' : 'diproses';
                 const statusText = item.status === 'selesai' ? 'Selesai' : 'Diproses';
-                const pickupDeliveryDate = item.metode_pengambilan === 'delivery' ? 
-                    (item.tanggal_delivery || '-') : 
+                const pickupDeliveryDate = item.metode_pengambilan === 'delivery' ?
+                    (item.tanggal_delivery || '-') :
                     (item.tanggal_pickup || '-');
-                
+
                 return `
                 <tr data-status="${item.status || 'diproses'}">
-                    <td>${index + 1}</td>
+                    <td>${start + index + 1}</td>
                     <td>${item.nama}</td>
                     <td>${item.no_hp || '-'}</td>
                     <td>${item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</td>
@@ -1560,16 +1338,61 @@
                             <button class="btn-icon" onclick="showDetail('pelanggan', '${item.id}')" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            <button class="btn-icon" onclick="openEditModal('pelanggan', '${item.id}')" title="Edit Pesanan">
+                                <i class="fas fa-pen"></i>
+                            </button>
                             <button class="btn-icon" onclick="markComplete('pelanggan', '${item.id}')" title="Checklist Selesai">
                                 <i class="fas fa-check"></i>
                             </button>
                             <button class="btn-icon" onclick="downloadInvoice('pelanggan', '${item.id}')" title="Download Invoice">
                                 <i class="fas fa-file-invoice"></i>
                             </button>
+                            <button class="btn-icon delete" onclick="deletePesanan('pelanggan', '${item.id}')" title="Hapus Pesanan">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
             `}).join('');
+
+            renderPagination('paginationPelanggan', pag, totalItems, 'pelanggan');
+        }
+
+        // Pagination Functions
+        function renderPagination(containerId, pag, totalItems, type) {
+            const container = document.getElementById(containerId);
+            const totalPages = Math.max(1, Math.ceil(totalItems / pag.perPage));
+            const currentPage = pag.currentPage;
+            const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pag.perPage + 1;
+            const endItem = Math.min(currentPage * pag.perPage, totalItems);
+
+            let pagesHtml = '';
+            // Previous
+            pagesHtml += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="goToPage('${type}', ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                pagesHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage('${type}', ${i})">${i}</button>`;
+            }
+            // Next
+            pagesHtml += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="goToPage('${type}', ${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&raquo;</button>`;
+
+            container.innerHTML = `
+                <div class="pagination-info">
+                    Menampilkan ${startItem} sampai ${endItem} dari ${totalItems} pesanan
+                </div>
+                <div class="pagination-nav">
+                    ${pagesHtml}
+                </div>
+            `;
+        }
+
+        function goToPage(type, page) {
+            paginationState[type].currentPage = page;
+            if (type === 'karyawan') {
+                renderKaryawanTable();
+            } else {
+                renderPelangganTable();
+            }
         }
 
         // Tab Switching
@@ -1582,22 +1405,123 @@
         }
 
         // Modal Functions
-        function openAddModal() {
+        function resetModal() {
+            editingId = null;
+            editingType = null;
             productCount = 0;
-            document.getElementById('modalAddPesanan').classList.add('show');
             document.getElementById('productList').innerHTML = '';
             document.getElementById('totalPesanan').textContent = 'Rp 0';
             document.querySelector('input[name="tipePesanan"][value="karyawan"]').checked = true;
             document.querySelector('input[name="metodeMetode"][value="pickup"]').checked = true;
             document.querySelector('input[name="metodePayment"][value="cash"]').checked = true;
             document.getElementById('buktiBayar').value = '';
+            document.getElementById('noHpPelanggan').value = '';
+            document.getElementById('alamatDelivery').value = '';
+            document.getElementById('tanggalDelivery').value = '';
+            document.getElementById('tanggalPickupKaryawan').value = '';
+            document.getElementById('tanggalPickupPelanggan').value = '';
+            document.getElementById('modalTitleAdd').textContent = 'Tambah Pesanan';
+            document.querySelectorAll('input[name="tipePesanan"]').forEach(el => el.disabled = false);
+            setTimeout(() => {
+                if (typeof $ !== 'undefined') {
+                    if ($('#namaKaryawan').data('select2')) $('#namaKaryawan').val(null).trigger('change');
+                    if ($('#namaPelanggan').data('select2')) $('#namaPelanggan').val(null).trigger('change');
+                }
+            }, 200);
+        }
+
+        function openAddModal() {
+            resetModal();
+            document.getElementById('modalAddPesanan').classList.add('show');
             changePesananType();
             changeMetode();
             changePaymentMethod();
         }
 
+        function openEditModal(type, pesananId) {
+            const pesanan = pesananData[type].find(p => p.id === pesananId);
+            if (!pesanan) return;
+
+            editingId = pesanan.id_pesanan;
+            editingType = type;
+            resetModal();
+
+            document.getElementById('modalTitleAdd').textContent = 'Edit Pesanan';
+            document.getElementById('modalAddPesanan').classList.add('show');
+
+            // Lock tipe pesanan
+            document.querySelectorAll('input[name="tipePesanan"]').forEach(el => {
+                el.checked = (el.value === type);
+                el.disabled = true;
+            });
+            changePesananType();
+
+            if (type === 'karyawan') {
+                document.getElementById('tanggalPickupKaryawan').value = pesanan.tanggal_pickup || '';
+                // Pre-fill Select2 karyawan
+                setTimeout(() => {
+                    if (typeof $ !== 'undefined' && pesanan.id_karyawan) {
+                        const $sel = $('#namaKaryawan');
+                        if ($sel.data('select2')) {
+                            const option = new Option(pesanan.nama, pesanan.id_karyawan, true, true);
+                            $sel.empty().append(option).trigger('change');
+                        }
+                    }
+                }, 300);
+            } else {
+                document.getElementById('noHpPelanggan').value = pesanan.no_hp || '';
+                document.getElementById('tanggalPickupPelanggan').value = pesanan.tanggal_pickup || '';
+
+                // Metode
+                const metode = pesanan.metode_pengambilan || 'pickup';
+                document.querySelector(`input[name="metodeMetode"][value="${metode}"]`).checked = true;
+                changeMetode();
+
+                if (metode === 'delivery') {
+                    document.getElementById('alamatDelivery').value = pesanan.alamat_delivery || '';
+                    document.getElementById('tanggalDelivery').value = pesanan.tanggal_delivery || '';
+                }
+
+                // Payment
+                const payment = pesanan.metode_pembayaran || 'cash';
+                document.querySelector(`input[name="metodePayment"][value="${payment}"]`).checked = true;
+                changePaymentMethod();
+
+                // Pre-fill Select2 pelanggan
+                setTimeout(() => {
+                    if (typeof $ !== 'undefined' && pesanan.id_pelanggan) {
+                        const $sel = $('#namaPelanggan');
+                        if ($sel.data('select2')) {
+                            const option = new Option(pesanan.nama + '_' + pesanan.no_hp, pesanan.id_pelanggan, true, true);
+                            option.no_tlp = pesanan.no_hp;
+                            $sel.empty().append(option).trigger('change');
+                        }
+                    }
+                }, 300);
+            }
+
+            // Pre-fill products
+            if (pesanan.produk && pesanan.produk.length > 0) {
+                pesanan.produk.forEach(pr => {
+                    addProductRow();
+                    const lastRow = document.getElementById('productList').lastElementChild;
+                    if (lastRow) {
+                        const select = lastRow.querySelector('select');
+                        const input = lastRow.querySelector('input[type="number"]');
+                        if (select && pr.id_produk) {
+                            const option = select.querySelector(`option[value^="${pr.id_produk}|"]`);
+                            if (option) option.selected = true;
+                        }
+                        if (input) input.value = pr.qty || 1;
+                    }
+                });
+                updateTotal();
+            }
+        }
+
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
+            resetModal();
         }
 
         function changePesananType() {
@@ -1605,9 +1529,47 @@
             if (type === 'karyawan') {
                 document.getElementById('formKaryawan').style.display = 'block';
                 document.getElementById('formPelanggan').style.display = 'none';
+                setTimeout(() => {
+                    if (typeof $ !== 'undefined' && !$('#namaKaryawan').data('select2')) {
+                        $('#namaKaryawan').select2({
+                            placeholder: 'Cari nama karyawan...',
+                            allowClear: true,
+                            dropdownParent: $('#modalAddPesanan'),
+                            ajax: {
+                                url: '/api/karyawans-autocomplete',
+                                dataType: 'json',
+                                delay: 300,
+                                data: function(p) { return { q: p.term }; },
+                                processResults: function(d) { return { results: d.results }; },
+                                cache: true
+                            },
+                            minimumInputLength: 1,
+                            width: '100%'
+                        });
+                    }
+                }, 100);
             } else {
                 document.getElementById('formKaryawan').style.display = 'none';
                 document.getElementById('formPelanggan').style.display = 'block';
+                setTimeout(() => {
+                    if (typeof $ !== 'undefined' && !$('#namaPelanggan').data('select2')) {
+                        $('#namaPelanggan').select2({
+                            placeholder: 'Cari nama pelanggan...',
+                            allowClear: true,
+                            dropdownParent: $('#modalAddPesanan'),
+                            ajax: {
+                                url: '/api/pelanggans-autocomplete',
+                                dataType: 'json',
+                                delay: 300,
+                                data: function(p) { return { q: p.term }; },
+                                processResults: function(d) { return { results: d.results }; },
+                                cache: true
+                            },
+                            minimumInputLength: 1,
+                            width: '100%'
+                        });
+                    }
+                }, 100);
                 changeMetode();
             }
         }
@@ -1617,7 +1579,7 @@
             const alamatGroup = document.getElementById('alamatDeliveryGroup');
             const tanggalDeliveryGroup = document.getElementById('tanggalDeliveryGroup');
             const tanggalPickupGroup = document.getElementById('tanggalPickupGroup');
-            
+
             if (metode === 'delivery') {
                 alamatGroup.style.display = 'block';
                 tanggalDeliveryGroup.style.display = 'block';
@@ -1632,7 +1594,7 @@
         function changePaymentMethod() {
             const method = document.querySelector('input[name="metodePayment"]:checked').value;
             const buktiBayarGroup = document.getElementById('buktiBayarGroup');
-            
+
             if (method === 'transfer') {
                 buktiBayarGroup.style.display = 'block';
             } else {
@@ -1646,15 +1608,17 @@
             const productRow = document.createElement('div');
             productRow.className = 'product-item';
             productRow.id = 'product-' + productCount;
+            const options = masterProduk.length > 0
+                ? masterProduk.map(p =>
+                    `<option value="${p.id_produk}|${p.harga_produk}|${p.nama_produk}">${p.nama_produk} - Rp ${formatHarga(p.harga_produk)}</option>`
+                  ).join('')
+                : '<option value="">-- Tidak ada produk --</option>';
             productRow.innerHTML = `
                 <div class="product-item-controls" style="flex: 1;">
                     <label>Pilih Produk</label>
                     <select class="form-control" onchange="updateTotal()">
                         <option value="">-- Pilih Produk --</option>
-                        <option value="roti_tawar|30000">Roti Tawar - Rp 30.000</option>
-                        <option value="donat_glaze|50000">Donat Glaze - Rp 50.000</option>
-                        <option value="kue_tart|300000">Kue Tart - Rp 300.000</option>
-                        <option value="roti_croissant|100000">Roti Croissant - Rp 100.000</option>
+                        ${options}
                     </select>
                 </div>
                 <div class="product-item-controls" style="flex: 0.5;">
@@ -1681,113 +1645,193 @@
                 const select = p.querySelector('select');
                 const input = p.querySelector('input[type="number"]');
                 if (select.value && input.value) {
-                    const [name, price] = select.value.split('|');
-                    total += parseInt(price) * parseInt(input.value);
+                    const parts = select.value.split('|');
+                    const price = parseInt(parts[1]);
+                    total += price * parseInt(input.value);
                 }
             });
             document.getElementById('totalPesanan').textContent = 'Rp ' + total.toLocaleString('id-ID');
         }
 
-        function savePesanan() {
+        async function savePesanan() {
             const type = document.querySelector('input[name="tipePesanan"]:checked').value;
             const productCount = document.querySelectorAll('.product-item').length;
-            
+
             if (productCount === 0) {
                 showToast('Silakan tambahkan minimal 1 produk', 'error');
                 return;
             }
 
-            // Collect products
             const produk = [];
             document.querySelectorAll('.product-item').forEach(p => {
                 const select = p.querySelector('select');
                 const input = p.querySelector('input[type="number"]');
                 if (select.value && input.value) {
-                    const [name, price] = select.value.split('|');
+                    const parts = select.value.split('|');
                     produk.push({
-                        nama: name,
-                        harga: parseInt(price),
-                        qty: parseInt(input.value)
+                        id_produk: parseInt(parts[0]),
+                        jumlah_pesan: parseInt(input.value)
                     });
                 }
             });
 
-            const totalAmount = produk.reduce((sum, p) => sum + (p.harga * p.qty), 0);
-            
-            if (type === 'karyawan') {
-                const newPesanan = {
-                    id: 'K' + String(pesananData.karyawan.length + 1).padStart(3, '0'),
-                    nama: document.getElementById('namaKaryawan').value,
-                    status: 'belum_setor',
-                    tanggal_pesan: new Date().toISOString().split('T')[0],
-                    tanggal_pickup: document.getElementById('tanggalPickupKaryawan').value,
-                    tanggal_setor: null,
-                    total: totalAmount,
-                    produk: produk
+            const totalAmount = produk.reduce((sum, p) => {
+                const item = masterProduk.find(mp => mp.id_produk == p.id_produk);
+                return sum + ((item ? item.harga_produk : 0) * p.jumlah_pesan);
+            }, 0);
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+            // EDIT MODE
+            if (editingId) {
+                let payload = {
+                    total_bayar: totalAmount,
+                    products: produk
                 };
-                
-                if (!newPesanan.nama || !newPesanan.tanggal_pickup) {
-                    showToast('Silakan isi semua field yang wajib', 'error');
+
+                const tglPickup = document.getElementById(type === 'karyawan' ? 'tanggalPickupKaryawan' : 'tanggalPickupPelanggan').value;
+                if (tglPickup) payload.tgl_pesan = tglPickup;
+
+                if (type === 'pelanggan') {
+                    const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
+                    const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
+                    payload.metode_pengambilan = metode;
+                    payload.metode_pembayaran = metodePayment;
+                    payload.status_pembayaran = metodePayment === 'cash' ? 'lunas' : 'menunggu_verifikasi';
+                    payload.status_bayar = metodePayment === 'cash' ? 'lunas' : 'belum_lunas';
+
+                    if (metode === 'delivery') {
+                        const alamat = document.getElementById('alamatDelivery').value.trim();
+                        const tglDelivery = document.getElementById('tanggalDelivery').value;
+                        if (!alamat || !tglDelivery) {
+                            showToast('Silakan isi alamat dan tanggal delivery', 'error');
+                            return;
+                        }
+                        payload.alamat_delivery = alamat;
+                        payload.tgl_delivery = tglDelivery;
+                    }
+                }
+
+                try {
+                    const response = await fetch(`/pesanan-offline/${editingId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showToast('Pesanan berhasil diperbarui', 'success');
+                        closeModal('modalAddPesanan');
+                        setTimeout(() => window.location.reload(), 600);
+                    } else {
+                        showToast(result.message || 'Gagal memperbarui pesanan', 'error');
+                    }
+                } catch (err) {
+                    showToast('Terjadi kesalahan: ' + err.message, 'error');
+                }
+                return;
+            }
+
+            // CREATE MODE
+            let payload = {
+                tipe_pesanan: type,
+                tgl_pesan: new Date().toISOString().split('T')[0],
+                total_bayar: totalAmount,
+                products: produk
+            };
+
+            if (type === 'karyawan') {
+                const karyawanData = $('#namaKaryawan').select2('data')[0];
+                const idKaryawan = karyawanData?.id;
+                const nama = karyawanData?.text?.split(' (')[0] || '';
+
+                if (!idKaryawan || !document.getElementById('tanggalPickupKaryawan').value) {
+                    showToast('Silakan pilih karyawan dan tanggal pickup', 'error');
                     return;
                 }
-                
-                pesananData.karyawan.push(newPesanan);
-                showToast('Pesanan karyawan berhasil dibuat', 'success');
+
+                payload.id_karyawan = parseInt(idKaryawan);
+                payload.nama_karyawan = nama;
+                payload.status_bayar = 'belum_lunas';
             } else {
                 const metode = document.querySelector('input[name="metodeMetode"]:checked').value;
                 const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
-                
-                const newPesanan = {
-                    id: 'P' + String(pesananData.pelanggan.length + 1).padStart(3, '0'),
-                    nama: document.getElementById('namaPelanggan').value,
-                    no_hp: document.getElementById('noHpPelanggan').value,
-                    status: 'diproses',
-                    tgl_transaksi: new Date().toISOString().split('T')[0],
-                    metode_pengambilan: metode,
-                    metode_pembayaran: metodePayment,
-                    total: totalAmount,
-                    produk: produk
-                };
+                const pelangganData = $('#namaPelanggan').select2('data')[0];
+                const idPelanggan = pelangganData?.id;
+                const nama = pelangganData?.text?.split('_')[0] || '';
+                const noHp = pelangganData?.no_tlp || document.getElementById('noHpPelanggan').value;
+
+                if (!idPelanggan || !noHp) {
+                    showToast('Silakan pilih pelanggan', 'error');
+                    return;
+                }
+
+                payload.id_pelanggan = parseInt(idPelanggan);
+                payload.nama_pelanggan = nama;
+                payload.no_tlp = noHp;
+                payload.metode_pengambilan = metode;
+                payload.metode_pembayaran = metodePayment;
+                payload.status_pembayaran = metodePayment === 'cash' ? 'lunas' : 'menunggu_verifikasi';
+                payload.status_bayar = metodePayment === 'cash' ? 'lunas' : 'belum_lunas';
 
                 if (metode === 'delivery') {
-                    newPesanan.alamat_delivery = document.getElementById('alamatDelivery').value;
-                    newPesanan.tanggal_delivery = document.getElementById('tanggalDelivery').value;
-                    if (!newPesanan.alamat_delivery || !newPesanan.tanggal_delivery) {
+                    const alamat = document.getElementById('alamatDelivery').value.trim();
+                    const tglDelivery = document.getElementById('tanggalDelivery').value;
+                    if (!alamat || !tglDelivery) {
                         showToast('Silakan isi alamat dan tanggal delivery', 'error');
                         return;
                     }
+                    payload.alamat_delivery = alamat;
+                    payload.tgl_delivery = tglDelivery;
                 } else {
-                    newPesanan.tanggal_pickup = document.getElementById('tanggalPickupPelanggan').value;
-                    if (!newPesanan.tanggal_pickup) {
+                    const tglPickup = document.getElementById('tanggalPickupPelanggan').value;
+                    if (!tglPickup) {
                         showToast('Silakan isi tanggal pickup', 'error');
                         return;
                     }
+                    payload.tgl_pesan = tglPickup;
                 }
-
-                if (!newPesanan.nama || !newPesanan.no_hp) {
-                    showToast('Silakan isi nama dan nomor HP pelanggan', 'error');
-                    return;
-                }
-                
-                pesananData.pelanggan.push(newPesanan);
-                showToast('Pesanan pelanggan berhasil dibuat (Status: Lunas)', 'success');
             }
 
-            renderTables();
-            updateStats();
-            closeModal('modalAddPesanan');
+            try {
+                const response = await fetch('/pesanan-offline', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast(type === 'karyawan' ? 'Pesanan karyawan berhasil dibuat' : 'Pesanan pelanggan berhasil dibuat', 'success');
+                    closeModal('modalAddPesanan');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    showToast(result.message || 'Gagal menyimpan pesanan', 'error');
+                }
+            } catch (err) {
+                showToast('Terjadi kesalahan: ' + err.message, 'error');
+            }
         }
 
         function showDetail(type, pesananId) {
             const detailContent = document.getElementById('detailContent');
-            
+
             if (type === 'pelanggan') {
                 const pesanan = pesananData.pelanggan.find(p => p.id === pesananId);
                 if (!pesanan) return;
-                
-                const metodePickup = pesanan.metode_pengambilan === 'delivery' ? 
+
+                const metodePickup = pesanan.metode_pengambilan === 'delivery' ?
                     pesanan.tanggal_delivery : pesanan.tanggal_pickup;
-                
+
                 let produkHTML = pesanan.produk.map(p => `
                     <tr>
                         <td>${p.nama}</td>
@@ -1795,7 +1839,7 @@
                         <td style="text-align: right;">Rp ${(p.harga * p.qty).toLocaleString('id-ID')}</td>
                     </tr>
                 `).join('');
-                
+
                 detailContent.innerHTML = `
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DATA PELANGGAN</h4>
@@ -1812,7 +1856,7 @@
                             <div class="detail-value">${pesanan.metode_pengambilan === 'delivery' ? pesanan.alamat_delivery || '-' : '-'}</div>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL TRANSAKSI</h4>
                         <div class="detail-row">
@@ -1832,7 +1876,7 @@
                             <div class="detail-value"><span class="status-badge ${pesanan.status === 'selesai' ? 'selesai' : 'diproses'}">${pesanan.status === 'selesai' ? 'Selesai' : 'Diproses'}</span></div>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL PRODUK</h4>
                         <table style="width: 100%; border-collapse: collapse;">
@@ -1858,7 +1902,7 @@
             } else {
                 const pesanan = pesananData.karyawan.find(p => p.id === pesananId);
                 if (!pesanan) return;
-                
+
                 let produkHTML = pesanan.produk.map(p => `
                     <tr>
                         <td>${p.nama}</td>
@@ -1866,9 +1910,9 @@
                         <td style="text-align: right;">Rp ${(p.harga * p.qty).toLocaleString('id-ID')}</td>
                     </tr>
                 `).join('');
-                
+
                 const totalBarang = pesanan.produk.reduce((sum, p) => sum + p.qty, 0);
-                
+
                 detailContent.innerHTML = `
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DATA KARYAWAN</h4>
@@ -1877,7 +1921,7 @@
                             <div class="detail-value">${pesanan.nama}</div>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">DETAIL PRODUK</h4>
                         <table style="width: 100%; border-collapse: collapse;">
@@ -1899,7 +1943,7 @@
                             </tfoot>
                         </table>
                     </div>
-                    
+
                     <div class="detail-section">
                         <h4 style="margin-bottom: 16px; font-size: 15px; font-weight: 600; color: var(--text-dark);">STATUS SETORAN</h4>
                         <div class="detail-row">
@@ -1917,17 +1961,17 @@
                     </div>
                 `;
             }
-            
+
             document.getElementById('modalDetail').classList.add('show');
         }
 
         function downloadInvoice(type, pesananId) {
-            const pesanan = type === 'pelanggan' ? 
+            const pesanan = type === 'pelanggan' ?
                 pesananData.pelanggan.find(p => p.id === pesananId) :
                 pesananData.karyawan.find(p => p.id === pesananId);
-            
+
             if (!pesanan) return;
-            
+
             // Implementasi sederhana - dalam praktik nyata gunakan library seperti jsPDF
             let invoiceContent = `
             Invoice ${type === 'pelanggan' ? 'Pelanggan' : 'Karyawan'}
@@ -1936,13 +1980,13 @@
             Nama: ${pesanan.nama}
             ${type === 'pelanggan' ? 'No HP: ' + pesanan.no_hp + '\n' : ''}
             Tanggal: ${type === 'pelanggan' ? pesanan.tgl_transaksi : pesanan.tanggal_pickup}
-            
+
             Produk:
             ${pesanan.produk.map(p => `${p.nama} x${p.qty} = Rp ${(p.harga * p.qty).toLocaleString('id-ID')}`).join('\n')}
-            
+
             Total: Rp ${pesanan.total.toLocaleString('id-ID')}
             `;
-            
+
             const blob = new Blob([invoiceContent], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -1950,33 +1994,73 @@
             link.download = `Invoice_${pesanan.id}.txt`;
             link.click();
             window.URL.revokeObjectURL(url);
-            
+
             showToast('Invoice berhasil diunduh', 'success');
         }
 
-        function markComplete(type, pesananId) {
-            if (type === 'pelanggan') {
-                const pesanan = pesananData.pelanggan.find(p => p.id === pesananId);
-                if (!pesanan) return;
-                
-                pesanan.status = pesanan.status === 'selesai' ? 'diproses' : 'selesai';
-                showToast(pesanan.status === 'selesai' ? 'Pesanan marked as Selesai' : 'Pesanan marked as Diproses', 'success');
-            } else {
-                const pesanan = pesananData.karyawan.find(p => p.id === pesananId);
-                if (!pesanan) return;
-                
-                pesanan.status = pesanan.status === 'sudah_setor' ? 'belum_setor' : 'sudah_setor';
-                if (pesanan.status === 'sudah_setor') {
-                    pesanan.tanggal_setor = new Date().toISOString().split('T')[0];
-                    showToast('Pesanan marked as Sudah Setor - Otomatis masuk laporan', 'success');
+        async function markComplete(type, pesananId) {
+            const numericId = parseInt(pesananId.toString().replace(/^[KP]-/, ''));
+            if (!numericId) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            const pesanan = type === 'pelanggan'
+                ? pesananData.pelanggan.find(p => p.id === pesananId)
+                : pesananData.karyawan.find(p => p.id === pesananId);
+            if (!pesanan) return;
+
+            const newStatusBayar = (type === 'pelanggan'
+                ? (pesanan.status === 'selesai' ? 'belum_lunas' : 'lunas')
+                : (pesanan.status === 'sudah_setor' ? 'belum_lunas' : 'lunas'));
+
+            try {
+                const response = await fetch(`/pesanan-offline/${numericId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ status_bayar: newStatusBayar })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Status berhasil diperbarui', 'success');
+                    setTimeout(() => window.location.reload(), 600);
                 } else {
-                    pesanan.tanggal_setor = null;
-                    showToast('Pesanan marked as Belum Setor', 'success');
+                    showToast(result.message || 'Gagal memperbarui status', 'error');
                 }
+            } catch (err) {
+                showToast('Terjadi kesalahan: ' + err.message, 'error');
             }
-            
-            renderTables();
-            updateStats();
+        }
+
+        async function deletePesanan(type, pesananId) {
+            if (!confirm('Yakin ingin menghapus pesanan ini?')) return;
+            const numericId = parseInt(pesananId.toString().replace(/^[KP]-/, ''));
+            if (!numericId) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            try {
+                const response = await fetch(`/pesanan-offline/${numericId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Pesanan berhasil dihapus', 'success');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    showToast(result.message || 'Gagal menghapus pesanan', 'error');
+                }
+            } catch (err) {
+                showToast('Terjadi kesalahan: ' + err.message, 'error');
+            }
         }
 
         // Search Functions
@@ -1994,18 +2078,18 @@
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            
+
             let icon = 'fas fa-info-circle';
             if (type === 'success') icon = 'fas fa-check-circle';
             if (type === 'error') icon = 'fas fa-exclamation-circle';
-            
+
             toast.innerHTML = `
                 <div class="toast-icon"><i class="${icon}"></i></div>
                 <div class="toast-text">${message}</div>
             `;
-            
+
             toastContainer.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.remove();
             }, 3000);
@@ -2013,75 +2097,55 @@
 
         function filterTable(type) {
             if (!type) type = currentTab;
-            const searchValue = type === 'karyawan' ? 
-                document.getElementById('searchKaryawan').value.toLowerCase() : 
+            const searchValue = type === 'karyawan' ?
+                document.getElementById('searchKaryawan').value.toLowerCase() :
                 document.getElementById('searchPelanggan').value.toLowerCase();
-            const filterValue = type === 'karyawan' ? 
-                document.getElementById('filterKaryawan').value : 
+            const filterValue = type === 'karyawan' ?
+                document.getElementById('filterKaryawan').value :
                 document.getElementById('filterPelanggan').value;
 
-            const tbody = type === 'karyawan' ? 
-                document.getElementById('bodyKaryawan') : 
-                document.getElementById('bodyPelanggan');
-            const rows = tbody.getElementsByTagName('tr');
-
-            let hasVisibleRows = false;
-            const noResultsRow = rows[0]; // Track first row for empty state
-
-            for (let i = 0; i < rows.length; i++) {
-                // Skip if it's the empty state row
-                if (rows[i].textContent.includes('Belum ada pesanan')) continue;
-                
-                const text = rows[i].textContent.toLowerCase();
-                const status = rows[i].getAttribute('data-status') || '';
-                
+            // Filter on original data
+            const originalData = pesananData[type];
+            const filtered = originalData.filter(item => {
+                const text = (item.nama + ' ' + item.id + ' ' + (item.no_hp || '')).toLowerCase();
                 let show = text.includes(searchValue);
                 if (filterValue) {
-                    show = show && status === filterValue;
+                    show = show && (item.status || '') === filterValue;
                 }
+                return show;
+            });
 
-                rows[i].style.display = show ? '' : 'none';
-                if (show) hasVisibleRows = true;
+            // Save filtered data (or null if no filter/search applied)
+            if (!searchValue && !filterValue) {
+                filteredData[type] = null;
+            } else {
+                filteredData[type] = filtered;
             }
 
-            // If no results found, show appropriate message
-            if (!hasVisibleRows && noResultsRow && noResultsRow.textContent.includes('Belum ada pesanan')) {
-                noResultsRow.style.display = '';
-            } else if (!hasVisibleRows) {
-                // Hide the empty state and show search result message
-                noResultsRow.style.display = 'none';
-                const tbody2 = type === 'karyawan' ? 
-                    document.getElementById('bodyKaryawan') : 
-                    document.getElementById('bodyPelanggan');
-                tbody2.innerHTML = `<tr><td colspan="${type === 'karyawan' ? 6 : 7}" style="text-align: center; color: var(--dark-gray); padding: 40px;">
-                    <i class="fas fa-search" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
-                    Pesanan tidak ditemukan
-                </td></tr>`;
-            }
-        }
+            // Reset pagination to page 1
+            paginationState[type].currentPage = 1;
 
-        function toggleSubmenu(button) {
-            const submenu = button.nextElementSibling;
-            const arrow = button.querySelector('.toggle-arrow');
-            
-            submenu.classList.toggle('open');
-            arrow.classList.toggle('open');
-            button.classList.toggle('active');
+            // Re-render table
+            if (type === 'karyawan') {
+                renderKaryawanTable();
+            } else {
+                renderPelangganTable();
+            }
         }
 
         // Update Stats
         function updateStats() {
             // Total Pesanan = semua pesanan (pelanggan + karyawan)
             const totalPesanan = pesananData.pelanggan.length + pesananData.karyawan.length;
-            
+
             // Pesanan Diproses = pelanggan diproses + karyawan belum setor
-            const pesananDiproses = pesananData.pelanggan.filter(p => p.status === 'diproses').length + 
+            const pesananDiproses = pesananData.pelanggan.filter(p => p.status === 'diproses').length +
                                     pesananData.karyawan.filter(p => p.status === 'belum_setor').length;
-            
+
             // Pesanan Selesai = pelanggan selesai + karyawan sudah setor
-            const pesananSelesai = pesananData.pelanggan.filter(p => p.status === 'selesai').length + 
+            const pesananSelesai = pesananData.pelanggan.filter(p => p.status === 'selesai').length +
                                    pesananData.karyawan.filter(p => p.status === 'sudah_setor').length;
-            
+
             // Total Revenue = hanya dari pelanggan yang selesai/lunas (selalu lunas saat dibuat)
             const totalRevenue = pesananData.pelanggan.reduce((sum, p) => sum + (p.total || 0), 0);
 
@@ -2098,32 +2162,65 @@
             }
         });
 
-const profileMenuButton = document.getElementById('profileMenuButton');
-const profileDropdown = document.getElementById('profileDropdown');
+</script>
 
-if (profileMenuButton && profileDropdown) {
-    const closeProfileDropdown = () => {
-        profileDropdown.classList.remove('show');
-        profileMenuButton.setAttribute('aria-expanded', 'false');
-    };
-
-    profileMenuButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        const isOpen = profileDropdown.classList.toggle('show');
-        profileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-
-    profileDropdown.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-
-    document.addEventListener('click', closeProfileDropdown);
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeProfileDropdown();
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function initKaryawanSelect2() {
+            if ($('#namaKaryawan').data('select2')) {
+                $('#namaKaryawan').select2('destroy');
+            }
+            $('#namaKaryawan').select2({
+                placeholder: 'Cari nama karyawan...',
+                allowClear: true,
+                dropdownParent: $('#modalAddPesanan'),
+                ajax: {
+                    url: '/api/karyawans-autocomplete',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function(params) { return { q: params.term }; },
+                    processResults: function(data) { return { results: data.results }; },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                width: '100%'
+            });
         }
+
+        function initPelangganSelect2() {
+            if ($('#namaPelanggan').data('select2')) {
+                $('#namaPelanggan').select2('destroy');
+            }
+            $('#namaPelanggan').select2({
+                placeholder: 'Cari nama pelanggan...',
+                allowClear: true,
+                dropdownParent: $('#modalAddPesanan'),
+                ajax: {
+                    url: '/api/pelanggans-autocomplete',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function(params) { return { q: params.term }; },
+                    processResults: function(data) { return { results: data.results }; },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                width: '100%'
+            });
+        }
+
+        initKaryawanSelect2();
+        initPelangganSelect2();
+
+        $('#namaPelanggan').on('select2:select', function(e) {
+            const data = e.params.data;
+            document.getElementById('noHpPelanggan').value = data.no_tlp || '';
+        });
+
+        $('#namaPelanggan').on('select2:clear', function() {
+            document.getElementById('noHpPelanggan').value = '';
+        });
     });
-}
-    </script>
-</body>
-</html>
+</script>
+@endsection

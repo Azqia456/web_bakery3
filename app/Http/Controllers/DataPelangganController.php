@@ -62,7 +62,7 @@ class DataPelangganController extends Controller
             ]);
         }
 
-        return view('data-pelanggan', compact('pelanggans', 'stats', 'search', 'status'));
+        return view('data-pelanggan', compact('pelanggans', 'stats', 'search', 'status', 'perPage'));
     }
 
     /**

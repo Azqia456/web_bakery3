@@ -30,5 +30,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'pelanggan',
             ]
         );
+
+        $this->call(PelangganSeeder::class);
+        $this->call(PesananSeeder::class);
     }
 }

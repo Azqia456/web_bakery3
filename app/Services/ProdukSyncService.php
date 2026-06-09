@@ -51,17 +51,10 @@ class ProdukSyncService
     }
 
     /**
-     * Tambah produk dan sinkronkan
+     * Tambah produk dan sinkronisasi
      */
     public static function createProduct($data)
     {
-        // Cek apakah produk dengan nama yang sama sudah ada
-        $existing = Produk::where('nama_produk', $data['nama_produk'])->first();
-        
-        if ($existing) {
-            return $existing;
-        }
-        
         return Produk::create($data);
     }
 }

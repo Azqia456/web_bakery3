@@ -42,10 +42,10 @@ class PesananController extends Controller
 
     public function show($id_pesanan)
     {
-        $pesanan = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'pembayarans'])
+        $pesanan = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk', 'pembayarans'])
             ->findOrFail($id_pesanan);
         
-        return $pesanan;
+        return response()->json($pesanan);
     }
 
     public function update(Request $request, $id_pesanan)
@@ -71,14 +71,180 @@ class PesananController extends Controller
         return response()->noContent();
     }
 
-    public function offline()
+    public function offline(Request $request)
     {
-        return view('pesanan-offline');
+        // Query pesanan karyawan (offline, id_pelanggan null)
+        $queryKaryawan = Pesanan::with(['karyawan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
+            ->whereNull('id_pelanggan');
+
+        // Query pesanan pelanggan (offline, id_pelanggan not null)
+        $queryPelanggan = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan');
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $queryKaryawan->where(function ($q) use ($search) {
+                $q->where('id_pesanan', 'like', "%{$search}%")
+                  ->orWhereHas('karyawan', function ($kq) use ($search) {
+                      $kq->where('nama', 'like', "%{$search}%");
+                  });
+            });
+            $queryPelanggan->where(function ($q) use ($search) {
+                $q->where('id_pesanan', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function ($pq) use ($search) {
+                      $pq->where('nama', 'like', "%{$search}%")
+                         ->orWhere('no_tlp', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter status_bayar
+        if ($request->filled('status')) {
+            $queryKaryawan->where('status_bayar', $request->status);
+            $queryPelanggan->where('status_bayar', $request->status);
+        }
+
+        $pesananKaryawan = $queryKaryawan->orderBy('tgl_pesan', 'desc')->get();
+        $pesananPelanggan = $queryPelanggan->orderBy('tgl_pesan', 'desc')->get();
+
+        // Map to JS-friendly arrays
+        $karyawanItems = $pesananKaryawan->map(function ($p) {
+            return [
+                'id' => 'K-' . $p->id_pesanan,
+                'id_pesanan' => $p->id_pesanan,
+                'id_karyawan' => $p->id_karyawan,
+                'nama' => $p->karyawan->nama ?? '-',
+                'status' => $p->status_bayar === 'lunas' ? 'sudah_setor' : 'belum_setor',
+                'status_bayar' => $p->status_bayar,
+                'tanggal_pesan' => $p->tgl_pesan->format('Y-m-d'),
+                'tanggal_pickup' => $p->tgl_pesan->format('Y-m-d'),
+                'tanggal_setor' => $p->status_bayar === 'lunas' ? $p->tgl_pesan->format('Y-m-d') : null,
+                'total' => (float) $p->total_bayar,
+                'produk' => $p->detailPesanans->map(function ($d) {
+                    return [
+                        'id_produk' => $d->id_produk,
+                        'nama' => $d->produk->nama_produk ?? '-',
+                        'harga' => (float) ($d->produk->harga_produk ?? 0),
+                        'qty' => (int) $d->jumlah_pesan,
+                    ];
+                })->values()->all(),
+            ];
+        })->values()->all();
+
+        $pelangganItems = $pesananPelanggan->map(function ($p) {
+            return [
+                'id' => 'P-' . $p->id_pesanan,
+                'id_pesanan' => $p->id_pesanan,
+                'id_pelanggan' => $p->id_pelanggan,
+                'nama' => $p->pelanggan->nama ?? '-',
+                'no_hp' => $p->pelanggan->no_tlp ?? '-',
+                'status' => $p->status_bayar === 'lunas' ? 'selesai' : 'diproses',
+                'status_bayar' => $p->status_bayar,
+                'tgl_transaksi' => $p->tgl_pesan->format('Y-m-d'),
+                'metode_pengambilan' => $p->metode_pengambilan ?? 'pickup',
+                'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
+                'total' => (float) $p->total_bayar,
+                'alamat_delivery' => $p->alamat_delivery,
+                'tanggal_delivery' => $p->tgl_delivery ? $p->tgl_delivery->format('Y-m-d') : null,
+                'tanggal_pickup' => $p->tgl_pesan->format('Y-m-d'),
+                'produk' => $p->detailPesanans->map(function ($d) {
+                    return [
+                        'id_produk' => $d->id_produk,
+                        'nama' => $d->produk->nama_produk ?? '-',
+                        'harga' => (float) ($d->produk->harga_produk ?? 0),
+                        'qty' => (int) $d->jumlah_pesan,
+                    ];
+                })->values()->all(),
+            ];
+        })->values()->all();
+
+        // Stats
+        $stats = [
+            'total' => Pesanan::where('sumber_pesanan', 'offline')->count(),
+            'diproses' => Pesanan::where('sumber_pesanan', 'offline')->where('status_bayar', 'belum_lunas')->count(),
+            'selesai' => Pesanan::where('sumber_pesanan', 'offline')->where('status_bayar', 'lunas')->count(),
+        ];
+
+        return view('pesanan-offline', compact('karyawanItems', 'pelangganItems', 'stats'))->with([
+            'pageTitle' => 'Pesanan Offline',
+            'totalNotifikasi' => $stats['diproses'] ?? 0
+        ]);
     }
 
-    public function online()
+    public function online(Request $request)
     {
-        return view('pesanan-online');
+        $query = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'online');
+
+        // Filter by date
+        if ($request->filled('date')) {
+            $query->whereDate('tgl_pesan', $request->date);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status_pesanan', $request->status);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id_pesanan', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function ($pq) use ($search) {
+                      $pq->where('nama', 'like', "%{$search}%")
+                         ->orWhere('no_tlp', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('detailPesanans.produk', function ($pq) use ($search) {
+                      $pq->where('nama_produk', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $pesanans = $query->orderBy('tgl_pesan', 'desc')->paginate(10)->withQueryString();
+
+        // Calculate stats
+        $stats = [
+            'semua' => Pesanan::where('sumber_pesanan', 'online')->count(),
+            'menunggu_konfirmasi' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'menunggu_konfirmasi')->count(),
+            'diproses' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'diproses')->count(),
+            'siap_diambil' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'siap_diambil')->count(),
+            'dikirim' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'dikirim')->count(),
+            'selesai' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'selesai')->count(),
+        ];
+
+        return view('pesanan-online', compact('pesanans', 'stats'))->with([
+            'pageTitle' => 'Pesanan Online',
+            'totalNotifikasi' => $stats['menunggu_konfirmasi'] ?? 0
+        ]);
+    }
+
+    public function submitOrder($id_pesanan)
+    {
+        $pesanan = Pesanan::findOrFail($id_pesanan);
+
+        // Advance order status
+        $statusFlow = [
+            'menunggu_konfirmasi' => 'diproses',
+            'diproses' => 'siap_diambil',
+            'siap_diambil' => $pesanan->metode_pengambilan === 'delivery' ? 'dikirim' : 'selesai',
+            'dikirim' => 'selesai',
+            'selesai' => 'selesai',
+        ];
+
+        $currentStatus = $pesanan->status_pesanan ?: 'menunggu_konfirmasi';
+        $newStatus = $statusFlow[$currentStatus] ?? 'selesai';
+
+        $pesanan->update(['status_pesanan' => $newStatus]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pesanan berhasil diperbarui.',
+            'status_pesanan' => $newStatus,
+        ]);
     }
 
     public function confirmPaymentProof(Request $request)

@@ -20,7 +20,7 @@ class PesananOfflineController extends Controller
                 'id_karyawan' => 'required_if:tipe_pesanan,karyawan|integer|exists:karyawans,id_karyawan',
                 'nama_pelanggan' => 'required_if:tipe_pesanan,pelanggan|string',
                 'id_pelanggan' => 'nullable|integer|exists:pelanggans,id_pelanggan',
-                'no_tlp' => 'required_if:tipe_pesanan,pelanggan|regex:/^[0-9]+$/',
+                'no_tlp' => 'required_if:tipe_pesanan,pelanggan|string',
                 'metode_pengambilan' => 'required_if:tipe_pesanan,pelanggan|in:delivery,pickup',
                 'alamat_delivery' => 'required_if:metode_pengambilan,delivery|string',
                 'tgl_delivery' => 'required_if:metode_pengambilan,delivery|date',

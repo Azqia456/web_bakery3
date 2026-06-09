@@ -15,18 +15,31 @@ class PelangganController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_user' => 'required|integer|exists:users,id_user',
             'nama' => 'required|string|max:255',
-            'no_tlp' => 'required|string|max:50',
+            'no_tlp' => 'required|string|max:50|unique:pelanggans,no_tlp',
+            'email' => 'nullable|email|unique:pelanggans,email',
             'alamat' => 'required|string',
+            'status' => 'required|in:Online,Offline',
         ]);
 
-        return Pelanggan::create($validated);
+        $validated['id_user'] = auth()->id();
+        $pelanggan = Pelanggan::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pelanggan berhasil ditambahkan',
+            'pelanggan' => $pelanggan,
+        ]);
     }
 
     public function show($id_pelanggan)
     {
-        return Pelanggan::findOrFail($id_pelanggan);
+        $pelanggan = Pelanggan::with('pesanans')->findOrFail($id_pelanggan);
+
+        return response()->json([
+            'pelanggan' => $pelanggan,
+            'pesanans' => $pelanggan->pesanans,
+        ]);
     }
 
     public function update(Request $request, $id_pelanggan)
@@ -34,23 +47,40 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::findOrFail($id_pelanggan);
 
         $validated = $request->validate([
-            'id_user' => 'integer|exists:users,id_user',
             'nama' => 'string|max:255',
-            'no_tlp' => 'string|max:50',
+            'no_tlp' => 'string|max:50|unique:pelanggans,no_tlp,' . $id_pelanggan . ',id_pelanggan',
+            'email' => 'nullable|email|unique:pelanggans,email,' . $id_pelanggan . ',id_pelanggan',
             'alamat' => 'string',
+            'status' => 'in:Online,Offline',
         ]);
 
         $pelanggan->update($validated);
 
-        return $pelanggan;
+        return response()->json([
+            'success' => true,
+            'message' => 'Pelanggan berhasil diperbarui',
+            'pelanggan' => $pelanggan,
+        ]);
     }
 
     public function destroy($id_pelanggan)
     {
         $pelanggan = Pelanggan::findOrFail($id_pelanggan);
+
+        $pesananCount = $pelanggan->pesanans()->count();
+        if ($pesananCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Tidak dapat menghapus pelanggan yang memiliki {$pesananCount} pesanan. Hapus pesanan terlebih dahulu.",
+            ], 422);
+        }
+
         $pelanggan->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'success' => true,
+            'message' => 'Pelanggan berhasil dihapus',
+        ]);
     }
 
     /**
@@ -71,7 +101,7 @@ class PelangganController extends Controller
             ->map(function ($customer) {
                 return [
                     'id' => $customer->id_pelanggan,
-                    'text' => $customer->nama . ' (' . $customer->no_tlp . ')',
+                    'text' => $customer->nama . '_' . $customer->no_tlp,
                     'nama' => $customer->nama,
                     'no_tlp' => $customer->no_tlp,
                     'email' => $customer->email,

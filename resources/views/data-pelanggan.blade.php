@@ -1,8 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.dashboard-layout', ['pageTitle' => 'Data Pelanggan'])
 
-@section('content')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+@section('additional-styles')
 <style>
     :root {
         --primary-brown: #8B6F47;
@@ -24,301 +22,11 @@
         --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: var(--font-base);
-        font-size: 16px;
-        background: var(--cream);
-        color: var(--text-dark);
-        line-height: 1.6;
-    }
-
     button,
     input,
     select,
     textarea {
         font-family: inherit;
-    }
-
-    .min-h-screen > nav {
-        display: none;
-    }
-
-    .dashboard {
-        display: flex;
-        min-height: 100vh;
-    }
-
-    .sidebar {
-        width: 280px;
-        background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
-        color: var(--white);
-        position: fixed;
-        height: 100vh;
-        left: 0;
-        top: 0;
-        z-index: 1000;
-        box-shadow: var(--shadow-lg);
-        overflow-y: auto;
-    }
-
-    .sidebar-header {
-        padding: 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-    }
-
-    .sidebar-header h1 {
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 4px;
-        letter-spacing: -0.02em;
-    }
-
-    .sidebar-header p {
-        font-size: 13px;
-        opacity: 0.85;
-        font-weight: 500;
-    }
-
-    .sidebar-menu {
-        padding: 16px 0;
-    }
-
-    .sidebar-menu-item {
-        margin: 4px 16px;
-    }
-
-    .sidebar-menu-item > a,
-    .sidebar-menu-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 16px;
-        color: rgba(255, 255, 255, 0.9);
-        text-decoration: none;
-        border-radius: var(--border-radius);
-        transition: var(--transition);
-        font-weight: 600;
-        font-size: 15px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        text-align: left;
-        letter-spacing: 0.3px;
-    }
-
-    .sidebar-menu-item > a:hover,
-    .sidebar-menu-item > a.active,
-    .sidebar-menu-toggle:hover,
-    .sidebar-menu-toggle.active {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: var(--white);
-    }
-
-    .sidebar-menu-item > a.active {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .sidebar-menu-item i,
-    .sidebar-menu-toggle i {
-        width: 20px;
-        min-width: 20px;
-        margin-right: 12px;
-        text-align: center;
-        font-size: 17px;
-    }
-
-    .sidebar-menu-item .toggle-arrow {
-        font-size: 13px;
-        transition: transform 0.3s ease;
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-
-    .sidebar-menu-item .toggle-arrow.open {
-        transform: rotate(180deg);
-    }
-
-    .sidebar-submenu {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: var(--border-radius);
-        margin: 0 8px;
-    }
-
-    .sidebar-submenu.open {
-        max-height: 500px;
-    }
-
-    .sidebar-submenu-item {
-        padding: 10px 16px 10px 48px;
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        font-weight: 400;
-        transition: var(--transition);
-    }
-
-    .sidebar-submenu-item:hover,
-    .sidebar-submenu-item.active {
-        color: var(--white);
-        padding-left: 52px;
-    }
-
-    .main-content {
-        flex: 1;
-        margin-left: 280px;
-        min-height: 100vh;
-        background:
-            radial-gradient(1200px 600px at 10% 0%, rgba(212, 165, 116, 0.18), transparent 50%),
-            radial-gradient(900px 500px at 90% 10%, rgba(139, 111, 71, 0.12), transparent 45%),
-            var(--cream);
-    }
-
-    .header {
-        background: var(--white);
-        border-bottom: 1px solid var(--medium-gray);
-        padding: 16px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        box-shadow: var(--shadow-sm);
-        position: sticky;
-        top: 0;
-        z-index: 999;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .header-title {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--text-dark);
-        letter-spacing: -0.02em;
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .notification-btn,
-    .profile-btn {
-        position: relative;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--light-gray);
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: var(--transition);
-        color: var(--dark-gray);
-    }
-
-    .notification-btn:hover,
-    .profile-btn:hover {
-        background: var(--medium-gray);
-        transform: scale(1.05);
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 18px;
-        height: 18px;
-        background: #EF4444;
-        color: var(--white);
-        border-radius: 50%;
-        font-size: 11px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .profile-menu {
-        position: relative;
-    }
-
-    .profile-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-brown), #C8A25A);
-        color: var(--white);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 14px;
-    }
-
-    .profile-dropdown {
-        position: absolute;
-        top: calc(100% + 10px);
-        right: 0;
-        min-width: 180px;
-        background: var(--white);
-        border: 1px solid var(--medium-gray);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow-lg);
-        padding: 8px;
-        display: none;
-        z-index: 1001;
-    }
-
-    .profile-dropdown.show {
-        display: block;
-    }
-
-    .profile-dropdown a,
-    .profile-dropdown button {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border: none;
-        border-radius: 10px;
-        background: transparent;
-        color: var(--text-dark);
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        text-align: left;
-        transition: var(--transition);
-    }
-
-    .profile-dropdown a:hover,
-    .profile-dropdown button:hover {
-        background: var(--light-gray);
-    }
-
-    .profile-dropdown .logout-action {
-        color: #EF4444;
     }
 
     .dashboard-content {
@@ -415,6 +123,15 @@
 
     .filter-select .select-arrow {
         right: 12px;
+    }
+
+    .per-page-select select {
+        min-width: 70px;
+        padding: 10px 30px 10px 12px;
+    }
+
+    .per-page-select .filter-icon {
+        display: none;
     }
 
     .btn-primary {
@@ -631,14 +348,6 @@
     }
 
     @media (max-width: 1024px) {
-        .sidebar {
-            transform: translateX(-100%);
-        }
-
-        .main-content {
-            margin-left: 0;
-        }
-
         .page-hero {
             flex-direction: column;
         }
@@ -1085,32 +794,6 @@
         }
     }
 
-    @media (max-width: 768px) {
-        .header {
-            padding: 12px 16px;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .header-right {
-            width: 100%;
-            justify-content: flex-end;
-        }
-
-        .header-title {
-            font-size: 20px;
-        }
-
-        .dashboard-content {
-            padding: 20px 16px 32px;
-        }
-
-        .page-title h1 {
-            font-size: 40px;
-        }
-    }
-
     @media (min-width: 768px) {
         .page-title h1 {
             font-size: 40px;
@@ -1121,260 +804,196 @@
         }
     }
 </style>
+@endsection
 
-<div class="dashboard">
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1>🍞 Three D Bakery</h1>
-            <p>Management System</p>
+@section('content')
+<main class="dashboard-content">
+    <section class="page-hero">
+        <div class="page-title">
+            <p>Kelola seluruh data pelanggan Three D Bakery</p>
         </div>
-        <nav class="sidebar-menu">
-            <div class="sidebar-menu-item">
-                <a href="/dashboard" class="{{ Request::is('dashboard') ? 'active' : '' }}" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span style="font-weight:700;">Dashboard</span>
-                </a>
+        <div class="page-actions">
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP..." value="{{ $search ?? '' }}">
             </div>
-
-            <div class="sidebar-menu-item">
-                <button class="sidebar-menu-toggle {{ Request::is('pesanan*') ? 'active' : '' }}" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span style="font-weight:700;">Pesanan</span>
-                    <i class="fas fa-chevron-down toggle-arrow {{ Request::is('pesanan*') ? 'open' : '' }}"></i>
-                </button>
-                <div class="sidebar-submenu {{ Request::is('pesanan*') ? 'open' : '' }}">
-                    <a href="/pesanan-online" class="sidebar-submenu-item {{ Request::is('pesanan-online') ? 'active' : '' }}">Pesanan Online</a>
-                    <a href="/pesanan-offline" class="sidebar-submenu-item {{ Request::is('pesanan-offline') ? 'active' : '' }}">Pesanan Offline</a>
-                </div>
+            <div class="filter-select">
+                <i class="fas fa-filter filter-icon"></i>
+                <select id="statusFilter">
+                    <option value="">Semua Status</option>
+                    <option value="Online" {{ $status === 'Online' ? 'selected' : '' }}>Online</option>
+                    <option value="Offline" {{ $status === 'Offline' ? 'selected' : '' }}>Offline</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
             </div>
-
-            <div class="sidebar-menu-item">
-                <button class="sidebar-menu-toggle {{ Request::is('data*') ? 'active' : '' }}" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-database"></i>
-                    <span style="font-weight:700;">Data</span>
-                    <i class="fas fa-chevron-down toggle-arrow {{ Request::is('data*') ? 'open' : '' }}"></i>
-                </button>
-                <div class="sidebar-submenu {{ Request::is('data*') ? 'open' : '' }}">
-                    <a href="/data-karyawan" class="sidebar-submenu-item {{ Request::is('data-karyawan') ? 'active' : '' }}">Data Karyawan</a>
-                    <a href="/data-pelanggan" class="sidebar-submenu-item {{ Request::is('data-pelanggan') ? 'active' : '' }}">Data Pelanggan</a>
-                </div>
+            <div class="filter-select per-page-select">
+                <select id="perPageFilter">
+                    <option value="5" {{ ($perPage ?? 10) == 5 ? 'selected' : '' }}>5</option>
+                    <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+                </select>
+                <i class="fas fa-chevron-down select-arrow"></i>
             </div>
+            <button class="btn-primary" type="button" id="btnTambahPelanggan">
+                <i class="fas fa-plus"></i>
+                Tambah Pelanggan
+            </button>
+        </div>
+    </section>
 
-            <div class="sidebar-menu-item">
-                <a href="/produk" class="{{ Request::is('produk') ? 'active' : '' }}" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-box"></i>
-                    <span style="font-weight:700;">Produk</span>
-                </a>
+    <section class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-icon tan">
+                <i class="fas fa-users"></i>
             </div>
-
-            <div class="sidebar-menu-item">
-                <a href="/riwayat-transaksi" class="{{ Request::is('riwayat-transaksi') ? 'active' : '' }}" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-credit-card"></i>
-                    <span style="font-weight:700;">Riwayat Transaksi</span>
-                </a>
+            <div class="summary-meta">
+                <span class="summary-title">Total Pelanggan</span>
+                <span class="summary-value" id="totalPelanggan">{{ $stats['total_pelanggan'] ?? 0 }}</span>
+                <span class="summary-subtext">Semua pelanggan terdaftar</span>
             </div>
-
-            <div class="sidebar-menu-item">
-                <button class="sidebar-menu-toggle {{ Request::is('laporan*') ? 'active' : '' }}" onclick="toggleSubmenu(this)" style="justify-content: flex-start; gap: 12px;">
-                    <i class="fas fa-chart-line"></i>
-                    <span style="font-weight:700;">Laporan</span>
-                    <i class="fas fa-chevron-down toggle-arrow {{ Request::is('laporan*') ? 'open' : '' }}"></i>
-                </button>
-                <div class="sidebar-submenu {{ Request::is('laporan*') ? 'open' : '' }}">
-                    <a href="/laporan-penjualan" class="sidebar-submenu-item {{ Request::is('laporan-penjualan') ? 'active' : '' }}">Laporan Penjualan</a>
-                    <a href="/laporan-pesanan-online" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-online') ? 'active' : '' }}">Laporan Pesanan Online</a>
-                    <a href="/laporan-pesanan-offline" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-offline') ? 'active' : '' }}">Laporan Pesanan Offline</a>
-                    <a href="/laporan-pembayaran" class="sidebar-submenu-item {{ Request::is('laporan-pembayaran') ? 'active' : '' }}">Laporan Pembayaran</a>
-                    <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item {{ Request::is('laporan-setoran-karyawan') ? 'active' : '' }}">Laporan Setoran Karyawan</a>
-                </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon green">
+                <i class="fas fa-globe"></i>
             </div>
-        </nav>
-    </aside>
+            <div class="summary-meta">
+                <span class="summary-title">Pelanggan Online</span>
+                <span class="summary-value" id="pelangganOnline">{{ $stats['pelanggan_online'] ?? 0 }}</span>
+                <span class="summary-subtext">Dari website dan aplikasi</span>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon orange">
+                <i class="fas fa-store"></i>
+            </div>
+            <div class="summary-meta">
+                <span class="summary-title">Pelanggan Offline</span>
+                <span class="summary-value" id="pelangganOffline">{{ $stats['pelanggan_offline'] ?? 0 }}</span>
+                <span class="summary-subtext">Dari toko langsung</span>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon blue">
+                <i class="fas fa-bag-shopping"></i>
+            </div>
+            <div class="summary-meta">
+                <span class="summary-title">Total Pesanan Hari Ini</span>
+                <span class="summary-value" id="totalPesananHariIni">{{ $stats['total_pesanan_hari_ini'] ?? 0 }}</span>
+                <span class="summary-subtext">Semua transaksi hari ini</span>
+            </div>
+        </div>
+    </section>
 
-    <div class="main-content">
-        @include('layouts.header', ['title' => 'Data Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
-        
+    <section class="table-card">
+        <div class="table-header">
+            <div class="table-title">
+                <h2>Daftar Pelanggan</h2>
+                <span>Daftar pelanggan terbaru Three D Bakery</span>
+            </div>
+            <button class="btn-ghost" type="button">
+                <i class="fas fa-file-export"></i>
+                Export
+            </button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Pelanggan</th>
+                        <th>No. HP</th>
+                        <th>Alamat</th>
+                        <th>Total Pesanan</th>
+                        <th>Terakhir Pesan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="pelanggantTableBody">
+                    @forelse($pelanggans as $key => $pelanggan)
+                        @php
+                            $nomor = ($pelanggans->currentPage() - 1) * $pelanggans->perPage() + $key + 1;
+                            $tanggalAkhir = $pelanggan->terakhir_pesan ? \Carbon\Carbon::parse($pelanggan->terakhir_pesan) : null;
+                        @endphp
+                        <tr data-id="{{ $pelanggan->id_pelanggan }}">
+                            <td>{{ $nomor }}</td>
+                            <td>
+                                <span class="pelanggan-name">{{ $pelanggan->nama }}</span>
+                                <span class="status-badge status-{{ strtolower($pelanggan->status) }}">
+                                    <span class="status-dot"></span>
+                                    {{ $pelanggan->status }}
+                                </span>
+                            </td>
+                            <td>{{ $pelanggan->no_tlp }}</td>
+                            <td>
+                                <span class="alamat-cell" title="{{ $pelanggan->alamat }}">
+                                    {{ Str::limit($pelanggan->alamat, 40, '...') }}
+                                </span>
+                            </td>
+                            <td>{{ $pelanggan->total_pesanan ?? 0 }} Pesanan</td>
+                            <td>
+                                @if($tanggalAkhir)
+                                    <span class="table-date">{{ $tanggalAkhir->locale('id')->format('d M Y') }}</span>
+                                    <span class="table-time">{{ $tanggalAkhir->format('H:i') }} WIB</span>
+                                @else
+                                    <span class="table-date text-muted">Belum ada pesanan</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view" type="button" aria-label="Lihat" data-id="{{ $pelanggan->id_pelanggan }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" type="button" aria-label="Edit" data-id="{{ $pelanggan->id_pelanggan }}">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="{{ $pelanggan->id_pelanggan }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
+                                Tidak ada pelanggan ditemukan
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination Info -->
+        @if($pelanggans->total() > 0)
+        <div class="pagination-info">
+            Menampilkan {{ $pelanggans->firstItem() }} sampai {{ $pelanggans->lastItem() }} dari {{ $pelanggans->total() }} pelanggan
+        </div>
+        <!-- Pagination Links -->
+        <div class="pagination">
+            @if ($pelanggans->onFirstPage())
+                <span class="disabled">&laquo; Sebelumnya</span>
+            @else
+                <a href="{{ $pelanggans->previousPageUrl() }}">&laquo; Sebelumnya</a>
+            @endif
 
-        <main class="dashboard-content">
-            <section class="page-hero">
-                <div class="page-title">
-                    <p>Kelola seluruh data pelanggan Three D Bakery</p>
-                </div>
-                <div class="page-actions">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Cari nama atau nomor HP..." value="{{ $search ?? '' }}">
-                    </div>
-                    <div class="filter-select">
-                        <i class="fas fa-filter filter-icon"></i>
-                        <select id="statusFilter">
-                            <option value="">Semua Status</option>
-                            <option value="Online" {{ $status === 'Online' ? 'selected' : '' }}>Online</option>
-                            <option value="Offline" {{ $status === 'Offline' ? 'selected' : '' }}>Offline</option>
-                        </select>
-                        <i class="fas fa-chevron-down select-arrow"></i>
-                    </div>
-                    <button class="btn-primary" type="button" id="btnTambahPelanggan">
-                        <i class="fas fa-plus"></i>
-                        Tambah Pelanggan
-                    </button>
-                </div>
-            </section>
-
-            <section class="summary-grid">
-                <div class="summary-card">
-                    <div class="summary-icon tan">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="summary-meta">
-                        <span class="summary-title">Total Pelanggan</span>
-                        <span class="summary-value" id="totalPelanggan">{{ $stats['total_pelanggan'] ?? 0 }}</span>
-                        <span class="summary-subtext">Semua pelanggan terdaftar</span>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon green">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <div class="summary-meta">
-                        <span class="summary-title">Pelanggan Online</span>
-                        <span class="summary-value" id="pelangganOnline">{{ $stats['pelanggan_online'] ?? 0 }}</span>
-                        <span class="summary-subtext">Dari website dan aplikasi</span>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon orange">
-                        <i class="fas fa-store"></i>
-                    </div>
-                    <div class="summary-meta">
-                        <span class="summary-title">Pelanggan Offline</span>
-                        <span class="summary-value" id="pelangganOffline">{{ $stats['pelanggan_offline'] ?? 0 }}</span>
-                        <span class="summary-subtext">Dari toko langsung</span>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon blue">
-                        <i class="fas fa-bag-shopping"></i>
-                    </div>
-                    <div class="summary-meta">
-                        <span class="summary-title">Total Pesanan Hari Ini</span>
-                        <span class="summary-value" id="totalPesananHariIni">{{ $stats['total_pesanan_hari_ini'] ?? 0 }}</span>
-                        <span class="summary-subtext">Semua transaksi hari ini</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="table-card">
-                <div class="table-header">
-                    <div class="table-title">
-                        <h2>Daftar Pelanggan</h2>
-                        <span>Daftar pelanggan terbaru Three D Bakery</span>
-                    </div>
-                    <button class="btn-ghost" type="button">
-                        <i class="fas fa-file-export"></i>
-                        Export
-                    </button>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Pelanggan</th>
-                                <th>No. HP</th>
-                                <th>Alamat</th>
-                                <th>Total Pesanan</th>
-                                <th>Terakhir Pesan</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pelanggantTableBody">
-                            @forelse($pelanggans as $key => $pelanggan)
-                                @php
-                                    $nomor = ($pelanggans->currentPage() - 1) * $pelanggans->perPage() + $key + 1;
-                                    $tanggalAkhir = $pelanggan->terakhir_pesan ? \Carbon\Carbon::parse($pelanggan->terakhir_pesan) : null;
-                                @endphp
-                                <tr data-id="{{ $pelanggan->id_pelanggan }}">
-                                    <td>{{ $nomor }}</td>
-                                    <td>
-                                        <span class="pelanggan-name">{{ $pelanggan->nama }}</span>
-                                        <span class="status-badge status-{{ strtolower($pelanggan->status) }}">
-                                            <span class="status-dot"></span>
-                                            {{ $pelanggan->status }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $pelanggan->no_tlp }}</td>
-                                    <td>
-                                        <span class="alamat-cell" title="{{ $pelanggan->alamat }}">
-                                            {{ Str::limit($pelanggan->alamat, 40, '...') }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $pelanggan->total_pesanan ?? 0 }} Pesanan</td>
-                                    <td>
-                                        @if($tanggalAkhir)
-                                            <span class="table-date">{{ $tanggalAkhir->locale('id')->format('d M Y') }}</span>
-                                            <span class="table-time">{{ $tanggalAkhir->format('H:i') }} WIB</span>
-                                        @else
-                                            <span class="table-date text-muted">Belum ada pesanan</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn btn-view" type="button" aria-label="Lihat" data-id="{{ $pelanggan->id_pelanggan }}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="action-btn btn-edit" type="button" aria-label="Edit" data-id="{{ $pelanggan->id_pelanggan }}">
-                                                <i class="fas fa-pen"></i>
-                                            </button>
-                                            <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="{{ $pelanggan->id_pelanggan }}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                                        <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
-                                        Tidak ada pelanggan ditemukan
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Pagination Info -->
-                @if($pelanggans->total() > 0)
-                <div class="pagination-info">
-                    Menampilkan {{ $pelanggans->firstItem() }} sampai {{ $pelanggans->lastItem() }} dari {{ $pelanggans->total() }} pelanggan
-                </div>
-                <!-- Pagination Links -->
-                <div class="pagination">
-                    @if ($pelanggans->onFirstPage())
-                        <span class="disabled">&laquo; Sebelumnya</span>
-                    @else
-                        <a href="{{ $pelanggans->previousPageUrl() }}">&laquo; Sebelumnya</a>
-                    @endif
-
-                    @foreach ($pelanggans->getUrlRange(1, $pelanggans->lastPage()) as $page => $url)
-                        @if ($page == $pelanggans->currentPage())
-                            <button class="active">{{ $page }}</button>
-                        @else
-                            <a href="{{ $url }}">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    @if ($pelanggans->hasMorePages())
-                        <a href="{{ $pelanggans->nextPageUrl() }}">Selanjutnya &raquo;</a>
-                    @else
-                        <span class="disabled">Selanjutnya &raquo;</span>
-                    @endif
-                </div>
+            @foreach ($pelanggans->getUrlRange(1, $pelanggans->lastPage()) as $page => $url)
+                @if ($page == $pelanggans->currentPage())
+                    <button class="active">{{ $page }}</button>
+                @else
+                    <a href="{{ $url }}">{{ $page }}</a>
                 @endif
-            </section>
-        </main>
-    </div>
-</div>
+            @endforeach
+
+            @if ($pelanggans->hasMorePages())
+                <a href="{{ $pelanggans->nextPageUrl() }}">Selanjutnya &raquo;</a>
+            @else
+                <span class="disabled">Selanjutnya &raquo;</span>
+            @endif
+        </div>
+        @endif
+    </section>
+</main>
 
 <!-- Modal Add/Edit Pelanggan -->
 <div class="modal-overlay" id="modalPelanggan">
@@ -1462,7 +1081,9 @@
 
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
+@endsection
 
+@section('additional-scripts')
 <script>
     // BASE URLs
     const API_BASE_URL = '{{ url("/api") }}';
@@ -1507,12 +1128,20 @@
     document.getElementById('searchInput').addEventListener('keyup', debounce(function() {
         const search = this.value;
         const status = document.getElementById('statusFilter').value;
-        loadPelanggans(search, status, 1);
+        const perPage = document.getElementById('perPageFilter').value;
+        loadPelanggans(search, status, perPage, 1);
     }, 500));
 
     document.getElementById('statusFilter').addEventListener('change', function() {
         const search = document.getElementById('searchInput').value;
-        loadPelanggans(search, this.value, 1);
+        const perPage = document.getElementById('perPageFilter').value;
+        loadPelanggans(search, this.value, perPage, 1);
+    });
+
+    document.getElementById('perPageFilter').addEventListener('change', function() {
+        const search = document.getElementById('searchInput').value;
+        const status = document.getElementById('statusFilter').value;
+        loadPelanggans(search, status, this.value, 1);
     });
 
     function debounce(func, wait) {
@@ -1523,13 +1152,13 @@
         };
     }
 
-    // Load Pelanggans with AJAX
-    function loadPelanggans(search = '', status = '', page = 1) {
+    // Load Pelanggans with AJAX – dynamic table + pagination render
+    function loadPelanggans(search = '', status = '', perPage = 10, page = 1) {
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (status) params.append('status', status);
         params.append('page', page);
-        params.append('per_page', 10);
+        params.append('per_page', perPage);
 
         fetch(`{{ route('data-pelanggan') }}?${params.toString()}`, {
             headers: {
@@ -1539,20 +1168,149 @@
         })
         .then(response => response.json())
         .then(data => {
-            // Update stats
-            document.getElementById('totalPelanggan').textContent = data.stats.total_pelanggan;
-            document.getElementById('pelangganOnline').textContent = data.stats.pelanggan_online;
-            document.getElementById('pelangganOffline').textContent = data.stats.pelanggan_offline;
-            document.getElementById('totalPesananHariIni').textContent = data.stats.total_pesanan_hari_ini;
-
-            // Reload table
-            location.reload();
+            renderTable(data);
+            renderPagination(data.pagination, search, status, perPage);
+            updateStats(data.stats);
+            updateUrl(search, status, perPage, page);
         })
         .catch(error => {
             console.error('Error:', error);
             showToast('Gagal memuat data pelanggan', 'error');
         });
     }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('pelanggantTableBody');
+        const rows = data.data;
+        const p = data.pagination;
+
+        if (!rows || rows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 12px; display: block;"></i>
+                Tidak ada pelanggan ditemukan</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map((pel, i) => {
+            const no = (p.current_page - 1) * p.per_page + i + 1;
+            const statusLower = (pel.status || '').toLowerCase();
+            const alamat = pel.alamat || '';
+            const alamatShort = alamat.length > 40 ? alamat.substring(0, 40) + '...' : alamat;
+            const totalPesanan = pel.total_pesanan ?? 0;
+            let lastOrderHtml = '<span class="table-date text-muted">Belum ada pesanan</span>';
+            if (pel.terakhir_pesan) {
+                const d = new Date(pel.terakhir_pesan);
+                const dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                const timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                lastOrderHtml = `<span class="table-date">${dateStr}</span><span class="table-time">${timeStr} WIB</span>`;
+            }
+            return `<tr data-id="${pel.id_pelanggan}">
+                <td>${no}</td>
+                <td>
+                    <span class="pelanggan-name">${escHtml(pel.nama)}</span>
+                    <span class="status-badge status-${statusLower}">
+                        <span class="status-dot"></span> ${pel.status || ''}
+                    </span>
+                </td>
+                <td>${escHtml(pel.no_tlp)}</td>
+                <td><span class="alamat-cell" title="${escHtml(alamat)}">${escHtml(alamatShort)}</span></td>
+                <td>${totalPesanan} Pesanan</td>
+                <td>${lastOrderHtml}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-view" type="button" aria-label="Lihat" data-id="${pel.id_pelanggan}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn btn-edit" type="button" aria-label="Edit" data-id="${pel.id_pelanggan}">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="${pel.id_pelanggan}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function renderPagination(p, search, status, perPage) {
+        const paginationInfo = document.querySelector('.pagination-info');
+        const paginationNav = document.querySelector('.pagination');
+        if (!paginationInfo || !paginationNav) return;
+
+        if (p.total === 0) {
+            paginationInfo.textContent = '';
+            paginationNav.innerHTML = '';
+            return;
+        }
+
+        paginationInfo.textContent = `Menampilkan ${p.from} sampai ${p.to} dari ${p.total} pelanggan`;
+
+        let html = '';
+        const baseUrl = `{{ route('data-pelanggan') }}`;
+
+        // Prev
+        if (p.current_page <= 1) {
+            html += '<span class="disabled">&laquo; Sebelumnya</span>';
+        } else {
+            html += `<a href="#" data-page="${p.current_page - 1}" data-search="${search}" data-status="${status}" data-per-page="${perPage}">&laquo; Sebelumnya</a>`;
+        }
+
+        // Pages
+        for (let i = 1; i <= p.last_page; i++) {
+            if (i === p.current_page) {
+                html += `<button class="active">${i}</button>`;
+            } else {
+                html += `<a href="#" data-page="${i}" data-search="${search}" data-status="${status}" data-per-page="${perPage}">${i}</a>`;
+            }
+        }
+
+        // Next
+        if (p.current_page >= p.last_page) {
+            html += '<span class="disabled">Selanjutnya &raquo;</span>';
+        } else {
+            html += `<a href="#" data-page="${p.current_page + 1}" data-search="${search}" data-status="${status}" data-per-page="${perPage}">Selanjutnya &raquo;</a>`;
+        }
+
+        paginationNav.innerHTML = html;
+    }
+
+    function updateStats(stats) {
+        document.getElementById('totalPelanggan').textContent = stats.total_pelanggan;
+        document.getElementById('pelangganOnline').textContent = stats.pelanggan_online;
+        document.getElementById('pelangganOffline').textContent = stats.pelanggan_offline;
+        document.getElementById('totalPesananHariIni').textContent = stats.total_pesanan_hari_ini;
+    }
+
+    function updateUrl(search, status, perPage, page) {
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        if (status) params.set('status', status);
+        if (perPage != '10') params.set('per_page', perPage);
+        if (page > 1) params.set('page', page);
+        const qs = params.toString();
+        const newUrl = qs ? `{{ route('data-pelanggan') }}?${qs}` : `{{ route('data-pelanggan') }}`;
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // Pagination click delegation
+    document.querySelector('.table-card')?.addEventListener('click', function(e) {
+        const link = e.target.closest('.pagination a');
+        if (!link) return;
+        e.preventDefault();
+        const page = link.dataset.page;
+        const search = link.dataset.search || document.getElementById('searchInput').value;
+        const status = link.dataset.status || document.getElementById('statusFilter').value;
+        const perPage = link.dataset.perPage || document.getElementById('perPageFilter').value;
+        loadPelanggans(search, status, perPage, page);
+    });
 
     // Add/Edit Pelanggan
     document.getElementById('btnTambahPelanggan').addEventListener('click', function() {
@@ -1571,6 +1329,7 @@
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || document.querySelector('input[name="csrf-token"]')?.value,
                 'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             },
             body: formData
         })
@@ -1579,7 +1338,7 @@
             if (data.success) {
                 showToast(data.message, 'success');
                 closeModal('modalPelanggan');
-                setTimeout(() => location.reload(), 500);
+                reloadCurrentPage();
             } else {
                 showToast(data.message || 'Terjadi kesalahan', 'error');
             }
@@ -1588,6 +1347,15 @@
             console.error('Error:', error);
             showToast('Gagal menyimpan data pelanggan', 'error');
         });
+    }
+
+    function reloadCurrentPage() {
+        const search = document.getElementById('searchInput').value;
+        const status = document.getElementById('statusFilter').value;
+        const perPage = document.getElementById('perPageFilter').value;
+        const activePage = document.querySelector('.pagination .active');
+        const page = activePage ? parseInt(activePage.textContent) : 1;
+        loadPelanggans(search, status, perPage, page);
     }
 
     // View Detail
@@ -1710,6 +1478,7 @@
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || document.querySelector('input[name="csrf-token"]')?.value,
                 'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
             }
         })
         .then(response => response.json())
@@ -1717,7 +1486,7 @@
             if (data.success) {
                 showToast(data.message, 'success');
                 closeModal('modalDelete');
-                setTimeout(() => location.reload(), 500);
+                reloadCurrentPage();
             } else {
                 showToast(data.message || 'Terjadi kesalahan', 'error');
             }
@@ -1754,44 +1523,5 @@
         })
         .catch(error => console.error('Error:', error));
     }, 30000);
-
-    // Profile Menu Functionality
-    const profileMenuButton = document.getElementById('profileMenuButton');
-    const profileDropdown = document.getElementById('profileDropdown');
-
-    if (profileMenuButton && profileDropdown) {
-        const closeProfileDropdown = () => {
-            profileDropdown.classList.remove('show');
-            profileMenuButton.setAttribute('aria-expanded', 'false');
-        };
-
-        profileMenuButton.addEventListener('click', function(event) {
-            event.stopPropagation();
-            const isOpen = profileDropdown.classList.toggle('show');
-            profileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-
-        profileDropdown.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-
-        document.addEventListener('click', closeProfileDropdown);
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeProfileDropdown();
-            }
-        });
-    }
-
-    // Sidebar Menu Toggle (if included sidebar)
-    function toggleSubmenu(button) {
-        const submenu = button.nextElementSibling;
-        const arrow = button.querySelector('.toggle-arrow');
-
-        if (submenu && arrow) {
-            submenu.classList.toggle('open');
-            arrow.classList.toggle('open');
-        }
-    }
 </script>
 @endsection

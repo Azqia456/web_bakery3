@@ -89,6 +89,16 @@
     .modal-footer .btn-submit { background: #D4A574; color: #FFFFFF; }
     .modal-footer .btn-submit:hover { background: #C49564; }
 
+    .detail-value {
+        padding: 10px 12px;
+        background: #F8F9FA;
+        border-radius: 12px;
+        font-size: 14px;
+        color: #2D3748;
+        margin: 0;
+        line-height: 1.5;
+    }
+
     .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 20px; border-top: 1px solid #E9ECEF; }
 
     @media (max-width: 768px) {
@@ -110,9 +120,9 @@
                 <input type="text" id="searchInput" placeholder="Cari karyawan...">
                 <i class="fas fa-search"></i>
             </div>
-            <button class="btn btn-export">
+            <a href="{{ route('karyawans.export') }}" class="btn btn-export">
                 <i class="fas fa-download"></i> Export
-            </button>
+            </a>
             <button class="btn btn-primary" onclick="openAddModal()">
                 <i class="fas fa-plus"></i> Tambah Karyawan
             </button>
@@ -260,9 +270,40 @@
     </div>
 </div>
 
+<!-- Modal Detail Karyawan -->
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Detail Karyawan</h3>
+        </div>
+        <div id="viewContent">
+            <div class="form-group">
+                <label>Nama Karyawan</label>
+                <p class="detail-value" id="viewNama"></p>
+            </div>
+            <div class="form-group">
+                <label>No HP</label>
+                <p class="detail-value" id="viewNoTlp"></p>
+            </div>
+            <div class="form-group">
+                <label>Alamat</label>
+                <p class="detail-value" id="viewAlamat"></p>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <p class="detail-value" id="viewStatus"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeViewModal()" style="flex: 1;">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let editingId = null;
 const modal = document.getElementById('karyawanModal');
+const viewModal = document.getElementById('viewModal');
 
 function openAddModal() {
     editingId = null;
@@ -294,8 +335,16 @@ function viewKaryawan(id) {
     fetch(`/api/karyawans/${id}`)
         .then(res => res.json())
         .then(data => {
-            alert(`Nama: ${data.nama}\nNo HP: ${data.no_tlp}\nAlamat: ${data.alamat}\nStatus: ${data.status}`);
+            document.getElementById('viewNama').textContent = data.nama;
+            document.getElementById('viewNoTlp').textContent = data.no_tlp;
+            document.getElementById('viewAlamat').textContent = data.alamat;
+            document.getElementById('viewStatus').textContent = data.status;
+            viewModal.classList.add('show');
         });
+}
+
+function closeViewModal() {
+    viewModal.classList.remove('show');
 }
 
 function deleteKaryawan(id, nama) {
@@ -306,7 +355,6 @@ function deleteKaryawan(id, nama) {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
             }
         })
-        .then(res => res.json())
         .then(() => {
             location.reload();
         });
@@ -352,6 +400,10 @@ document.getElementById('searchInput').addEventListener('keyup', (e) => {
 
 modal.addEventListener('click', (e) => {
     if (e.target === modal) closeAddModal();
+});
+
+viewModal.addEventListener('click', (e) => {
+    if (e.target === viewModal) closeViewModal();
 });
 </script>
 @endsection

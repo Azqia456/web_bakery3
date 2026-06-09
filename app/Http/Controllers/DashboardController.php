@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Karyawan;
+use App\Models\Pelanggan;
 use App\Models\Pesanan;
 use Carbon\Carbon;
 
@@ -88,7 +89,8 @@ class DashboardController extends Controller
 
     public function pelanggan()
     {
-        return view('pelanggan.dashboard_pelanggan');
+        $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
+        return view('pelanggan.dashboard_pelanggan', compact('pelanggan'));
     }
 
     public function getStats()
@@ -236,78 +238,125 @@ class DashboardController extends Controller
 
     public function getPelangganStats()
     {
+        $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
+        $idPelanggan = $pelanggan ? $pelanggan->id_pelanggan : null;
+
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+        $startOfWeek = $now->copy()->startOfWeek();
+        $endOfWeek = $now->copy()->endOfWeek();
+
+        $pesananQuery = Pesanan::where('id_pelanggan', $idPelanggan);
+
+        $totalOrders = (clone $pesananQuery)->count();
+        $completedOrders = (clone $pesananQuery)->whereIn('status_pesanan', ['Selesai', 'completed'])->count();
+        $activeOrders = $totalOrders - $completedOrders;
+
+        $totalSpentThisMonth = (clone $pesananQuery)
+            ->whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])
+            ->where('status_pembayaran', 'lunas')
+            ->sum('total_bayar');
+
+        $totalSpent = (clone $pesananQuery)
+            ->where('status_pembayaran', 'lunas')
+            ->sum('total_bayar');
+
+        $ordersChart = $this->getWeeklyChartData($idPelanggan, $startOfWeek, $endOfWeek);
+
+        $recentOrders = (clone $pesananQuery)
+            ->with(['detailPesanans.produk'])
+            ->latest('tgl_pesan')
+            ->limit(3)
+            ->get()
+            ->map(function ($order) {
+                $produkNames = $order->detailPesanans->pluck('produk.nama')->filter()->implode(', ') ?: '-';
+                return [
+                    'kode' => 'ORD-' . $order->id_pesanan,
+                    'tanggal' => $order->tgl_pesan ? $order->tgl_pesan->format('Y-m-d') : '-',
+                    'produk' => $produkNames,
+                    'total' => 'Rp ' . number_format($order->total_bayar ?? 0, 0, ',', '.'),
+                    'status_pesanan' => $order->status_pesanan ?? 'Menunggu',
+                ];
+            });
+
+        $statusRingkasan = [
+            [
+                'label' => 'Diproses',
+                'value' => (clone $pesananQuery)->where('status_pesanan', 'Diproses')->count(),
+                'class' => 'warning',
+            ],
+            [
+                'label' => 'Dikirim',
+                'value' => (clone $pesananQuery)->where('status_pesanan', 'Dikirim')->count(),
+                'class' => 'info',
+            ],
+            [
+                'label' => 'Selesai',
+                'value' => $completedOrders,
+                'class' => 'success',
+            ],
+        ];
+
         return response()->json([
             'summary_cards' => [
                 [
-                    'title' => 'Pesanan Aktif Saya',
-                    'value' => 3,
-                    'change' => '+1 pesanan baru',
+                    'title' => 'Total Pesanan',
+                    'value' => $totalOrders,
+                    'change' => $activeOrders . ' pesanan aktif',
                     'change_type' => 'positive',
                     'icon' => 'fas fa-box-open',
                     'color' => 'blue'
                 ],
                 [
                     'title' => 'Total Belanja Bulan Ini',
-                    'value' => 'Rp 1.250.000',
-                    'change' => '+12% dari bulan lalu',
+                    'value' => 'Rp ' . number_format($totalSpentThisMonth, 0, ',', '.'),
+                    'change' => 'Total: Rp ' . number_format($totalSpent, 0, ',', '.'),
                     'change_type' => 'positive',
                     'icon' => 'fas fa-shopping-bag',
                     'color' => 'green'
                 ],
                 [
-                    'title' => 'Estimasi Pengiriman',
-                    'value' => '2 Hari',
-                    'change' => 'Rata-rata lebih cepat',
+                    'title' => 'Pesanan Selesai',
+                    'value' => $completedOrders,
+                    'change' => 'Dari ' . $totalOrders . ' total',
                     'change_type' => 'positive',
-                    'icon' => 'fas fa-truck',
+                    'icon' => 'fas fa-check-circle',
                     'color' => 'purple'
                 ]
             ],
-            'orders_chart' => [
-                'labels' => ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
-                'data' => [1, 2, 1, 3, 2, 4, 3]
-            ],
-            'orders_list' => [
-                [
-                    'kode' => 'ORD-260401',
-                    'tanggal' => '2026-04-24',
-                    'produk' => 'Roti Coklat Premium',
-                    'total' => 'Rp 350.000',
-                    'status_pesanan' => 'Diproses'
-                ],
-                [
-                    'kode' => 'ORD-260395',
-                    'tanggal' => '2026-04-22',
-                    'produk' => 'Cake Ulang Tahun',
-                    'total' => 'Rp 650.000',
-                    'status_pesanan' => 'Dikirim'
-                ],
-                [
-                    'kode' => 'ORD-260388',
-                    'tanggal' => '2026-04-20',
-                    'produk' => 'Pastry Box',
-                    'total' => 'Rp 250.000',
-                    'status_pesanan' => 'Menunggu Konfirmasi'
-                ]
-            ],
-            'status_ringkasan' => [
-                [
-                    'label' => 'Diproses',
-                    'value' => 1,
-                    'class' => 'warning'
-                ],
-                [
-                    'label' => 'Dikirim',
-                    'value' => 1,
-                    'class' => 'info'
-                ],
-                [
-                    'label' => 'Menunggu Konfirmasi',
-                    'value' => 1,
-                    'class' => 'warning'
-                ]
-            ]
+            'orders_chart' => $ordersChart,
+            'orders_list' => $recentOrders,
+            'status_ringkasan' => $statusRingkasan,
         ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    private function getWeeklyChartData($idPelanggan, $startOfWeek, $endOfWeek)
+    {
+        if (!$idPelanggan) {
+            return ['labels' => ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'], 'data' => [0, 0, 0, 0, 0, 0, 0]];
+        }
+
+        $labels = [];
+        $data = [];
+        $current = $startOfWeek->copy();
+
+        while ($current->lte($endOfWeek)) {
+            $dayLabel = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'][$current->dayOfWeek];
+            $labels[] = $dayLabel;
+
+            $count = Pesanan::where('id_pelanggan', $idPelanggan)
+                ->whereDate('tgl_pesan', $current->toDateString())
+                ->count();
+
+            $data[] = $count;
+            $current->addDay();
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+        ];
     }
 
     public function dataKaryawan()
@@ -398,5 +447,149 @@ class DashboardController extends Controller
     public function laporan()
     {
         return view('laporan');
+    }
+
+    public function laporanPesananOffline(Request $request)
+    {
+        $today = Carbon::today();
+
+        // Default date range: 7 hari terakhir
+        $endDate = $request->input('end_date', $today->toDateString());
+        $startDate = $request->input('start_date', $today->copy()->subDays(6)->toDateString());
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $offlineQuery = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereBetween('tgl_pesan', [$start, $end]);
+
+        // Summary metrics
+        $totalTransaksi = (clone $offlineQuery)->count();
+        $totalPembayaran = (clone $offlineQuery)->sum('total_bayar') ?? 0;
+        $produkTerjual = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
+                $q->where('sumber_pesanan', 'offline')
+                  ->whereBetween('tgl_pesan', [$start, $end]);
+            })->sum('jumlah_pesan') ?? 0;
+
+        // Detail table: each row = one order item from offline orders
+        $transaksiData = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
+                $q->where('sumber_pesanan', 'offline')
+                  ->whereBetween('tgl_pesan', [$start, $end]);
+            })
+            ->with(['pesanan.pelanggan', 'pesanan.karyawan', 'produk'])
+            ->get()
+            ->map(function ($detail) {
+                $nama = $detail->pesanan->pelanggan->nama
+                    ?? $detail->pesanan->karyawan->nama
+                    ?? 'Pelanggan';
+                return [
+                    'nama_pelanggan' => $nama,
+                    'produk' => $detail->produk->nama_produk ?? 'Produk',
+                    'jumlah' => (int) $detail->jumlah_pesan,
+                    'total_pembayaran' => (float) ($detail->produk->harga_produk ?? 0) * (int) $detail->jumlah_pesan,
+                    'tanggal' => $detail->pesanan->tgl_pesan->format('Y-m-d'),
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        return view('laporan_pesanan_offline', compact(
+            'totalTransaksi',
+            'totalPembayaran',
+            'produkTerjual',
+            'transaksiData',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    public function laporanPesananOnline(Request $request)
+    {
+        $today = Carbon::today();
+
+        // Default date range: 7 hari terakhir
+        $endDate = $request->input('end_date', $today->toDateString());
+        $startDate = $request->input('start_date', $today->copy()->subDays(6)->toDateString());
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $onlineQuery = Pesanan::where('sumber_pesanan', 'online')
+            ->whereBetween('tgl_pesan', [$start, $end]);
+
+        // Summary metrics
+        $totalPesanan = (clone $onlineQuery)->count();
+        $totalPembayaran = (clone $onlineQuery)->sum('total_bayar') ?? 0;
+        $pesananSelesai = (clone $onlineQuery)->where('status_pesanan', 'selesai')->count();
+
+        // Detail table: each row = one order item from online orders
+        $pesananData = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
+                $q->where('sumber_pesanan', 'online')
+                  ->whereBetween('tgl_pesan', [$start, $end]);
+            })
+            ->with(['pesanan.pelanggan', 'produk'])
+            ->get()
+            ->map(function ($detail) {
+                return [
+                    'nama_pelanggan' => $detail->pesanan->pelanggan->nama ?? 'Pelanggan',
+                    'produk' => $detail->produk->nama_produk ?? 'Produk',
+                    'jumlah' => (int) $detail->jumlah_pesan,
+                    'total_bayar' => (float) ($detail->produk->harga_produk ?? 0) * (int) $detail->jumlah_pesan,
+                    'tanggal' => $detail->pesanan->tgl_pesan->format('Y-m-d'),
+                    'status' => $detail->pesanan->status_pesanan ?? 'diproses',
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        return view('laporan_pesanan_online', compact(
+            'totalPesanan',
+            'totalPembayaran',
+            'pesananSelesai',
+            'pesananData',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    public function laporanPenjualan(Request $request)
+    {
+        $today = Carbon::today();
+        $now = Carbon::now();
+
+        // Default date range: 30 hari terakhir
+        $endDate = $request->input('end_date', $today->toDateString());
+        $startDate = $request->input('start_date', $today->copy()->subDays(29)->toDateString());
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        // Metrics: total harian, mingguan, bulanan
+        $totalHarian = Pesanan::whereDate('tgl_pesan', $today)->sum('total_bayar') ?? 0;
+        $totalMingguan = Pesanan::whereBetween('tgl_pesan', [
+            $now->copy()->startOfWeek(), $now->copy()->endOfWeek()
+        ])->sum('total_bayar') ?? 0;
+        $totalBulanan = Pesanan::whereBetween('tgl_pesan', [
+            $now->copy()->startOfMonth(), $now->copy()->endOfMonth()
+        ])->sum('total_bayar') ?? 0;
+        $jumlahTransaksi = Pesanan::whereBetween('tgl_pesan', [$start, $end])->count();
+
+        // Daily sales data for chart and table
+        $salesData = Pesanan::whereBetween('tgl_pesan', [$start, $end])
+            ->selectRaw('DATE(tgl_pesan) as tanggal, COUNT(*) as jumlah_transaksi, SUM(total_bayar) as total_pendapatan')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'asc')
+            ->get()
+            ->toArray();
+
+        return view('laporan_penjualan', compact(
+            'totalHarian',
+            'totalMingguan',
+            'totalBulanan',
+            'jumlahTransaksi',
+            'salesData',
+            'startDate',
+            'endDate'
+        ));
     }
 }

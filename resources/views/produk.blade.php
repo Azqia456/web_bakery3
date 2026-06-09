@@ -543,7 +543,7 @@
         grid.innerHTML = filtered.map(produk => {
             return '<div class="product-card bg-white rounded-lg border border-[#E8DFD5]">' +
                 '<div class="relative h-48 overflow-hidden bg-[#F5F1EB]">' +
-                    '<img src="' + (produk.gambar || '') + '" alt="' + produk.nama + '" class="product-image w-full h-full" />' +
+                    '<img src="' + (produk.gambar || '{{ asset('image/rotibulat.png') }}') + '" alt="' + produk.nama + '" class="product-image w-full h-full" />' +
                     '<div class="absolute top-3 right-3">' +
                         (produk.status === 'aktif'
                             ? '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-md"><span class="w-1.5 h-1.5 bg-emerald-200 rounded-full"></span>Aktif</span>'

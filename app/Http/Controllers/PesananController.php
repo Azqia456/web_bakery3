@@ -55,6 +55,8 @@ class PesananController extends Controller
             'id_karyawan' => 'integer|exists:karyawans,id_karyawan',
             'tgl_pesan' => 'date',
             'status_bayar' => 'in:belum_lunas,lunas',
+            'status_pembayaran' => 'in:lunas,menunggu_verifikasi,belum_bayar',
+            'status_pesanan' => 'in:menunggu_konfirmasi,diproses,siap_diambil,dikirim,selesai',
             'total_bayar' => 'numeric|min:0',
             'products' => 'array',
         ]);

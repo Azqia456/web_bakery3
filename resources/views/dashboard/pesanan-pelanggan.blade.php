@@ -1,451 +1,574 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three D Bakery - Pesanan Pelanggan</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-green: #8B6F47;
-            --primary-brown: #8B6F47;
-            --light-green: #D4A574;
-            --light-brown: #D4A574;
-            --cream: #F7F3E9;
-            --white: #FFFFFF;
-            --light-gray: #F8F9FA;
-            --medium-gray: #E9ECEF;
-            --dark-gray: #6C757D;
-            --text-dark: #2D3748;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
-            --transition: all 0.3s ease;
-        }
+@extends('layouts.pelanggan')
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+@push('styles')
+<style>
+.section.content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--cream);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
+.card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
 
-        .dashboard { min-height: 100vh; display: flex; }
+.card-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--medium-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
 
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, var(--primary-brown), var(--light-brown));
-            color: var(--white);
-            position: fixed;
-            inset: 0 auto 0 0;
-            box-shadow: var(--shadow-lg);
-            overflow-y: auto;
-        }
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
 
-        .sidebar-header { padding: 24px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header h1 { font-size: 20px; margin-bottom: 4px; letter-spacing: -0.025em; }
-        .sidebar-header p { font-size: 12px; opacity: 0.85; }
-        .sidebar-menu { padding: 16px 0; }
-        .sidebar-menu-item { margin: 4px 16px; }
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
 
-        .sidebar-menu-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-size: 14px;
-            font-weight: 500;
-        }
+.btn-order {
+    background: linear-gradient(135deg, var(--light-brown, #C9A877), var(--primary-brown, #8B6F47));
+    color: white;
+}
 
-        .sidebar-menu-item a:hover,
-        .sidebar-menu-item a.active {
-            background: rgba(255,255,255,0.15);
-            color: var(--white);
-            transform: translateX(4px);
-        }
+.btn-payment {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    color: white;
+}
 
-        .main-content { margin-left: 280px; width: calc(100% - 280px); }
+.btn-order:hover,
+.btn-payment:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
 
-        .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--medium-gray);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 16px;
+    padding: 24px;
+}
 
-        .header-title { font-size: 24px; font-weight: 700; }
-        .header-subtitle { font-size: 13px; color: var(--dark-gray); margin-top: 2px; }
+.order-card {
+    background: var(--white);
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
 
-        .profile-menu { position: relative; }
-        .profile-btn {
-            width: 40px; height: 40px; border: none; border-radius: 50%; background: var(--light-gray);
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);
-        }
-        .profile-btn:hover { background: var(--medium-gray); transform: scale(1.05); }
-        .profile-avatar {
-            width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-green), #81C784);
-            color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
-        }
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--medium-gray);
+}
 
-        .profile-dropdown {
-            position: absolute; top: calc(100% + 10px); right: 0; min-width: 180px; background: var(--white);
-            border: 1px solid var(--medium-gray); border-radius: var(--border-radius); box-shadow: var(--shadow-lg); padding: 8px; display: none;
-        }
-        .profile-dropdown.show { display: block; }
-        .profile-dropdown a,
-        .profile-dropdown button {
-            width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: none; border-radius: 10px;
-            background: transparent; color: var(--text-dark); text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: var(--transition);
-        }
-        .profile-dropdown a:hover,
-        .profile-dropdown button:hover { background: var(--light-gray); }
-        .profile-dropdown .logout-action { color: #EF4444; }
+.order-code {
+    font-size: 13px;
+    color: var(--dark-gray);
+    font-weight: 500;
+}
 
-        .content { padding: 24px; }
-        .card { background: var(--white); border: 1px solid var(--medium-gray); border-radius: 16px; box-shadow: var(--shadow-md); overflow: hidden; }
-        .card-header {
-            padding: 18px 20px; border-bottom: 1px solid var(--medium-gray); background: var(--light-gray);
-            display: flex; justify-content: space-between; align-items: center; gap: 12px;
-        }
-        .card-title { font-size: 16px; font-weight: 700; }
-        .btn-back {
-            display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; text-decoration: none;
-            background: linear-gradient(135deg, var(--light-brown), var(--primary-brown)); color: white; font-size: 13px; font-weight: 600; box-shadow: var(--shadow-sm);
-        }
+.order-date {
+    font-size: 12px;
+    color: var(--dark-gray);
+    margin-top: 2px;
+}
 
-        .btn-order,
-        .btn-payment {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: var(--shadow-sm);
-        }
+.order-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
-        .btn-order {
-            background: linear-gradient(135deg, var(--light-brown), var(--primary-brown));
-            color: white;
-        }
+.order-status-badge.menunggu { background: #FEF3C7; color: #92400E; }
+.order-status-badge.diproses { background: #DBEAFE; color: #1E40AF; }
+.order-status-badge.siap { background: #F3E8FF; color: #6B21A8; }
+.order-status-badge.dikirim { background: #FCE7F3; color: #9D174D; }
+.order-status-badge.selesai { background: #DCFCE7; color: #166534; }
 
-        .btn-payment {
-            background: linear-gradient(135deg, #22C55E, #16A34A);
-            color: white;
-        }
+.order-items {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--medium-gray);
+}
 
-        .btn-order:hover,
-        .btn-payment:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
 
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            padding: 16px;
-        }
+.order-item:last-child {
+    margin-bottom: 0;
+}
 
-        .modal-overlay.show {
-            display: flex;
-        }
+.order-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #E8DCC8 0%, #F5EFE7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
 
-        .modal-card {
-            width: min(720px, 100%);
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
+.order-item-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-        .modal-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--medium-gray);
-            background: var(--light-gray);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
+.order-item-icon.no-image img {
+    display: none;
+}
 
-        .modal-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
+.order-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
 
-        .modal-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 50%;
-            background: var(--white);
-            cursor: pointer;
-        }
+.order-item-qty {
+    font-size: 12px;
+    color: var(--dark-gray);
+}
 
-        .modal-body {
-            padding: 20px;
-        }
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
+.order-total-label {
+    font-size: 13px;
+    color: var(--dark-gray);
+    font-weight: 500;
+}
 
-        .form-group {
-            margin-bottom: 14px;
-        }
+.order-total-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-brown);
+}
 
-        .form-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            color: var(--dark-gray);
-            letter-spacing: 0.5px;
-        }
+.timeline-container {
+    padding-top: 4px;
+}
 
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--medium-gray);
-            border-radius: 10px;
-            font: inherit;
-            background: var(--white);
-            color: var(--text-dark);
-        }
+.timeline-steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
 
-        .form-textarea {
-            min-height: 96px;
-            resize: vertical;
-        }
+.timeline-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 0;
+}
 
-        .modal-footer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--medium-gray);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            background: #fffdf9;
-        }
+.timeline-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--medium-gray);
+    border: 2px solid var(--white);
+    box-shadow: 0 0 0 1px var(--medium-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--dark-gray);
+    margin-bottom: 6px;
+    z-index: 2;
+    position: relative;
+    flex-shrink: 0;
+}
 
-        .btn-cancel,
-        .btn-submit {
-            border: none;
-            border-radius: 10px;
-            padding: 11px 16px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-        }
+.timeline-dot.active {
+    background: var(--primary-brown);
+    color: var(--white);
+    box-shadow: 0 0 0 1px var(--primary-brown);
+}
 
-        .btn-cancel {
-            background: var(--light-gray);
-            color: var(--dark-gray);
-        }
+.timeline-dot.completed {
+    background: #22C55E;
+    color: var(--white);
+    box-shadow: 0 0 0 1px #22C55E;
+}
 
-        .btn-submit {
-            background: linear-gradient(135deg, var(--light-brown), var(--primary-brown));
-            color: white;
-        }
+.timeline-dot i {
+    font-size: 9px;
+}
 
-        .btn-cancel:hover,
-        .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
+.timeline-label {
+    font-size: 10px;
+    color: var(--dark-gray);
+    text-align: center;
+    font-weight: 500;
+    white-space: nowrap;
+}
 
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 8px;
-        }
+.timeline-line-wrapper {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    width: 100%;
+    z-index: 1;
+}
 
-        .payment-method {
-            position: relative;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px;
-            border: 1px solid var(--medium-gray);
-            border-radius: 12px;
-            background: var(--white);
-            cursor: pointer;
-            transition: var(--transition);
-        }
+.timeline-line {
+    height: 2px;
+    background: var(--medium-gray);
+    width: 100%;
+}
 
-        .payment-method:hover {
-            border-color: var(--primary-brown);
-            box-shadow: var(--shadow-sm);
-            transform: translateY(-1px);
-        }
+.timeline-line.active {
+    background: var(--primary-brown);
+}
 
-        .payment-method input {
-            margin-top: 4px;
-            accent-color: var(--primary-brown);
-        }
+.timeline-line.completed {
+    background: #22C55E;
+}
 
-        .payment-method.active {
-            border-color: var(--primary-brown);
-            background: #fffdf8;
-            box-shadow: var(--shadow-sm);
-        }
+.timeline-step:last-child .timeline-line-wrapper {
+    display: none;
+}
 
-        .payment-method-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+.empty-state {
+    text-align: center;
+    padding: 64px;
+    color: var(--dark-gray);
+}
 
-        .payment-method-desc {
-            font-size: 12px;
-            color: var(--dark-gray);
-            margin-top: 3px;
-        }
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
 
-        .payment-summary {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 12px;
-            background: var(--light-gray);
-            border: 1px solid var(--medium-gray);
-            font-size: 13px;
-            color: var(--text-dark);
-        }
+.empty-state p {
+    font-size: 16px;
+    margin: 0;
+}
 
-        .payment-summary strong {
-            color: var(--primary-brown);
-        }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 720px; }
-        th, td { padding: 14px 16px; border-bottom: 1px solid var(--medium-gray); text-align: left; font-size: 14px; }
-        th { text-transform: uppercase; letter-spacing: 0.5px; font-size: 12px; color: var(--dark-gray); }
-        .badge {
-            display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
-        }
-        .badge-proses { background: rgba(59, 130, 246, 0.12); color: #1D4ED8; }
-        .badge-selesai { background: rgba(34, 197, 94, 0.12); color: #166534; }
-        .badge-lunas { background: rgba(34, 197, 94, 0.12); color: #166534; }
-        .badge-belum { background: rgba(239, 68, 68, 0.12); color: #B91C1C; }
-        .actions { display: flex; gap: 8px; align-items: center; }
-        .btn-icon,
-        .btn-confirm {
-            width: 36px; height: 36px; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: var(--transition);
-        }
-        .btn-icon { background: var(--light-gray); color: var(--dark-gray); }
-        .btn-confirm { background: var(--primary-green); color: white; }
-        .btn-icon:hover,
-        .btn-confirm:hover { transform: translateY(-1px); }
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+}
 
-        @media (max-width: 900px) {
-            .sidebar { position: static; width: 100%; height: auto; }
-            .main-content { margin-left: 0; width: 100%; }
-            .dashboard { display: block; }
-        }
+.modal-overlay.show {
+    display: flex;
+}
 
-        @media (max-width: 768px) {
-            .header { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
-            .content { padding: 16px; }
-            .card-header { flex-direction: column; align-items: flex-start; }
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>🍞 Three D Bakery</h1>
-                <p>Panel Pelanggan</p>
+.modal-card {
+    width: min(720px, 100%);
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--medium-gray);
+    background: var(--light-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--white);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: var(--medium-gray);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    color: var(--dark-gray);
+    letter-spacing: 0.5px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 10px;
+    font: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.form-textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--medium-gray);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #fffdf9;
+}
+
+.btn-cancel,
+.btn-submit {
+    border: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-cancel {
+    background: var(--light-gray);
+    color: var(--dark-gray);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--light-brown, #C9A877), var(--primary-brown, #8B6F47));
+    color: white;
+}
+
+.btn-cancel:hover,
+.btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.payment-method {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 12px;
+    background: var(--white);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.payment-method:hover {
+    border-color: var(--primary-brown);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.payment-method input {
+    margin-top: 4px;
+    accent-color: var(--primary-brown);
+}
+
+.payment-method.active {
+    border-color: var(--primary-brown);
+    background: #fffdf8;
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-method-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.payment-method-desc {
+    font-size: 12px;
+    color: var(--dark-gray);
+    margin-top: 3px;
+}
+
+.payment-summary {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--light-gray);
+    border: 1px solid var(--medium-gray);
+    font-size: 13px;
+    color: var(--text-dark);
+}
+
+.payment-summary strong {
+    color: var(--primary-brown);
+}
+
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    padding: 0 24px 24px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--medium-gray);
+    background: var(--white);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dark-gray);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-brown);
+    color: var(--primary-brown);
+}
+
+.filter-btn.active {
+    background: var(--primary-brown);
+    color: var(--white);
+    border-color: var(--primary-brown);
+}
+
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    .card-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .timeline-label {
+        font-size: 9px;
+    }
+}
+</style>
+@endpush
+
+@section('content')
+    <main class="main-content" style="padding:0;">
+        <section class="content">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Daftar Pesanan Saya</h2>
+                        <p style="font-size: 13px; color: var(--dark-gray); margin-top: 4px;">Pantau status pesanan Anda melalui timeline di bawah ini.</p>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="button" class="btn-action btn-payment" onclick="openPaymentModal()"><i class="fas fa-credit-card"></i> Konfirmasi Pembayaran</button>
+                        <button type="button" class="btn-action btn-order" onclick="openOrderModal()"><i class="fas fa-bag-shopping"></i> Pesan</button>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <button class="filter-btn active" data-filter="all">Semua</button>
+                    <button class="filter-btn" data-filter="menunggu_konfirmasi">Menunggu Konfirmasi</button>
+                    <button class="filter-btn" data-filter="diproses">Diproses</button>
+                    <button class="filter-btn" data-filter="siap_diambil">Siap Diambil</button>
+                    <button class="filter-btn" data-filter="dikirim">Dikirim</button>
+                    <button class="filter-btn" data-filter="selesai">Selesai</button>
+                </div>
+
+                <div class="orders-grid" id="ordersGrid">
+                </div>
+                <div class="empty-state" id="ordersEmptyState" style="display:none;">
+                    <i class="fas fa-inbox"></i>
+                    <p>Belum ada pesanan</p>
+                </div>
             </div>
-            <nav class="sidebar-menu">
-                <div class="sidebar-menu-item">
-                    <a href="{{ route('pelanggan.dashboard') }}"><i class="fas fa-tachometer-alt"></i>Dashboard Pelanggan</a>
-                </div>
-                <div class="sidebar-menu-item">
-                    <a href="{{ url('/pelanggan/pesanan') }}" class="active"><i class="fas fa-shopping-cart"></i>Pesanan Saya</a>
-                </div>
-            </nav>
-        </aside>
+        </section>
+    </main>
 
-        <main class="main-content">
-            @include('layouts.header', ['title' => 'Pesanan Pelanggan', 'showSearch' => false, 'showAddButton' => false, 'totalNotifikasi' => 0])
-
-            <section class="content">
-                <div class="card">
-                    <div class="card-header">
-                        <div>
-                            <h2 class="card-title">Daftar Pesanan Saya</h2>
-                            <p style="font-size: 13px; color: var(--dark-gray); margin-top: 4px;">Gunakan halaman ini untuk memantau status pesanan Anda.</p>
-                        </div>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                <a href="{{ route('pelanggan.dashboard') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
-                                <button type="button" class="btn-payment" onclick="openPaymentModal()"><i class="fas fa-credit-card"></i> Konfirmasi Pembayaran</button>
-                                <button type="button" class="btn-order" onclick="openOrderModal()"><i class="fas fa-bag-shopping"></i> Pesan</button>
-                            </div>
-                    </div>
-
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Kode</th>
-                                    <th>Tanggal</th>
-                                    <th>Produk</th>
-                                    <th>Total</th>
-                                    <th>Status Pesanan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>ORD-260401</td>
-                                    <td>2026-04-24</td>
-                                    <td>Roti Coklat Premium</td>
-                                    <td>Rp 350.000</td>
-                                    <td><span class="badge badge-proses">Diproses</span></td>
-                                </tr>
-                                <tr>
-                                    <td>ORD-260395</td>
-                                    <td>2026-04-22</td>
-                                    <td>Cake Ulang Tahun</td>
-                                    <td>Rp 650.000</td>
-                                    <td><span class="badge badge-selesai">Selesai</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
+    <!-- Order Modal -->
     <div class="modal-overlay" id="orderModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -456,23 +579,20 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Nama</label>
-                        <input class="form-input" type="text" placeholder="Nama pemesan">
+                        <input class="form-input" type="text" id="orderNama" placeholder="Nama pemesan" value="{{ $pelanggan->nama ?? '' }}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tipe Pesanan</label>
-                        <select class="form-select">
-                            <option>Pelanggan</option>
-                            <option>Karyawan</option>
-                        </select>
+                        <label class="form-label">No HP</label>
+                        <input class="form-input" type="tel" id="orderNoHp" placeholder="Nomor telepon" value="{{ $pelanggan->no_tlp ?? '' }}">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Produk</label>
-                    <input class="form-input" type="text" placeholder="Contoh: Roti Coklat Premium">
+                    <input class="form-input" type="text" id="orderProduk" placeholder="Contoh: Roti Coklat Premium">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Catatan</label>
-                    <textarea class="form-textarea" placeholder="Catatan tambahan untuk pesanan"></textarea>
+                    <textarea class="form-textarea" id="orderCatatan" placeholder="Catatan tambahan untuk pesanan"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -482,6 +602,7 @@
         </div>
     </div>
 
+    <!-- Payment Confirmation Modal -->
     <div class="modal-overlay" id="paymentModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -519,17 +640,33 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Nomor Pesanan</label>
-                        <input class="form-input" type="text" placeholder="Contoh: ORD-260401">
+                        <input class="form-input" type="text" id="paymentOrderNumber" placeholder="Contoh: ORD-260401">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Nominal Pembayaran</label>
-                        <input class="form-input" type="text" placeholder="Rp 350.000">
+                        <input class="form-input" type="text" id="paymentNominal" placeholder="Rp 350.000">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nama Pengirim</label>
+                        <input class="form-input" type="text" id="paymentNamaPengirim" placeholder="Nama pemilik rekening" value="{{ $pelanggan->nama ?? '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bank Pengirim</label>
+                        <input class="form-input" type="text" id="paymentBankPengirim" placeholder="Contoh: BCA">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Bukti / Catatan</label>
-                    <textarea class="form-textarea" placeholder="Isi nomor referensi, nama pengirim, atau catatan pembayaran"></textarea>
+                    <textarea class="form-textarea" id="paymentCatatan" placeholder="Isi nomor referensi, nama pengirim, atau catatan pembayaran"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Bukti Transfer</label>
+                    <input type="file" class="form-input" id="paymentBukti" accept=".jpg,.jpeg,.png,.pdf">
                 </div>
 
                 <div class="payment-summary" id="paymentSummary">
@@ -542,98 +679,302 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <script>
-        const profileMenuButton = document.getElementById('profileMenuButton');
-        const profileDropdown = document.getElementById('profileDropdown');
-        const orderModal = document.getElementById('orderModal');
-        const paymentModal = document.getElementById('paymentModal');
+@push('scripts')
+<script>
+    let allOrders = [];
+    let currentFilter = 'all';
 
-        const paymentMethodLabels = {
-            transfer_bank: 'Transfer Bank',
-            qris: 'QRIS',
-            e_wallet: 'E-Wallet'
+    const statusLabels = {
+        'menunggu_konfirmasi': 'Menunggu Konfirmasi',
+        'diproses': 'Diproses',
+        'siap_diambil': 'Siap Diambil',
+        'dikirim': 'Dikirim',
+        'selesai': 'Selesai',
+    };
+
+    const statusClasses = {
+        'menunggu_konfirmasi': 'menunggu',
+        'diproses': 'diproses',
+        'siap_diambil': 'siap',
+        'dikirim': 'dikirim',
+        'selesai': 'selesai',
+    };
+
+    const timelineSteps = ['Menunggu', 'Diproses', 'Siap', 'Dikirim', 'Selesai'];
+    const statusStepIndex = {
+        'menunggu_konfirmasi': 0,
+        'diproses': 1,
+        'siap_diambil': 2,
+        'dikirim': 3,
+        'selesai': 4,
+    };
+
+    function getProductImagePath(name) {
+        const imageMap = {
+            'Roti Cokelat': '/image/coklat.jpg',
+            'Roti Coklat Premium': '/image/coklat.jpg',
+            'Roti Stroberi': '/image/strawberry.jpg',
+            'Roti Bluberi': '/image/bluberry.jpg',
+            'Roti Kelapa': '/image/kelapa.jpg',
+            'Roti Kacang Ijo': '/image/kacanghiaju.jpg',
         };
+        const key = Object.keys(imageMap).find(k => name && name.toLowerCase().includes(k.toLowerCase()));
+        return key ? imageMap[key] : `{{ asset('image/rotibulat.png') }}`;
+    }
 
-        function openOrderModal() {
-            orderModal.classList.add('show');
+    function renderOrders() {
+        const grid = document.getElementById('ordersGrid');
+        const emptyState = document.getElementById('ordersEmptyState');
+
+        const filtered = currentFilter === 'all'
+            ? allOrders
+            : allOrders.filter(o => o.status_pesanan === currentFilter);
+
+        if (!filtered.length) {
+            grid.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
         }
 
-        function closeOrderModal() {
-            orderModal.classList.remove('show');
+        emptyState.style.display = 'none';
+
+        grid.innerHTML = filtered.map(order => {
+            const status = order.status_pesanan || 'menunggu_konfirmasi';
+            const statusLabel = statusLabels[status] || status;
+            const statusClass = statusClasses[status] || 'menunggu';
+            const currentStep = statusStepIndex[status] || 0;
+            const isDone = status === 'selesai';
+
+            const timeline = timelineSteps.map((step, index) => {
+                const completed = isDone ? index <= currentStep : index < currentStep;
+                const active = index === currentStep;
+
+                return `
+                    <div class="timeline-step">
+                        <div class="timeline-dot ${completed ? 'completed' : active ? 'active' : ''}">
+                            ${completed ? '<i class="fas fa-check"></i>' : index + 1}
+                        </div>
+                        <div class="timeline-label">${step}</div>
+                        <div class="timeline-line-wrapper">
+                            <div class="timeline-line ${completed ? 'completed' : active ? 'active' : ''}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const products = order.detail_pesanans || [];
+            const itemsHTML = products.slice(0, 3).map(item => {
+                const produk = item.produk || {};
+                const name = produk.nama_produk || 'Produk';
+                const img = produk.gambar || getProductImagePath(name);
+                return `
+                    <div class="order-item">
+                        <div class="order-item-icon ${img ? '' : 'no-image'}">
+                            ${img ? `<img src="${img}" alt="${name}" onerror="this.parentElement.classList.add('no-image')" />` : ''}
+                            ${!img ? `<span>🍞</span>` : ''}
+                        </div>
+                        <div>
+                            <div class="order-item-name">${name}</div>
+                            <div class="order-item-qty">${item.jumlah_pesan || 1} item</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const remainingItems = products.length > 3 ? `<div class="order-item-qty" style="margin-top:4px;">+${products.length - 3} produk lainnya</div>` : '';
+
+            const date = order.tgl_pesan ? new Date(order.tgl_pesan).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+
+            return `
+                <div class="order-card" data-status="${status}">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-code">#ORD-${order.id_pesanan}</div>
+                            <div class="order-date"><i class="far fa-calendar-alt"></i> ${date}</div>
+                        </div>
+                        <span class="order-status-badge ${statusClass}">
+                            <i class="fas ${status === 'selesai' ? 'fa-check-circle' : status === 'dikirim' ? 'fa-truck' : status === 'diproses' ? 'fa-spinner' : 'fa-clock'}"></i>
+                            ${statusLabel}
+                        </span>
+                    </div>
+
+                    <div class="order-items">
+                        ${itemsHTML}
+                        ${remainingItems}
+                    </div>
+
+                    <div class="order-total">
+                        <span class="order-total-label">Total Pesanan</span>
+                        <span class="order-total-value">Rp ${parseInt(order.total_bayar || 0).toLocaleString('id-ID')}</span>
+                    </div>
+
+                    <div class="timeline-container">
+                        <div class="timeline-steps">
+                            ${timeline}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function loadOrders() {
+        try {
+            const response = await fetch('/api/pesanans');
+            if (!response.ok) throw new Error('Failed to load orders');
+            const data = await response.json();
+            allOrders = Array.isArray(data) ? data : (data.data || []);
+            renderOrders();
+        } catch (error) {
+            console.error('Error loading orders:', error);
+        }
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.filter;
+            renderOrders();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+
+    // Payment & Order Modal Functions
+    const orderModal = document.getElementById('orderModal');
+    const paymentModalEl = document.getElementById('paymentModal');
+
+    const paymentMethodLabels = {
+        transfer_bank: 'Transfer Bank',
+        qris: 'QRIS',
+        e_wallet: 'E-Wallet'
+    };
+
+    function openOrderModal() {
+        orderModal.classList.add('show');
+    }
+
+    function closeOrderModal() {
+        orderModal.classList.remove('show');
+    }
+
+    async function submitOrder() {
+        const nama = document.getElementById('orderNama').value.trim();
+        const noHp = document.getElementById('orderNoHp').value.trim();
+        const produk = document.getElementById('orderProduk').value.trim();
+        const catatan = document.getElementById('orderCatatan').value.trim();
+
+        if (!nama || !noHp || !produk) {
+            alert('Silakan isi Nama, No HP, dan Produk');
+            return;
         }
 
-        function submitOrder() {
-            alert('Pesanan pelanggan siap diproses. Jika kamu mau, saya bisa sambungkan ke penyimpanan database berikutnya.');
+        try {
+            const response = await fetch('/api/pelanggans/find-or-create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ nama, no_tlp: noHp, alamat: 'Online Order' }),
+            });
+            const pelangganData = await response.json();
+            const idPelanggan = pelangganData.pelanggan?.id_pelanggan || pelangganData.id_pelanggan;
+
+            alert('Pesanan berhasil dibuat! Pesanan Anda akan segera diproses.');
             closeOrderModal();
+            loadOrders();
+        } catch (error) {
+            console.error('Error submitting order:', error);
+            alert('Gagal membuat pesanan. Silakan coba lagi.');
+        }
+    }
+
+    function openPaymentModal() {
+        paymentModalEl.classList.add('show');
+    }
+
+    function closePaymentModal() {
+        paymentModalEl.classList.remove('show');
+    }
+
+    async function submitPayment() {
+        const orderReference = document.getElementById('paymentOrderNumber').value.trim();
+        const namaPengirim = document.getElementById('paymentNamaPengirim').value.trim();
+        const bankPengirim = document.getElementById('paymentBankPengirim').value.trim();
+        const nominalTransfer = document.getElementById('paymentNominal').value.trim();
+        const catatan = document.getElementById('paymentCatatan').value.trim();
+        const buktiFile = document.getElementById('paymentBukti').files[0];
+
+        if (!orderReference || !buktiFile) {
+            alert('Silakan isi Nomor Pesanan dan upload Bukti Transfer');
+            return;
         }
 
-        function openPaymentModal() {
-            paymentModal.classList.add('show');
+        const formData = new FormData();
+        formData.append('order_reference', orderReference);
+        formData.append('nama_pengirim', namaPengirim);
+        formData.append('bank_pengirim', bankPengirim);
+        formData.append('nominal_transfer', nominalTransfer.replace(/[^0-9]/g, ''));
+        formData.append('catatan_pembayaran', catatan);
+        formData.append('bukti_transfer', buktiFile);
+
+        const cartItems = localStorage.getItem('bakery_cart');
+        if (cartItems) {
+            formData.append('items', cartItems);
         }
 
-        function closePaymentModal() {
-            paymentModal.classList.remove('show');
-        }
-
-        function submitPayment() {
-            const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
-            const methodLabel = selectedMethod ? paymentMethodLabels[selectedMethod.value] : 'Transfer Bank';
-            const paymentSummary = document.getElementById('paymentSummary');
-
-            if (paymentSummary) {
-                paymentSummary.innerHTML = `Metode terpilih: <strong>${methodLabel}</strong>`;
+        try {
+            const response = await fetch('/pelanggan/pembayaran/konfirmasi', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Konfirmasi pembayaran berhasil dikirim!');
+                closePaymentModal();
+            } else {
+                alert(result.message || 'Gagal mengirim konfirmasi');
             }
-
-            alert(`Konfirmasi pembayaran dikirim dengan metode ${methodLabel}.`);
-            closePaymentModal();
+        } catch (error) {
+            console.error('Error submitting payment:', error);
+            alert('Gagal mengirim konfirmasi. Silakan coba lagi.');
         }
+    }
 
-        if (orderModal) {
-            orderModal.addEventListener('click', (event) => {
-                if (event.target === orderModal) {
-                    closeOrderModal();
-                }
-            });
-        }
+    if (orderModal) {
+        orderModal.addEventListener('click', (e) => {
+            if (e.target === orderModal) closeOrderModal();
+        });
+    }
 
-        if (paymentModal) {
-            paymentModal.addEventListener('click', (event) => {
-                if (event.target === paymentModal) {
-                    closePaymentModal();
-                }
-            });
+    if (paymentModalEl) {
+        paymentModalEl.addEventListener('click', (e) => {
+            if (e.target === paymentModalEl) closePaymentModal();
+        });
 
-            const paymentMethods = document.querySelectorAll('#paymentMethods .payment-method');
-            paymentMethods.forEach((method) => {
-                method.addEventListener('click', () => {
-                    paymentMethods.forEach((item) => item.classList.remove('active'));
-                    method.classList.add('active');
-                    const radio = method.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
-                        const paymentSummary = document.getElementById('paymentSummary');
-                        if (paymentSummary) {
-                            paymentSummary.innerHTML = `Metode terpilih: <strong>${paymentMethodLabels[radio.value]}</strong>`;
-                        }
+        const paymentMethods = document.querySelectorAll('#paymentMethods .payment-method');
+        paymentMethods.forEach((method) => {
+            method.addEventListener('click', () => {
+                paymentMethods.forEach((item) => item.classList.remove('active'));
+                method.classList.add('active');
+                const radio = method.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    const summary = document.getElementById('paymentSummary');
+                    if (summary) {
+                        summary.innerHTML = `Metode terpilih: <strong>${paymentMethodLabels[radio.value]}</strong>`;
                     }
-                });
-            });
-        }
-
-        if (profileMenuButton && profileDropdown) {
-            profileMenuButton.addEventListener('click', () => {
-                profileDropdown.classList.toggle('show');
-                profileMenuButton.setAttribute('aria-expanded', profileDropdown.classList.contains('show') ? 'true' : 'false');
-            });
-
-            document.addEventListener('click', (event) => {
-                if (!profileMenuButton.contains(event.target) && !profileDropdown.contains(event.target)) {
-                    profileDropdown.classList.remove('show');
-                    profileMenuButton.setAttribute('aria-expanded', 'false');
                 }
             });
-        }
-    </script>
-</body>
-</html>
+        });
+    }
+</script>
+@endpush

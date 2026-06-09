@@ -689,6 +689,41 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .inline-editable {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        transition: background 0.15s;
+    }
+    .inline-editable:hover {
+        background: rgba(0,0,0,0.04);
+    }
+    .inline-editable .edit-icon {
+        font-size: 10px;
+        color: var(--dark-gray);
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    .inline-editable:hover .edit-icon {
+        opacity: 1;
+    }
+    .inline-editable.editing {
+        cursor: default;
+    }
+    .inline-editable select {
+        padding: 4px 6px;
+        border: 1px solid var(--brown);
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+        background: var(--white);
+        color: var(--text-dark);
+        min-width: 130px;
+    }
 </style>
 @endsection
 
@@ -807,6 +842,7 @@
                     <th>Total</th>
                     <th>Pembayaran</th>
                     <th>Status</th>
+                    <th>Bukti Transfer</th>
                     <th>Waktu</th>
                     <th>Aksi</th>
                 </tr>
@@ -832,27 +868,42 @@
                         <strong>Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</strong>
                     </td>
                     <td>
-                        @if($pesanan->status_bayar == 'lunas')
-                            <span class="badge badge-lunas">Lunas</span>
-                        @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
-                            <span class="badge badge-menunggu">Menunggu</span>
-                        @else
-                            <span class="badge badge-belum-lunas">Belum Lunas</span>
-                        @endif
+                        <div class="inline-editable" onclick="startInlineEdit(this, 'pembayaran', {{ $pesanan->id_pesanan }})">
+                            @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
+                                <span class="badge badge-lunas">Lunas</span>
+                            @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
+                                <span class="badge badge-menunggu">Menunggu</span>
+                            @else
+                                <span class="badge badge-belum-lunas">Belum Lunas</span>
+                            @endif
+                            <i class="fas fa-pen edit-icon"></i>
+                        </div>
                     </td>
                     <td>
-                        @if($pesanan->status_pesanan == 'menunggu_konfirmasi')
-                            <span class="badge status-menunggu-konfirmasi">Menunggu Konfirmasi</span>
-                        @elseif($pesanan->status_pesanan == 'diproses')
-                            <span class="badge status-diproses">Diproses</span>
-                        @elseif($pesanan->status_pesanan == 'siap_diambil')
-                            <span class="badge status-siap-diambil">Siap Diambil</span>
-                        @elseif($pesanan->status_pesanan == 'dikirim')
-                            <span class="badge status-dikirim">Dikirim</span>
-                        @elseif($pesanan->status_pesanan == 'selesai')
-                            <span class="badge status-selesai">Selesai</span>
+                        <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
+                            @if($pesanan->status_pesanan == 'menunggu_konfirmasi')
+                                <span class="badge status-menunggu-konfirmasi">Menunggu Konfirmasi</span>
+                            @elseif($pesanan->status_pesanan == 'diproses')
+                                <span class="badge status-diproses">Diproses</span>
+                            @elseif($pesanan->status_pesanan == 'siap_diambil')
+                                <span class="badge status-siap-diambil">Siap Diambil</span>
+                            @elseif($pesanan->status_pesanan == 'dikirim')
+                                <span class="badge status-dikirim">Dikirim</span>
+                            @elseif($pesanan->status_pesanan == 'selesai')
+                                <span class="badge status-selesai">Selesai</span>
+                            @else
+                                <span class="badge badge-menunggu">Menunggu Konfirmasi</span>
+                            @endif
+                            <i class="fas fa-pen edit-icon"></i>
+                        </div>
+                    </td>
+                    <td>
+                        @if($pesanan->bukti_transfer)
+                            <button class="btn-action btn-action-primary" onclick="showBuktiTransfer('{{ asset('storage/' . $pesanan->bukti_transfer) }}')">
+                                <i class="fas fa-image"></i> Lihat
+                            </button>
                         @else
-                            <span class="badge badge-menunggu">Menunggu Konfirmasi</span>
+                            <span style="color: var(--dark-gray); font-size: 13px;">-</span>
                         @endif
                     </td>
                     <td>
@@ -870,7 +921,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <p>Belum ada pesanan online</p>
@@ -936,6 +987,22 @@
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeDetailModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bukti Transfer Modal -->
+<div id="buktiTransferModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; text-align: center;">
+        <div class="modal-header">
+            <h3 class="modal-title">Bukti Transfer</h3>
+            <button class="modal-close" onclick="closeBuktiTransferModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <img id="buktiTransferImage" src="" alt="Bukti Transfer" style="max-width: 100%; border-radius: 8px;" />
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeBuktiTransferModal()">Tutup</button>
         </div>
     </div>
 </div>
@@ -1048,5 +1115,85 @@
     document.getElementById('detailModal').addEventListener('click', function(e) {
         if (e.target === this) closeDetailModal();
     });
+
+    function showBuktiTransfer(url) {
+        document.getElementById('buktiTransferImage').src = url;
+        document.getElementById('buktiTransferModal').style.display = 'flex';
+    }
+
+    function closeBuktiTransferModal() {
+        document.getElementById('buktiTransferModal').style.display = 'none';
+    }
+
+    document.getElementById('buktiTransferModal').addEventListener('click', function(e) {
+        if (e.target === this) closeBuktiTransferModal();
+    });
+
+    const paymentOptions = [
+        { value: 'lunas', label: 'Lunas', cls: 'badge-lunas' },
+        { value: 'menunggu_verifikasi', label: 'Menunggu', cls: 'badge-menunggu' },
+        { value: 'belum_bayar', label: 'Belum Lunas', cls: 'badge-belum-lunas' },
+    ];
+
+    const statusOptions = [
+        { value: 'menunggu_konfirmasi', label: 'Menunggu Konfirmasi', cls: 'status-menunggu-konfirmasi' },
+        { value: 'diproses', label: 'Diproses', cls: 'status-diproses' },
+        { value: 'siap_diambil', label: 'Siap Diambil', cls: 'status-siap-diambil' },
+        { value: 'dikirim', label: 'Dikirim', cls: 'status-dikirim' },
+        { value: 'selesai', label: 'Selesai', cls: 'status-selesai' },
+    ];
+
+    function startInlineEdit(el, type, id) {
+        if (el.classList.contains('editing')) return;
+
+        const currentBadge = el.querySelector('span.badge');
+        const currentText = currentBadge ? currentBadge.textContent.trim() : '';
+        const options = type === 'pembayaran' ? paymentOptions : statusOptions;
+        const field = type === 'pembayaran' ? 'status_pembayaran' : 'status_pesanan';
+
+        el.classList.add('editing');
+        el.innerHTML = '';
+
+        const select = document.createElement('select');
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            if (opt.label === currentText) option.selected = true;
+            select.appendChild(option);
+        });
+
+        el.appendChild(select);
+        select.focus();
+
+        const updateValue = () => {
+            const newValue = select.value;
+            const selected = options.find(o => o.value === newValue);
+
+            fetch(`/api/pesanans/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ [field]: newValue }),
+            })
+            .then(r => r.json())
+            .then(() => {
+                el.classList.remove('editing');
+                el.innerHTML = `<span class="badge ${selected.cls}">${selected.label}</span><i class="fas fa-pen edit-icon"></i>`;
+            })
+            .catch(err => {
+                el.classList.remove('editing');
+                el.innerHTML = currentBadge ? currentBadge.outerHTML + '<i class="fas fa-pen edit-icon"></i>' : '<i class="fas fa-pen edit-icon"></i>';
+                alert('Gagal mengupdate');
+                console.error(err);
+            });
+        };
+
+        select.addEventListener('change', updateValue);
+        select.addEventListener('blur', updateValue);
+    }
 </script>
 @endsection

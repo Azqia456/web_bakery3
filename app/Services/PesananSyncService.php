@@ -196,6 +196,10 @@ class PesananSyncService
             }
             if (isset($data['status_pembayaran'])) {
                 $updateData['status_pembayaran'] = $data['status_pembayaran'];
+                $updateData['status_bayar'] = $data['status_pembayaran'] === 'lunas' ? 'lunas' : 'belum_lunas';
+            }
+            if (isset($data['status_pesanan'])) {
+                $updateData['status_pesanan'] = $data['status_pesanan'];
             }
             if (isset($data['bukti_transfer'])) {
                 $updateData['bukti_transfer'] = $data['bukti_transfer'];

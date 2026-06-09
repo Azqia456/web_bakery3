@@ -79,17 +79,17 @@
 
         function getProductImagePath(name) {
             const productImageMap = {
-                'roti kelapa': '/image/kelapa.png',
-                'roti kacang ijo': '/image/kacanghiaju.png',
-                'roti kacang hijau': '/image/kacanghiaju.png',
-                'roti stroberi': '/image/strawberry.png',
-                'roti strawberry': '/image/strawberry.png',
-                'roti bluberi': '/image/bluberry.png',
-                'roti blueberry': '/image/bluberry.png',
-                'roti cokelat': '/image/coklat.png',
-                'roti coklat': '/image/coklat.png',
-                'roti cokelat premium': '/image/coklat.png',
-                'roti coklat premium': '/image/coklat.png'
+                'roti kelapa': '/image/kelapa.jpg',
+                'roti kacang ijo': '/image/kacanghiaju.jpg',
+                'roti kacang hijau': '/image/kacanghiaju.jpg',
+                'roti stroberi': '/image/strawberry.jpg',
+                'roti strawberry': '/image/strawberry.jpg',
+                'roti bluberi': '/image/bluberry.jpg',
+                'roti blueberry': '/image/bluberry.jpg',
+                'roti cokelat': '/image/coklat.jpg',
+                'roti coklat': '/image/coklat.jpg',
+                'roti cokelat premium': '/image/coklat.jpg',
+                'roti coklat premium': '/image/coklat.jpg'
             };
 
             return productImageMap[normalizeProductName(name)] || '/image/rotibulat.png';
@@ -113,7 +113,7 @@
                 productsGrid.innerHTML = products.map(product => {
                     const productName = product.nama_produk || 'Produk';
                     const description = getProductDescription(productName);
-                    const imagePath = getProductImagePath(productName);
+                    const imagePath = product.gambar ? `/storage/${product.gambar}` : getProductImagePath(productName);
                     return `
                     <div
                         class="product-card"

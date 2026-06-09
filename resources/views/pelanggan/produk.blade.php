@@ -78,7 +78,7 @@
                 productsGrid.innerHTML = products.map(product => {
                     const productName = product.nama_produk || 'Produk';
                     const description = getProductDescription(productName);
-                    const imagePath = product.gambar || getProductImagePath(productName);
+                    const imagePath = product.gambar ? `/storage/${product.gambar}` : getProductImagePath(productName);
                     return `
                     <div
                         class="product-card"

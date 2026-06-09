@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
 
     // PELANGGAN
     Route::get('/pelanggan/dashboard_pelanggan', [DashboardController::class, 'pelanggan'])->middleware('role:pelanggan')->name('pelanggan.dashboard');
+    Route::get('/pelanggan/produk', [DashboardController::class, 'produkPelanggan'])->middleware('role:pelanggan')->name('pelanggan.produk');
     Route::get('/pelanggan/profile', [PelangganProfileController::class, 'edit'])->middleware('role:pelanggan')->name('pelanggan.profile.edit');
     Route::patch('/pelanggan/profile', [PelangganProfileController::class, 'update'])->middleware('role:pelanggan')->name('pelanggan.profile.update');
     Route::post('/pelanggan/pembayaran/konfirmasi', [PesananController::class, 'confirmPaymentProof'])

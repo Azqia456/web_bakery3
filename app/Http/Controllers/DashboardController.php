@@ -93,6 +93,12 @@ class DashboardController extends Controller
         return view('pelanggan.dashboard_pelanggan', compact('pelanggan'));
     }
 
+    public function produkPelanggan()
+    {
+        $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
+        return view('pelanggan.produk', compact('pelanggan'));
+    }
+
     public function getStats()
     {
         return response()->json([

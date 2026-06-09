@@ -2099,7 +2099,7 @@
                         <i class="fas fa-home"></i>
                         Beranda
                     </a>
-                    <a href="{{ route('pelanggan.dashboard') }}" class="nav-tab">
+                    <a href="{{ route('pelanggan.produk') }}" class="nav-tab {{ request()->routeIs('pelanggan.produk') ? 'active' : '' }}">
                         <i class="fas fa-box"></i>
                         Produk
                     </a>

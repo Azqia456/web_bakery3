@@ -543,10 +543,10 @@
                         <h2 class="card-title">Daftar Pesanan Saya</h2>
                         <p style="font-size: 13px; color: var(--dark-gray); margin-top: 4px;">Pantau status pesanan Anda melalui timeline di bawah ini.</p>
                     </div>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    {{-- <div style="display:flex; gap:10px; flex-wrap:wrap;">
                         <button type="button" class="btn-action btn-payment" onclick="openPaymentModal()"><i class="fas fa-credit-card"></i> Konfirmasi Pembayaran</button>
                         <button type="button" class="btn-action btn-order" onclick="openOrderModal()"><i class="fas fa-bag-shopping"></i> Pesan</button>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="filter-bar">

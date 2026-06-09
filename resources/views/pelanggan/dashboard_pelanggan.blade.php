@@ -172,9 +172,14 @@
 
                 const data = await response.json();
                 
-                // Update summary cards with actual data if available
                 if (data.summary_cards && data.summary_cards[0]) {
                     document.getElementById('totalOrders').textContent = data.summary_cards[0].value || '0';
+                }
+                if (data.summary_cards && data.summary_cards[1]) {
+                    document.getElementById('totalSpent').textContent = data.summary_cards[1].value || 'Rp 0';
+                }
+                if (data.summary_cards && data.summary_cards[2]) {
+                    document.getElementById('completedOrders').textContent = data.summary_cards[2].value || '0';
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);

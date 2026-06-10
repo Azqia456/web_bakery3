@@ -15,7 +15,7 @@ class PesananController extends Controller
         return view('pesanan');
     }
 
-    public function pelangganView()
+    public function pelangganView(Request $request)
     {
         $user = Auth::user();
         $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
@@ -30,10 +30,14 @@ class PesananController extends Controller
             ]);
         }
 
-        $pesanans = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
-            ->where('id_pelanggan', $pelanggan->id_pelanggan)
-            ->orderBy('tgl_pesan', 'desc')
-            ->get();
+        $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+            ->where('id_pelanggan', $pelanggan->id_pelanggan);
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status_pesanan', $request->status);
+        }
+
+        $pesanans = $query->orderBy('tgl_pesan', 'desc')->get();
 
         return view('dashboard.pesanan-pelanggan', compact('pelanggan', 'pesanans'));
     }

@@ -28,21 +28,21 @@
                         <div class="summary-card-icon">
                             <i class="fas fa-bag-shopping"></i>
                         </div>
-                        <div class="summary-card-value" id="totalOrders">2</div>
+                        <div class="summary-card-value" id="totalOrders">0</div>
                         <div class="summary-card-label">Total pesanan</div>
                     </div>
                     <div class="summary-card">
                         <div class="summary-card-icon">
                             <i class="fas fa-wallet"></i>
                         </div>
-                        <div class="summary-card-value" id="totalSpent">Rp 1jt</div>
+                        <div class="summary-card-value" id="totalSpent">Rp 0</div>
                         <div class="summary-card-label">Pengeluaran</div>
                     </div>
                     <div class="summary-card">
                         <div class="summary-card-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="summary-card-value" id="completedOrders">1</div>
+                        <div class="summary-card-value" id="completedOrders">0</div>
                         <div class="summary-card-label">Selesai</div>
                     </div>
                 </div>

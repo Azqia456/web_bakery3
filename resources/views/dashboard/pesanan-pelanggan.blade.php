@@ -505,6 +505,8 @@
     color: var(--dark-gray);
     cursor: pointer;
     transition: var(--transition);
+    text-decoration: none;
+    display: inline-block;
 }
 
 .filter-btn:hover {
@@ -549,13 +551,14 @@
                     </div> --}}
                 </div>
 
+                @php $currentStatus = request('status', 'all'); @endphp
                 <div class="filter-bar">
-                    <button class="filter-btn active" data-filter="all">Semua</button>
-                    <button class="filter-btn" data-filter="menunggu_konfirmasi">Menunggu Konfirmasi</button>
-                    <button class="filter-btn" data-filter="diproses">Diproses</button>
-                    <button class="filter-btn" data-filter="siap_diambil">Siap Diambil</button>
-                    <button class="filter-btn" data-filter="dikirim">Dikirim</button>
-                    <button class="filter-btn" data-filter="selesai">Selesai</button>
+                    <a href="?status=all" class="filter-btn {{ $currentStatus === 'all' ? 'active' : '' }}">Semua</a>
+                    <a href="?status=menunggu_konfirmasi" class="filter-btn {{ $currentStatus === 'menunggu_konfirmasi' ? 'active' : '' }}">Menunggu Konfirmasi</a>
+                    <a href="?status=diproses" class="filter-btn {{ $currentStatus === 'diproses' ? 'active' : '' }}">Diproses</a>
+                    <a href="?status=siap_diambil" class="filter-btn {{ $currentStatus === 'siap_diambil' ? 'active' : '' }}">Siap Diambil</a>
+                    <a href="?status=dikirim" class="filter-btn {{ $currentStatus === 'dikirim' ? 'active' : '' }}">Dikirim</a>
+                    {{-- <a href="?status=selesai" class="filter-btn {{ $currentStatus === 'selesai' ? 'active' : '' }}">Selesai</a> --}}
                 </div>
 
                 <div class="orders-grid" id="ordersGrid">
@@ -761,166 +764,6 @@
 
 @push('scripts')
 <script>
-    let allOrders = @json($pesanans ?? []);
-    let currentFilter = 'all';
-
-    const statusLabels = {
-        'menunggu_konfirmasi': 'Menunggu Konfirmasi',
-        'diproses': 'Diproses',
-        'siap_diambil': 'Siap Diambil',
-        'dikirim': 'Dikirim',
-        'selesai': 'Selesai',
-    };
-
-    const statusClasses = {
-        'menunggu_konfirmasi': 'menunggu',
-        'diproses': 'diproses',
-        'siap_diambil': 'siap',
-        'dikirim': 'dikirim',
-        'selesai': 'selesai',
-    };
-
-    const timelineSteps = ['Menunggu', 'Diproses', 'Siap', 'Dikirim', 'Selesai'];
-    const statusStepIndex = {
-        'menunggu_konfirmasi': 0,
-        'diproses': 1,
-        'siap_diambil': 2,
-        'dikirim': 3,
-        'selesai': 4,
-    };
-
-    function getProductImagePath(name) {
-        const imageMap = {
-            'Roti Cokelat': '/image/coklat.jpg',
-            'Roti Coklat Premium': '/image/coklat.jpg',
-            'Roti Stroberi': '/image/strawberry.jpg',
-            'Roti Bluberi': '/image/bluberry.jpg',
-            'Roti Kelapa': '/image/kelapa.jpg',
-            'Roti Kacang Ijo': '/image/kacanghiaju.jpg',
-        };
-        const key = Object.keys(imageMap).find(k => name && name.toLowerCase().includes(k.toLowerCase()));
-        return key ? imageMap[key] : `{{ asset('image/rotibulat.png') }}`;
-    }
-
-    function renderOrders() {
-        const grid = document.getElementById('ordersGrid');
-        const emptyState = document.getElementById('ordersEmptyState');
-
-        const filtered = currentFilter === 'all'
-            ? allOrders
-            : allOrders.filter(o => o.status_pesanan === currentFilter);
-
-        if (!filtered.length) {
-            grid.innerHTML = '';
-            emptyState.style.display = 'block';
-            return;
-        }
-
-        emptyState.style.display = 'none';
-
-        grid.innerHTML = filtered.map(order => {
-            const status = order.status_pesanan || 'menunggu_konfirmasi';
-            const statusLabel = statusLabels[status] || status;
-            const statusClass = statusClasses[status] || 'menunggu';
-            const currentStep = statusStepIndex[status] || 0;
-            const isDone = status === 'selesai';
-
-            const timeline = timelineSteps.map((step, index) => {
-                const completed = isDone ? index <= currentStep : index < currentStep;
-                const active = index === currentStep;
-
-                return `
-                    <div class="timeline-step">
-                        <div class="timeline-dot ${completed ? 'completed' : active ? 'active' : ''}">
-                            ${completed ? '<i class="fas fa-check"></i>' : index + 1}
-                        </div>
-                        <div class="timeline-label">${step}</div>
-                        <div class="timeline-line-wrapper">
-                            <div class="timeline-line ${completed ? 'completed' : active ? 'active' : ''}"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            const products = order.detail_pesanans || [];
-            const itemsHTML = products.slice(0, 3).map(item => {
-                const produk = item.produk || {};
-                const name = produk.nama_produk || 'Produk';
-                const img = produk.gambar || getProductImagePath(name);
-                return `
-                    <div class="order-item">
-                        <div class="order-item-icon ${img ? '' : 'no-image'}">
-                            ${img ? `<img src="${img}" alt="${name}" onerror="this.parentElement.classList.add('no-image')" />` : ''}
-                            ${!img ? `<span>🍞</span>` : ''}
-                        </div>
-                        <div>
-                            <div class="order-item-name">${name}</div>
-                            <div class="order-item-qty">${item.jumlah_pesan || 1} item</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            const remainingItems = products.length > 3 ? `<div class="order-item-qty" style="margin-top:4px;">+${products.length - 3} produk lainnya</div>` : '';
-
-            const date = order.tgl_pesan ? new Date(order.tgl_pesan).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
-
-            return `
-                <div class="order-card" data-status="${status}">
-                    <div class="order-header">
-                        <div>
-                            <div class="order-code">#ORD-${order.id_pesanan}</div>
-                            <div class="order-date"><i class="far fa-calendar-alt"></i> ${date}</div>
-                        </div>
-                        <span class="order-status-badge ${statusClass}">
-                            <i class="fas ${status === 'selesai' ? 'fa-check-circle' : status === 'dikirim' ? 'fa-truck' : status === 'diproses' ? 'fa-spinner' : 'fa-clock'}"></i>
-                            ${statusLabel}
-                        </span>
-                    </div>
-
-                    <div class="order-items">
-                        ${itemsHTML}
-                        ${remainingItems}
-                    </div>
-
-                    <div class="order-total">
-                        <span class="order-total-label">Total Pesanan</span>
-                        <span class="order-total-value">Rp ${parseInt(order.total_bayar || 0).toLocaleString('id-ID')}</span>
-                    </div>
-
-                    <div class="timeline-container">
-                        <div class="timeline-steps">
-                            ${timeline}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    async function loadOrders() {
-        try {
-            const response = await fetch('/pelanggan/pesanan/data');
-            if (!response.ok) throw new Error('Failed to load orders');
-            const data = await response.json();
-            allOrders = Array.isArray(data) ? data : (data.data || []);
-            renderOrders();
-        } catch (error) {
-            console.error('Error loading orders:', error);
-        }
-    }
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilter = this.dataset.filter;
-            renderOrders();
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', loadOrders);
-
     // Payment & Order Modal Functions
     const orderModal = document.getElementById('orderModal');
     const paymentModalEl = document.getElementById('paymentModal');

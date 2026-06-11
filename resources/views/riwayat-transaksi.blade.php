@@ -663,17 +663,17 @@
                     $metodeBadge = 'metode-' . $metode;
 
                     $trxId = $sumber == 'online'
-                        ? '#ON-' . $pesanan->tgl_pesan->format('dmY') . '-' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT)
+                        ? '#ON-' . \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('dmY') . '-' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT)
                         : '#TRX-' . str_pad($pesanan->id_pesanan, 4, '0', STR_PAD_LEFT);
                 @endphp
-                <tr data-tipe="{{ $tipe }}" data-sumber="{{ $sumber }}" data-metode="{{ $metode }}" data-tanggal="{{ $pesanan->tgl_pesan->format('Y-m-d') }}">
+                <tr data-tipe="{{ $tipe }}" data-sumber="{{ $sumber }}" data-metode="{{ $metode }}" data-tanggal="{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('Y-m-d') }}">
                     <td><strong>{{ $trxId }}</strong></td>
                     <td>{{ $nama }}</td>
                     <td><span class="badge {{ $tipeBadge }}">{{ $tipeText }}</span></td>
                     <td><span class="badge {{ $sumberBadge }}">{{ $sumberText }}</span></td>
                     <td><span class="badge {{ $metodeBadge }}">{{ $metodeText }}</span></td>
                     <td><strong>Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</strong></td>
-                    <td>{{ $pesanan->tgl_pesan->format('d/m/Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('d/m/Y') }}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn-icon" onclick="showDetail({{ $pesanan->id_pesanan }})" title="Lihat Detail">

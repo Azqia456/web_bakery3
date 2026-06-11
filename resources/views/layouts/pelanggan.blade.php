@@ -2081,7 +2081,11 @@
 
                 <div class="user-card">
                     <div class="user-avatar">
-                        {{ strtoupper(substr(auth()->user()->username ?? 'P', 0, 1)) }}
+                        @if(auth()->user()->foto_profil)
+                            <img src="{{ asset('storage/' . auth()->user()->foto_profil) }}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->username ?? 'P', 0, 1)) }}
+                        @endif
                     </div>
                     <div class="user-name">{{ auth()->user()->username ?? 'Pelanggan' }}</div>
                     <div class="user-tier">
@@ -2103,11 +2107,11 @@
                         <i class="fas fa-box"></i>
                         Produk
                     </a>
-                    <a href="/pelanggan/pesanan" class="nav-tab {{ request()->is('pelanggan/pesanan*') ? 'active' : '' }}">
+                    <a href="/pelanggan/pesanan" class="nav-tab {{ request()->is('pelanggan/pesanan*') && request('status') !== 'selesai' ? 'active' : '' }}">
                         <i class="fas fa-shopping-bag"></i>
                         Pesanan Saya
                     </a>
-                    <a href="/pelanggan/pesanan" class="nav-tab">
+                    <a href="/pelanggan/pesanan?status=selesai" class="nav-tab {{ request()->is('pelanggan/pesanan*') && request('status') === 'selesai' ? 'active' : '' }}">
                         <i class="fas fa-clock"></i>
                         Riwayat Pesanan
                     </a>

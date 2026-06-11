@@ -153,6 +153,11 @@
     display: none;
 }
 
+.order-emoji {
+    font-size: 16px;
+    line-height: 1;
+}
+
 .order-item-name {
     font-size: 13px;
     font-weight: 600;
@@ -558,7 +563,7 @@
                     <a href="?status=diproses" class="filter-btn {{ $currentStatus === 'diproses' ? 'active' : '' }}">Diproses</a>
                     <a href="?status=siap_diambil" class="filter-btn {{ $currentStatus === 'siap_diambil' ? 'active' : '' }}">Siap Diambil</a>
                     <a href="?status=dikirim" class="filter-btn {{ $currentStatus === 'dikirim' ? 'active' : '' }}">Dikirim</a>
-                    {{-- <a href="?status=selesai" class="filter-btn {{ $currentStatus === 'selesai' ? 'active' : '' }}">Selesai</a> --}}
+                    <a href="?status=selesai" class="filter-btn {{ $currentStatus === 'selesai' ? 'active' : '' }}">Selesai</a>
                 </div>
 
                 <div class="orders-grid" id="ordersGrid">
@@ -601,8 +606,13 @@
                             <div class="order-items">
                                 @foreach($order->detailPesanans as $item)
                                     <div class="order-item">
-                                        <div class="order-item-icon">
-                                            <span>🍞</span>
+                                        <div class="order-item-icon no-image">
+                                            @php $produkGambar = $item->produk->gambar ?? null; @endphp
+                                            @if($produkGambar)
+                                                <img src="{{ asset('storage/' . $produkGambar) }}" alt="{{ $item->produk->nama_produk ?? 'Produk' }}" onload="this.parentElement.classList.remove('no-image')" onerror="this.style.display='none'" />
+                                            @else
+                                                <img src="{{ asset('image/rotibulat.png') }}" alt="{{ $item->produk->nama_produk ?? 'Produk' }}" onload="this.parentElement.classList.remove('no-image')" onerror="this.style.display='none'" />
+                                            @endif
                                         </div>
                                         <div>
                                             <div class="order-item-name">{{ $item->produk->nama_produk ?? 'Produk' }}</div>
@@ -614,6 +624,12 @@
                             <div class="order-total">
                                 <span class="order-total-label">Total Pesanan</span>
                                 <span class="order-total-value">Rp {{ number_format($order->total_bayar ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="order-meta" style="margin-bottom: 12px; display: flex; gap: 12px; font-size: 12px; color: var(--dark-gray);">
+                                <span><i class="fas {{ $order->metode_pengambilan === 'delivery' ? 'fa-truck' : 'fa-store' }}"></i> {{ $order->metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup' }}</span>
+                                @if($order->metode_pengambilan === 'delivery' && $order->alamat_delivery)
+                                    <span><i class="fas fa-map-marker-alt"></i> {{ $order->alamat_delivery }}</span>
+                                @endif
                             </div>
                             <div class="timeline-container">
                                 <div class="timeline-steps">

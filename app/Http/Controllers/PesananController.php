@@ -21,13 +21,15 @@ class PesananController extends Controller
         $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
 
         if (!$pelanggan) {
-            $pelanggan = \App\Models\Pelanggan::create([
-                'id_user' => $user->id_user,
-                'nama' => $user->username,
-                'email' => $user->email,
-                'no_tlp' => $user->no_telpon,
-                'status' => 'Online',
-            ]);
+            $pelanggan = \App\Models\Pelanggan::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'id_user' => $user->id_user,
+                    'nama' => $user->username,
+                    'no_tlp' => $user->no_telpon ?? '-',
+                    'status' => 'Online',
+                ]
+            );
         }
 
         $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
@@ -387,13 +389,15 @@ class PesananController extends Controller
         $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
 
         if (!$pelanggan) {
-            $pelanggan = \App\Models\Pelanggan::create([
-                'id_user' => $user->id_user,
-                'nama' => $user->username,
-                'email' => $user->email,
-                'no_tlp' => $validated['no_hp'],
-                'status' => 'Online',
-            ]);
+            $pelanggan = \App\Models\Pelanggan::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'id_user' => $user->id_user,
+                    'nama' => $user->username,
+                    'no_tlp' => $validated['no_hp'],
+                    'status' => 'Online',
+                ]
+            );
         } else {
             $pelanggan->update([
                 'nama' => $validated['nama'],

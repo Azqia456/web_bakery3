@@ -442,19 +442,28 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
+                                    <label class="form-label required">Username</label>
+                                    <input type="text" name="username" class="form-input" placeholder="Masukkan username" value="{{ old('username', $user->username) }}" required>
+                                    @error('username')
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label class="form-label required">Nomor Telepon</label>
                                     <input type="tel" name="no_tlp" class="form-input" placeholder="Masukkan nomor telepon" value="{{ old('no_tlp', $pelanggan->no_tlp) }}" required>
                                     @error('no_tlp')
                                         <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-input" placeholder="Masukkan email" value="{{ old('email', $pelanggan->email) }}">
-                                @error('email')
-                                    <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
-                                @enderror
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-input" placeholder="Masukkan email" value="{{ old('email', $pelanggan->email) }}">
+                                    @error('email')
+                                        <div class="error-message"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label required">Alamat</label>

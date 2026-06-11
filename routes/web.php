@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\DataPelangganController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
@@ -12,10 +14,9 @@ use App\Http\Controllers\PelangganProfileController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PasswordResetController;
 use App\Models\Pesanan;
+use Carbon\Carbon;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index']);
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -160,8 +161,41 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-pembayaran', function () {
         return view('laporan_pembayaran');
     })->name('laporan-pembayaran');
-    Route::get('/laporan-setoran-karyawan', function () {
-        return view('laporan_setoran_karyawan');
+    Route::get('/laporan-setoran-karyawan', function (Request $request) {
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $query = Pesanan::with(['karyawan', 'detailPesanans.produk'])
+            ->whereNotNull('id_karyawan')
+            ->whereBetween('tgl_pesan', [$start, $end]);
+
+        $totalSetoran = (clone $query)->sum('total_bayar') ?? 0;
+        $jumlahSetoran = (clone $query)->count();
+        $setoranBelumDicek = (clone $query)->where('status_bayar', 'belum_lunas')->count();
+
+        $setoranData = (clone $query)
+            ->orderBy('tgl_pesan', 'desc')
+            ->get()
+            ->map(function ($pesanan) {
+                $produkNames = $pesanan->detailPesanans
+                    ->pluck('produk.nama_produk')
+                    ->filter()
+                    ->implode(', ');
+                return [
+                    'nama_karyawan' => $pesanan->karyawan->nama ?? 'Karyawan',
+                    'produk_diambil' => $produkNames ?: 'Produk',
+                    'total_setoran' => (float) $pesanan->total_bayar,
+                    'tanggal_setoran' => $pesanan->tgl_pesan->format('Y-m-d'),
+                    'status' => $pesanan->status_bayar === 'lunas' ? 'sudah_dicek' : 'belum_dicek',
+                ];
+            });
+
+        return view('laporan_setoran_karyawan', compact(
+            'totalSetoran', 'jumlahSetoran', 'setoranBelumDicek', 'setoranData', 'startDate', 'endDate'
+        ));
     })->name('laporan-setoran-karyawan');
 });
 

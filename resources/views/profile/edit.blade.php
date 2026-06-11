@@ -23,9 +23,9 @@
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
             --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-            --border-radius: 0px;
-            --border-radius-lg: 0px;
-            --border-radius-xl: 0px;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --border-radius-xl: 16px;
             --transition: all 0.3s ease;
         }
 
@@ -708,10 +708,10 @@
                     <div class="edit-form" id="usernameForm">
                         <div class="form-input-group">
                             <label for="usernameInput">Username Baru</label>
-                            <input 
-                                type="text" 
-                                id="usernameInput" 
-                                name="username" 
+                            <input
+                                type="text"
+                                id="usernameInput"
+                                name="username"
                                 value="{{ $user->username }}"
                                 placeholder="Masukkan username baru"
                                 required
@@ -722,7 +722,7 @@
                                 <i class="fas fa-times"></i>
                                 Batal
                             </button>
-                            <button type="submit" class="btn-primary" onclick="setActiveField('username')">
+                            <button type="submit" class="btn-primary">
                                 <i class="fas fa-check"></i>
                                 Simpan
                             </button>
@@ -748,10 +748,10 @@
                     <div class="edit-form" id="emailForm">
                         <div class="form-input-group">
                             <label for="emailInput">Email Baru</label>
-                            <input 
-                                type="email" 
-                                id="emailInput" 
-                                name="email" 
+                            <input
+                                type="email"
+                                id="emailInput"
+                                name="email"
                                 value="{{ $user->email }}"
                                 placeholder="Masukkan email baru"
                                 required
@@ -762,7 +762,7 @@
                                 <i class="fas fa-times"></i>
                                 Batal
                             </button>
-                            <button type="submit" class="btn-primary" onclick="setActiveField('email')">
+                            <button type="submit" class="btn-primary">
                                 <i class="fas fa-check"></i>
                                 Simpan
                             </button>
@@ -792,10 +792,10 @@
                     <div class="edit-form" id="no_telponForm">
                         <div class="form-input-group">
                             <label for="no_telponInput">No. Telpon</label>
-                            <input 
-                                type="tel" 
-                                id="no_telponInput" 
-                                name="no_telpon" 
+                            <input
+                                type="tel"
+                                id="no_telponInput"
+                                name="no_telpon"
                                 value="{{ $user->no_telpon ?? '' }}"
                                 placeholder="Contoh: 08123456789"
                                 maxlength="20"
@@ -806,7 +806,7 @@
                                 <i class="fas fa-times"></i>
                                 Batal
                             </button>
-                            <button type="submit" class="btn-primary" onclick="setActiveField('no_telpon')">
+                            <button type="submit" class="btn-primary">
                                 <i class="fas fa-check"></i>
                                 Simpan
                             </button>
@@ -836,9 +836,9 @@
                     <div class="edit-form" id="alamatForm">
                         <div class="form-input-group">
                             <label for="alamatInput">Alamat</label>
-                            <textarea 
-                                id="alamatInput" 
-                                name="alamat" 
+                            <textarea
+                                id="alamatInput"
+                                name="alamat"
                                 placeholder="Masukkan alamat lengkap Anda"
                                 maxlength="500"
                             >{{ $user->alamat ?? '' }}</textarea>
@@ -848,7 +848,7 @@
                                 <i class="fas fa-times"></i>
                                 Batal
                             </button>
-                            <button type="submit" class="btn-primary" onclick="setActiveField('alamat')">
+                            <button type="submit" class="btn-primary">
                                 <i class="fas fa-check"></i>
                                 Simpan
                             </button>
@@ -856,80 +856,80 @@
                     </div>
                 </div>
             </form>
+        </div>
 
-            <!-- Bottom Cards: Verifikasi Email & Ubah Password -->
-            <div class="bottom-cards">
-                <div class="card-small">
-                    <h3 style="margin-bottom:12px;">Verifikasi Email</h3>
-                    @if($user->email_verified_at)
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <span class="badge-verified">Terverifikasi</span>
-                            <div style="color:var(--dark-gray);">Email Anda telah terverifikasi pada {{ \Carbon\Carbon::parse($user->email_verified_at)->translatedFormat('d F Y H:i') }}</div>
-                        </div>
-                    @else
-                        <p style="color:var(--dark-gray);margin-bottom:12px;">Email Anda: <strong>{{ $user->email }}</strong></p>
-                        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
-                            <button type="button" class="btn-primary" id="sendOtpBtn" onclick="sendVerificationOtp()">Kirim OTP</button>
-                            <button type="button" class="btn-secondary" id="resendOtpBtn" style="display:none;" onclick="sendVerificationOtp(true)">Kirim Ulang</button>
-                        </div>
+        <!-- Bottom Cards: Verifikasi Email & Ubah Password -->
+        <div class="bottom-cards">
+            <div class="card-small">
+                <h3 style="margin-bottom:12px;">Verifikasi Email</h3>
+                @if($user->email_verified_at)
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="badge-verified">Terverifikasi</span>
+                        <div style="color:var(--dark-gray);">Email Anda telah terverifikasi pada {{ \Carbon\Carbon::parse($user->email_verified_at)->translatedFormat('d F Y H:i') }}</div>
+                    </div>
+                @else
+                    <p style="color:var(--dark-gray);margin-bottom:12px;">Email Anda: <strong>{{ $user->email }}</strong></p>
+                    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+                        <button type="button" class="btn-primary" id="sendOtpBtn" onclick="sendVerificationOtp()">Kirim OTP</button>
+                        <button type="button" class="btn-secondary" id="resendOtpBtn" style="display:none;" onclick="sendVerificationOtp(true)">Kirim Ulang</button>
+                    </div>
 
-                        <div id="otpSection" style="display:none;margin-top:12px;">
-                            <div class="form-input-group">
-                                <label for="verifyOtpInput">Masukkan Kode OTP</label>
-                                <input type="text" id="verifyOtpInput" maxlength="6" placeholder="6 digit kode OTP">
-                            </div>
-                            <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
-                                <button type="button" class="btn-secondary" onclick="document.getElementById('verifyOtpInput').value='';">Batal</button>
-                                <button type="button" class="btn-primary" onclick="verifyEmailOtp()">Verifikasi</button>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                <div class="card-small">
-                    <h3 style="margin-bottom:12px;">Ubah Password</h3>
-                    @if(session('status') === 'password-updated')
-                        <div class="alert alert-success"><i class="fas fa-check-circle"></i> Kata sandi berhasil diperbarui.</div>
-                    @endif
-
-                    @if($errors->updatePassword->any())
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <div>
-                                <strong>Terjadi kesalahan!</strong>
-                                <ul style="margin-top: 4px; margin-left: 20px;">
-                                    @foreach($errors->updatePassword->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('password.update') }}">
-                        @csrf
-                        @method('PUT')
-
+                    <div id="otpSection" style="display:none;margin-top:12px;">
                         <div class="form-input-group">
-                            <label for="current_password">Password Saat Ini</label>
-                            <input type="password" name="current_password" id="current_password" placeholder="Masukkan password saat ini" required>
+                            <label for="verifyOtpInput">Masukkan Kode OTP</label>
+                            <input type="text" id="verifyOtpInput" maxlength="6" placeholder="6 digit kode OTP">
                         </div>
+                        <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
+                            <button type="button" class="btn-secondary" onclick="document.getElementById('verifyOtpInput').value='';">Batal</button>
+                            <button type="button" class="btn-primary" onclick="verifyEmailOtp()">Verifikasi</button>
+                        </div>
+                    </div>
+                @endif
+            </div>
 
-                        <div class="form-input-group">
-                            <label for="password">Password Baru</label>
-                            <input type="password" name="password" id="password" placeholder="Masukkan password baru" required>
-                        </div>
+            <div class="card-small">
+                <h3 style="margin-bottom:12px;">Ubah Password</h3>
+                @if(session('status') === 'password-updated')
+                    <div class="alert alert-success"><i class="fas fa-check-circle"></i> Kata sandi berhasil diperbarui.</div>
+                @endif
 
-                        <div class="form-input-group">
-                            <label for="password_confirmation">Konfirmasi Password Baru</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Konfirmasi password baru" required>
+                @if($errors->updatePassword->any())
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Terjadi kesalahan!</strong>
+                            <ul style="margin-top: 4px; margin-left: 20px;">
+                                @foreach($errors->updatePassword->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    </div>
+                @endif
 
-                        <div style="display:flex;justify-content:flex-end;margin-top:12px;gap:8px;">
-                            <button type="submit" class="btn-primary">Simpan Password</button>
-                        </div>
-                    </form>
-                </div>
+                <form method="POST" action="{{ route('password.update') }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="form-input-group">
+                        <label for="current_password">Password Saat Ini</label>
+                        <input type="password" name="current_password" id="current_password" placeholder="Masukkan password saat ini" required>
+                    </div>
+
+                    <div class="form-input-group">
+                        <label for="password">Password Baru</label>
+                        <input type="password" name="password" id="password" placeholder="Masukkan password baru" required>
+                    </div>
+
+                    <div class="form-input-group">
+                        <label for="password_confirmation">Konfirmasi Password Baru</label>
+                        <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Konfirmasi password baru" required>
+                    </div>
+
+                    <div style="display:flex;justify-content:flex-end;margin-top:12px;gap:8px;">
+                        <button type="submit" class="btn-primary">Simpan Password</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -965,18 +965,7 @@
             }
         }
 
-        // Set active field for form submission
-        let activeField = null;
-        function setActiveField(field) {
-            activeField = field;
-        }
-
-        // Form submission
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            if (!activeField) {
-                e.preventDefault();
-            }
-        });
+        // Form submission - all fields are validated server-side
 
         // Close alert after 5 seconds
         setTimeout(() => {

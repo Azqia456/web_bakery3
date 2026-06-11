@@ -466,7 +466,15 @@
                         <a class="nav-link" href="#kontak">Kontak</a>
                     </li>
                     <li class="nav-item ms-2">
-                        <a href="{{ route('login') }}" class="btn btn-login-nav">Login</a>
+                        @auth
+                            @if(auth()->user()->role === 'owner')
+                                <a href="{{ route('dashboard') }}" class="btn btn-login-nav">Dashboard</a>
+                            @else
+                                <a href="{{ route('pelanggan.dashboard') }}" class="btn btn-login-nav">Dashboard</a>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-login-nav">Login</a>
+                        @endauth
                     </li>
                 </ul>
             </div>
@@ -481,7 +489,15 @@
                     <h1 class="hero-title">Three D Bakery</h1>
                     <p class="hero-subtitle">Roti premium dengan cita rasa internasional dan bahan berkualitas terbaik. Dipanggang segar setiap hari untuk kepuasan Anda.</p>
                     <div>
-                        <a href="{{ route('login') }}" class="btn btn-hero btn-hero-primary">🛒 Belanja Sekarang</a>
+                        @auth
+                            @if(auth()->user()->role === 'owner')
+                                <a href="{{ route('dashboard') }}" class="btn btn-hero btn-hero-primary">📊 Dashboard</a>
+                            @else
+                                <a href="{{ route('pelanggan.dashboard') }}" class="btn btn-hero btn-hero-primary">🛒 Belanja Sekarang</a>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-hero btn-hero-primary">🛒 Belanja Sekarang</a>
+                        @endauth
                         <a href="#produk" class="btn btn-hero btn-hero-secondary">📋 Lihat Produk</a>
                     </div>
                 </div>
@@ -499,100 +515,43 @@
             <p class="section-subtitle">Koleksi roti premium pilihan kami yang paling dicintai pelanggan</p>
             
             <div class="row g-4">
-                <!-- Product 1 -->
+                @forelse($produks as $produk)
                 <div class="col-lg-4 col-md-6">
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="{{ asset('image/strawberry.jpg') }}" alt="Berry Lava">
+                            @if($produk->gambar)
+                                <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}">
+                            @else
+                                <img src="{{ asset('image/rotibulat.png') }}" alt="{{ $produk->nama_produk }}">
+                            @endif
                         </div>
                         <div class="product-body">
-                            <h5 class="product-name">Berry Lava</h5>
-                            <p class="product-desc">Roti dengan isian stroberi segar dan coklat lumer. Lembut dan lezat di setiap gigitan.</p>
+                            <h5 class="product-name">{{ $produk->nama_produk }}</h5>
+                            <p class="product-desc">{{ $produk->deskripsi ?? 'Roti premium dengan cita rasa terbaik.' }}</p>
                             <div class="product-footer">
-                                <span class="product-price">Rp 45.000</span>
-                                <a href="{{ route('login') }}" class="btn-add-cart">
-                                    <i class="bi bi-bag-plus"></i> Pesan
-                                </a>
+                                <span class="product-price">Rp {{ number_format($produk->harga_produk, 0, ',', '.') }}</span>
+                                @auth
+                                    @if(auth()->user()->role === 'owner')
+                                        <a href="{{ route('dashboard') }}" class="btn-add-cart">Dashboard</a>
+                                    @else
+                                        <a href="{{ route('pelanggan.dashboard') }}" class="btn-add-cart">
+                                            <i class="bi bi-bag-plus"></i> Pesan
+                                        </a>
+                                    @endif
+                                @else
+                                    <a href="{{ route('login') }}" class="btn-add-cart">
+                                        <i class="bi bi-bag-plus"></i> Pesan
+                                    </a>
+                                @endauth
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Product 2 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{{ asset('image/bluberry.jpg') }}" alt="Blue Bliss">
-                        </div>
-                        <div class="product-body">
-                            <h5 class="product-name">Blue Bliss</h5>
-                            <p class="product-desc">Roti blueberry premium dengan tekstur empuk dan rasa manis alami yang menyegarkan.</p>
-                            <div class="product-footer">
-                                <span class="product-price">Rp 50.000</span>
-                                <a href="{{ route('login') }}" class="btn-add-cart">
-                                    <i class="bi bi-bag-plus"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                @empty
+                <div class="col-12 text-center">
+                    <p class="text-muted">Belum ada produk tersedia saat ini.</p>
                 </div>
-
-                <!-- Product 3 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{{ asset('image/coklat.jpg') }}" alt="Choco Lava">
-                        </div>
-                        <div class="product-body">
-                            <h5 class="product-name">Choco Lava</h5>
-                            <p class="product-desc">Roti coklat dengan coklat lumer di bagian tengah. Surga bagi pecinta coklat sejati.</p>
-                            <div class="product-footer">
-                                <span class="product-price">Rp 52.000</span>
-                                <a href="{{ route('login') }}" class="btn-add-cart">
-                                    <i class="bi bi-bag-plus"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{{ asset('image/kelapa.jpg') }}" alt="Coco Melt">
-                        </div>
-                        <div class="product-body">
-                            <h5 class="product-name">Coco Melt</h5>
-                            <p class="product-desc">Roti kelapa dengan manisan kelapa yang lumer. Rasa tropis yang memanjakan lidah.</p>
-                            <div class="product-footer">
-                                <span class="product-price">Rp 48.000</span>
-                                <a href="{{ route('login') }}" class="btn-add-cart">
-                                    <i class="bi bi-bag-plus"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 5 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="{{ asset('image/kacanghiaju.jpg') }}" alt="Mung Bean">
-                        </div>
-                        <div class="product-body">
-                            <h5 class="product-name">Mung Bean</h5>
-                            <p class="product-desc">Roti kacang hijau dengan rasa gurih khas. Tekstur sempurna dengan kacang utuh.</p>
-                            <div class="product-footer">
-                                <span class="product-price">Rp 42.000</span>
-                                <a href="{{ route('login') }}" class="btn-add-cart">
-                                    <i class="bi bi-bag-plus"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>

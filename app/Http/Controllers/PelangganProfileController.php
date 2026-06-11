@@ -21,15 +21,17 @@ class PelangganProfileController extends Controller
 
         // Jika pelanggan belum ada, buat record baru
         if (!$pelanggan) {
-            $pelanggan = Pelanggan::create([
-                'id_user' => $user->id_user,
-                'nama' => $user->username ?? 'Pelanggan',
-                'no_tlp' => $user->no_telpon ?? '',
-                'email' => $user->email ?? '',
-                'alamat' => $user->alamat ?? '',
-                'bio' => '',
-                'status' => 'Online',
-            ]);
+            $pelanggan = Pelanggan::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'id_user' => $user->id_user,
+                    'nama' => $user->username ?? 'Pelanggan',
+                    'no_tlp' => $user->no_telpon ?? '',
+                    'alamat' => $user->alamat ?? '',
+                    'bio' => '',
+                    'status' => 'Online',
+                ]
+            );
         }
 
         return view('pelanggan.profile', [
@@ -48,15 +50,17 @@ class PelangganProfileController extends Controller
 
         // Jika pelanggan belum ada, buat record baru
         if (!$pelanggan) {
-            $pelanggan = Pelanggan::create([
-                'id_user' => $user->id_user,
-                'nama' => $user->username ?? 'Pelanggan',
-                'no_tlp' => $user->no_telpon ?? '',
-                'email' => $user->email ?? '',
-                'alamat' => $user->alamat ?? '',
-                'bio' => '',
-                'status' => 'Online',
-            ]);
+            $pelanggan = Pelanggan::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'id_user' => $user->id_user,
+                    'nama' => $user->username ?? 'Pelanggan',
+                    'no_tlp' => $user->no_telpon ?? '',
+                    'alamat' => $user->alamat ?? '',
+                    'bio' => '',
+                    'status' => 'Online',
+                ]
+            );
         }
 
         // Validate input

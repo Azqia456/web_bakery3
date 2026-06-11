@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +14,16 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): View|RedirectResponse
     {
+        $user = $request->user();
+
+        if ($user->role !== 'owner') {
+            return redirect()->route('pelanggan.profile.edit');
+        }
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 
@@ -28,7 +33,7 @@ class ProfileController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         $validated = $request->validate([
             'username' => 'required|string|unique:users,username,' . $user->id_user . ',id_user',
             'email' => 'required|email|unique:users,email,' . $user->id_user . ',id_user',
@@ -43,7 +48,7 @@ class ProfileController extends Controller
             if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
                 Storage::disk('public')->delete($user->foto_profil);
             }
-            
+
             $file = $request->file('foto_profil');
             $filename = 'profile_' . $user->id_user . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('profile-photos', $filename, 'public');
@@ -52,8 +57,8 @@ class ProfileController extends Controller
 
         $user->fill($validated);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
         $user->save();

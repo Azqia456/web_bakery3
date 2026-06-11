@@ -852,7 +852,7 @@
                 <tr>
                     <td>
                         <span class="order-number">
-                            #ON-{{ $pesanan->tgl_pesan->format('dmY') }}-{{ str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT) }}
+                            #ON-{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('dmY') }}-{{ str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT) }}
                         </span>
                     </td>
                     <td>
@@ -908,8 +908,8 @@
                     </td>
                     <td>
                         <div class="time-info">
-                            <div class="time-date">{{ $pesanan->tgl_pesan->format('d/m/Y') }}</div>
-                            <div class="time-hour">{{ $pesanan->tgl_pesan->format('H:i') }} WIB</div>
+                            <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('d/m/Y') }}</div>
+                            <div class="time-hour">{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('H:i') }} WIB</div>
                         </div>
                     </td>
                     <td>

@@ -50,6 +50,7 @@ class PesananSyncService
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
             'sumber_pesanan' => $data['sumber_pesanan'] ?? 'offline',
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
+            'status_pesanan' => $data['status_pesanan'] ?? 'menunggu_konfirmasi',
             'total_bayar' => $data['total_bayar'] ?? 0,
         ]);
 
@@ -107,6 +108,7 @@ class PesananSyncService
             'tgl_delivery' => $data['tgl_delivery'] ?? null,
             'metode_pembayaran' => $data['metode_pembayaran'] ?? 'cash',
             'status_pembayaran' => $data['status_pembayaran'] ?? self::getDefaultPaymentStatus($data['metode_pembayaran'] ?? 'cash'),
+            'status_pesanan' => $data['status_pesanan'] ?? 'menunggu_konfirmasi',
             'bukti_transfer' => $data['bukti_transfer'] ?? null,
             'catatan_pesanan' => $data['catatan_pesanan'] ?? null,
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',

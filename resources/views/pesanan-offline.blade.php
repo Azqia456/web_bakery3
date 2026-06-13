@@ -1421,6 +1421,7 @@
                 const totalBarang = item.produk ? item.produk.reduce((sum, p) => sum + (p.qty || 0), 0) : 0;
                 const statusBadge = item.status === 'sudah_setor' ? 'sudah_setor' : 'belum_setor';
                 const statusText = item.status === 'sudah_setor' ? 'Sudah Setor' : 'Belum Setor';
+                const isSudahSetor = item.status === 'sudah_setor';
 
                 return `
                 <tr data-status="${item.status || 'belum_setor'}">
@@ -1434,17 +1435,19 @@
                             <button class="btn-icon" onclick="showDetail('karyawan', '${item.id}')" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            ${isSudahSetor ? '' : `
                             <button class="btn-icon" onclick="openEditModal('karyawan', '${item.id}')" title="Edit Pesanan">
                                 <i class="fas fa-pen"></i>
                             </button>
                             <button class="btn-icon" onclick="markComplete('karyawan', '${item.id}')" title="Checklist Setor">
                                 <i class="fas fa-check"></i>
                             </button>
-                            <button class="btn-icon" onclick="downloadInvoice('karyawan', '${item.id}')" title="Download Invoice">
-                                <i class="fas fa-file-invoice"></i>
-                            </button>
                             <button class="btn-icon delete" onclick="deletePesanan('karyawan', '${item.id}')" title="Hapus Pesanan">
                                 <i class="fas fa-trash"></i>
+                            </button>
+                            `}
+                            <button class="btn-icon" onclick="downloadInvoice('karyawan', '${item.id}')" title="Download Invoice">
+                                <i class="fas fa-file-invoice"></i>
                             </button>
                         </div>
                     </td>

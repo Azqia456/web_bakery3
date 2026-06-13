@@ -189,13 +189,18 @@ class PesananController extends Controller
                 'no_hp' => $p->pelanggan->no_tlp ?? '-',
                 'status' => $p->status_bayar === 'lunas' ? 'selesai' : 'diproses',
                 'status_bayar' => $p->status_bayar,
+                'status_pembayaran' => $p->status_pembayaran ?? 'belum_bayar',
+                'status_pesanan' => $p->status_pesanan ?? 'menunggu_konfirmasi',
                 'tgl_transaksi' => $p->tgl_pesan->format('Y-m-d'),
+                'waktu' => $p->tgl_pesan->format('H:i'),
                 'metode_pengambilan' => $p->metode_pengambilan ?? 'pickup',
                 'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
                 'total' => (float) $p->total_bayar,
+                'total_item' => $p->detailPesanans->sum('jumlah_pesan'),
                 'alamat_delivery' => $p->alamat_delivery,
                 'tanggal_delivery' => $p->tgl_delivery ? $p->tgl_delivery->format('Y-m-d') : null,
                 'tanggal_pickup' => $p->tgl_pesan->format('Y-m-d'),
+                'bukti_transfer' => $p->bukti_transfer,
                 'produk' => $p->detailPesanans->map(function ($d) {
                     return [
                         'id_produk' => $d->id_produk,
@@ -210,8 +215,8 @@ class PesananController extends Controller
         // Stats
         $stats = [
             'total' => Pesanan::where('sumber_pesanan', 'offline')->count(),
-            'diproses' => Pesanan::where('sumber_pesanan', 'offline')->where('status_bayar', 'belum_lunas')->count(),
-            'selesai' => Pesanan::where('sumber_pesanan', 'offline')->where('status_bayar', 'lunas')->count(),
+            'diproses' => Pesanan::where('sumber_pesanan', 'offline')->whereIn('status_pesanan', ['menunggu_konfirmasi', 'diproses', 'siap_diambil', 'dikirim'])->count(),
+            'selesai' => Pesanan::where('sumber_pesanan', 'offline')->where('status_pesanan', 'selesai')->count(),
         ];
 
         return view('pesanan-offline', compact('karyawanItems', 'pelangganItems', 'stats'))->with([

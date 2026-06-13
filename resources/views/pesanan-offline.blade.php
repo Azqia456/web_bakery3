@@ -850,6 +850,139 @@
         .autocomplete-wrapper {
             position: relative;
         }
+
+        /* Inline Edit */
+        .inline-editable {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .inline-editable:hover {
+            background: rgba(0,0,0,0.04);
+        }
+        .inline-editable .edit-icon {
+            font-size: 10px;
+            color: var(--dark-gray);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .inline-editable:hover .edit-icon {
+            opacity: 1;
+        }
+        .inline-editable.editing select {
+            padding: 4px 8px;
+            border: 1px solid var(--primary-brown);
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .badge-lunas { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+        .badge-belum-lunas { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+        .badge-menunggu { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+        .status-menunggu-konfirmasi { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+        .status-diproses { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+        .status-siap-diambil { background: rgba(34, 197, 94, 0.1); color: #22C55E; }
+        .status-dikirim { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+        .status-selesai { background: rgba(20, 184, 166, 0.1); color: #14B8A6; }
+
+        /* Order Number */
+        .order-number {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 13px;
+        }
+
+        /* Customer Info */
+        .customer-info .customer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 13px;
+        }
+        .customer-info .customer-phone {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin-top: 2px;
+        }
+
+        /* Time Info */
+        .time-info .time-date {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 13px;
+        }
+        .time-info .time-hour {
+            font-size: 12px;
+            color: var(--dark-gray);
+            margin-top: 2px;
+        }
+
+        /* Action Group */
+        .action-group {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            border: 1px solid var(--medium-gray);
+            background: var(--white);
+            color: var(--text-dark);
+        }
+        .btn-action:hover {
+            background: var(--light-gray);
+            border-color: var(--dark-gray);
+        }
+        .btn-action-primary {
+            background: linear-gradient(135deg, var(--primary-brown), #D4A574);
+            color: var(--white);
+            border: none;
+        }
+        .btn-action-primary:hover {
+            background: linear-gradient(135deg, #6B4F33, #c49557);
+            box-shadow: 0 2px 6px rgba(139, 111, 71, 0.2);
+        }
+
+        /* Bukti Transfer Modal */
+        #modalBuktiTransfer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        #modalBuktiTransfer.show {
+            display: flex;
+        }
+        .bukti-modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius-xl);
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
 </style>
 @endsection
 
@@ -864,28 +997,28 @@
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="stat-card-label">Total Pesanan</div>
-                        <div class="stat-card-value" id="total-pesanan">0</div>
+                        <div class="stat-card-value" id="total-pesanan">{{ $stats['total'] ?? 0 }}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon orange">
                             <i class="fas fa-spinner"></i>
                         </div>
                         <div class="stat-card-label">Pesanan Diproses</div>
-                        <div class="stat-card-value" id="pesanan-diproses">0</div>
+                        <div class="stat-card-value" id="pesanan-diproses">{{ $stats['diproses'] ?? 0 }}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon green">
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-card-label">Pesanan Selesai</div>
-                        <div class="stat-card-value" id="pesanan-selesai">0</div>
+                        <div class="stat-card-value" id="pesanan-selesai">{{ $stats['selesai'] ?? 0 }}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-card-icon purple">
                             <i class="fas fa-coins"></i>
                         </div>
                         <div class="stat-card-label">Total Revenue</div>
-                        <div class="stat-card-value" id="total-revenue">Rp 0</div>
+                        <div class="stat-card-value" id="total-revenue">Rp {{ number_format(($pelangganItems ? collect($pelangganItems)->sum('total') : 0), 0, ',', '.') }}</div>
                     </div>
                 </section>
 
@@ -911,7 +1044,10 @@
                                 <label style="font-size: 13px; font-weight: 500;">Filter Status:</label>
                                 <select class="form-control" id="filterPelanggan" onchange="filterTable('pelanggan')" style="max-width: 200px; padding: 8px 12px;">
                                     <option value="">Semua</option>
+                                    <option value="menunggu_konfirmasi">Menunggu Konfirmasi</option>
                                     <option value="diproses">Diproses</option>
+                                    <option value="siap_diambil">Siap Diambil</option>
+                                    <option value="dikirim">Dikirim</option>
                                     <option value="selesai">Selesai</option>
                                 </select>
                             </div>
@@ -919,18 +1055,20 @@
                         <table id="tablePelanggan">
                             <thead>
                                 <tr>
-                                    <th style="width: 40px;">No</th>
-                                    <th>Nama Pelanggan</th>
-                                    <th>No HP</th>
-                                    <th>Pickup / Delivery</th>
-                                    <th>Total Bayar</th>
-                                    <th>Status Pesanan</th>
+                                    <th>No. Pesanan</th>
+                                    <th>Pelanggan</th>
+                                    <th>Produk</th>
+                                    <th>Total</th>
+                                    <th>Pembayaran</th>
+                                    <th>Status</th>
+                                    <th>Bukti Transfer</th>
+                                    <th>Waktu</th>
                                     <th style="min-width: 140px;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="bodyPelanggan">
                                 <tr>
-                                    <td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                                    <td colspan="9" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                                         <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                                         Belum ada pesanan pelanggan
                                     </td>
@@ -1124,6 +1262,15 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Modal Bukti Transfer -->
+    <div id="modalBuktiTransfer" onclick="closeModalBuktiTransfer()">
+        <div class="bukti-modal-content" onclick="event.stopPropagation()">
+            <h4 style="margin-bottom: 16px;">Bukti Transfer</h4>
+            <img id="buktiTransferImage" src="" alt="Bukti Transfer" style="max-width: 100%; border-radius: 8px;" />
+            <button class="btn-cancel" style="margin-top: 16px;" onclick="closeModalBuktiTransfer()">Tutup</button>
+        </div>
+    </div>
+
     <!-- Pagination Styles -->
     <style>
         .pagination-container {
@@ -1316,7 +1463,7 @@
             if (pag.currentPage > totalPages) pag.currentPage = totalPages;
 
             if (totalItems === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan pelanggan
                 </td></tr>`;
@@ -1328,38 +1475,76 @@
             const end = start + pag.perPage;
             const pageItems = data.slice(start, end);
 
+            const statusPesananMap = {
+                'menunggu_konfirmasi': { cls: 'status-menunggu-konfirmasi', label: 'Menunggu Konfirmasi' },
+                'diproses': { cls: 'status-diproses', label: 'Diproses' },
+                'siap_diambil': { cls: 'status-siap-diambil', label: 'Siap Diambil' },
+                'dikirim': { cls: 'status-dikirim', label: 'Dikirim' },
+                'selesai': { cls: 'status-selesai', label: 'Selesai' },
+            };
+
+            const statusBayarMap = {
+                'lunas': { cls: 'badge-lunas', label: 'Lunas' },
+                'menunggu_verifikasi': { cls: 'badge-menunggu', label: 'Menunggu' },
+                'belum_bayar': { cls: 'badge-belum-lunas', label: 'Belum Lunas' },
+            };
+
             tbody.innerHTML = pageItems.map((item, index) => {
-                const statusBadge = item.status === 'selesai' ? 'selesai' : 'diproses';
-                const statusText = item.status === 'selesai' ? 'Selesai' : 'Diproses';
-                const pickupDeliveryDate = item.metode_pengambilan === 'delivery' ?
-                    (item.tanggal_delivery || '-') :
-                    (item.tanggal_pickup || '-');
+                const isSelesai = item.status_pesanan === 'selesai';
+                const statusBayar = statusBayarMap[item.status_pembayaran] ||
+                    (item.status_bayar === 'lunas' ? statusBayarMap['lunas'] : statusBayarMap['belum_bayar']);
+                const statusPesanan = statusPesananMap[item.status_pesanan] || statusPesananMap['menunggu_konfirmasi'];
+
+                const orderDate = item.tgl_transaksi || '';
+                const dateParts = orderDate.split('-');
+                const orderNo = `#OFF-${dateParts[2] || ''}${dateParts[1] || ''}${dateParts[0]?.slice(2) || ''}-${String(item.id_pesanan).padStart(3, '0')}`;
+
+                const bayarHTML = isSelesai
+                    ? `<div><span class="badge ${statusBayar.cls}">${statusBayar.label}</span></div>`
+                    : `<div class="inline-editable" onclick="startInlineEditOffline(this, 'pembayaran', '${item.id}')">
+                        <span class="badge ${statusBayar.cls}">${statusBayar.label}</span>
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>`;
+
+                const statusHTML = isSelesai
+                    ? `<div><span class="badge ${statusPesanan.cls}">${statusPesanan.label}</span></div>`
+                    : `<div class="inline-editable" onclick="startInlineEditOffline(this, 'status', '${item.id}')">
+                        <span class="badge ${statusPesanan.cls}">${statusPesanan.label}</span>
+                        <i class="fas fa-pen edit-icon"></i>
+                    </div>`;
+
+                const buktiHTML = item.bukti_transfer
+                    ? `<button class="btn-action btn-action-primary" onclick="showBuktiTransferOffline('${item.bukti_transfer}')">
+                        <i class="fas fa-image"></i> Lihat
+                    </button>`
+                    : `<span style="color: var(--dark-gray); font-size: 13px;">-</span>`;
+
+                const submitBtn = isSelesai ? '' : `<button class="btn-action btn-action-primary" onclick="submitOrderOffline('${item.id}')">Submit</button>`;
 
                 return `
-                <tr data-status="${item.status || 'diproses'}">
-                    <td>${start + index + 1}</td>
-                    <td>${item.nama}</td>
-                    <td>${item.no_hp || '-'}</td>
-                    <td>${item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</td>
-                    <td>Rp ${(item.total).toLocaleString('id-ID')}</td>
-                    <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
+                <tr>
+                    <td><span class="order-number">${orderNo}</span></td>
                     <td>
-                        <div class="action-buttons">
-                            <button class="btn-icon" onclick="showDetail('pelanggan', '${item.id}')" title="Lihat Detail">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn-icon" onclick="openEditModal('pelanggan', '${item.id}')" title="Edit Pesanan">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button class="btn-icon" onclick="markComplete('pelanggan', '${item.id}')" title="Checklist Selesai">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="btn-icon" onclick="downloadInvoice('pelanggan', '${item.id}')" title="Download Invoice">
-                                <i class="fas fa-file-invoice"></i>
-                            </button>
-                            <button class="btn-icon delete" onclick="deletePesanan('pelanggan', '${item.id}')" title="Hapus Pesanan">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div class="customer-info">
+                            <div class="customer-name">${item.nama}</div>
+                            <div class="customer-phone">${item.no_hp || '-'}</div>
+                        </div>
+                    </td>
+                    <td>${item.total_item || 0} item</td>
+                    <td><strong>Rp ${(item.total).toLocaleString('id-ID')}</strong></td>
+                    <td>${bayarHTML}</td>
+                    <td>${statusHTML}</td>
+                    <td>${buktiHTML}</td>
+                    <td>
+                        <div class="time-info">
+                            <div class="time-date">${orderDate.split('-').reverse().join('/')}</div>
+                            <div class="time-hour">${item.waktu || '00:00'} WIB</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-action" onclick="showDetail('pelanggan', '${item.id}')">Detail</button>
+                            ${submitBtn}
                         </div>
                     </td>
                 </tr>
@@ -1894,7 +2079,11 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Status</div>
-                            <div class="detail-value"><span class="status-badge ${pesanan.status === 'selesai' ? 'selesai' : 'diproses'}">${pesanan.status === 'selesai' ? 'Selesai' : 'Diproses'}</span></div>
+                            <div class="detail-value">
+                                <span class="badge ${pesanan.status_pesanan === 'selesai' ? 'status-selesai' : (pesanan.status_pesanan === 'diproses' ? 'status-diproses' : 'status-menunggu-konfirmasi')}">
+                                    ${pesanan.status_pesanan === 'selesai' ? 'Selesai' : (pesanan.status_pesanan === 'diproses' ? 'Diproses' : (pesanan.status_pesanan === 'siap_diambil' ? 'Siap Diambil' : (pesanan.status_pesanan === 'dikirim' ? 'Dikirim' : 'Menunggu Konfirmasi')))}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -2084,6 +2273,121 @@
             }
         }
 
+        // Inline Edit for Offline Pelanggan Table
+        function startInlineEditOffline(el, type, pesananId) {
+            if (el.classList.contains('editing')) return;
+
+            const numericId = parseInt(pesananId.toString().replace(/^[KP]-/, ''));
+            if (!numericId) return;
+
+            const currentBadge = el.querySelector('span.badge');
+            const currentText = currentBadge ? currentBadge.textContent.trim() : '';
+
+            const paymentOptions = [
+                { value: 'lunas', label: 'Lunas', cls: 'badge-lunas' },
+                { value: 'menunggu_verifikasi', label: 'Menunggu', cls: 'badge-menunggu' },
+                { value: 'belum_bayar', label: 'Belum Lunas', cls: 'badge-belum-lunas' },
+            ];
+            const statusOptions = [
+                { value: 'menunggu_konfirmasi', label: 'Menunggu Konfirmasi', cls: 'status-menunggu-konfirmasi' },
+                { value: 'diproses', label: 'Diproses', cls: 'status-diproses' },
+                { value: 'siap_diambil', label: 'Siap Diambil', cls: 'status-siap-diambil' },
+                { value: 'dikirim', label: 'Dikirim', cls: 'status-dikirim' },
+                { value: 'selesai', label: 'Selesai', cls: 'status-selesai' },
+            ];
+
+            const options = type === 'pembayaran' ? paymentOptions : statusOptions;
+            const field = type === 'pembayaran' ? 'status_pembayaran' : 'status_pesanan';
+
+            el.classList.add('editing');
+            el.innerHTML = '';
+
+            const select = document.createElement('select');
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                if (opt.label === currentText) option.selected = true;
+                select.appendChild(option);
+            });
+            el.appendChild(select);
+            select.focus();
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+            const updateValue = () => {
+                const newValue = select.value;
+                const selected = options.find(o => o.value === newValue);
+
+                fetch(`/api/pesanans/${numericId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ [field]: newValue }),
+                })
+                .then(r => r.json())
+                .then(() => {
+                    el.classList.remove('editing');
+                    if (type === 'status' && newValue === 'selesai') {
+                        el.innerHTML = `<span class="badge ${selected.cls}">${selected.label}</span>`;
+                    } else {
+                        el.innerHTML = `<span class="badge ${selected.cls}">${selected.label}</span><i class="fas fa-pen edit-icon"></i>`;
+                    }
+                    setTimeout(() => window.location.reload(), 600);
+                })
+                .catch(err => {
+                    el.classList.remove('editing');
+                    el.innerHTML = currentBadge ? currentBadge.outerHTML + '<i class="fas fa-pen edit-icon"></i>' : '';
+                    console.error(err);
+                });
+            };
+
+            select.addEventListener('change', updateValue);
+            select.addEventListener('blur', updateValue);
+        }
+
+        function showBuktiTransferOffline(buktiPath) {
+            const baseUrl = window.location.origin;
+            document.getElementById('buktiTransferImage').src = baseUrl + '/storage/' + buktiPath;
+            document.getElementById('modalBuktiTransfer').classList.add('show');
+        }
+
+        function closeModalBuktiTransfer() {
+            document.getElementById('modalBuktiTransfer').classList.remove('show');
+        }
+
+        async function submitOrderOffline(pesananId) {
+            if (!confirm('Konfirmasi submit pesanan ini?')) return;
+
+            const numericId = parseInt(pesananId.toString().replace(/^[KP]-/, ''));
+            if (!numericId) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+            try {
+                const response = await fetch(`/api/pesanan/${numericId}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Pesanan berhasil di-submit!', 'success');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    showToast(result.message || 'Gagal submit pesanan', 'error');
+                }
+            } catch (err) {
+                showToast('Terjadi kesalahan: ' + err.message, 'error');
+            }
+        }
+
         // Search Functions
         function setupSearch() {
             document.getElementById('searchKaryawan').addEventListener('keyup', function() {
@@ -2131,7 +2435,11 @@
                 const text = (item.nama + ' ' + item.id + ' ' + (item.no_hp || '')).toLowerCase();
                 let show = text.includes(searchValue);
                 if (filterValue) {
-                    show = show && (item.status || '') === filterValue;
+                    if (type === 'pelanggan') {
+                        show = show && (item.status_pesanan || '') === filterValue;
+                    } else {
+                        show = show && (item.status || '') === filterValue;
+                    }
                 }
                 return show;
             });
@@ -2159,15 +2467,15 @@
             // Total Pesanan = semua pesanan (pelanggan + karyawan)
             const totalPesanan = pesananData.pelanggan.length + pesananData.karyawan.length;
 
-            // Pesanan Diproses = pelanggan diproses + karyawan belum setor
-            const pesananDiproses = pesananData.pelanggan.filter(p => p.status === 'diproses').length +
+            // Pesanan Diproses = pelanggan belum selesai + karyawan belum setor
+            const pesananDiproses = pesananData.pelanggan.filter(p => p.status_pesanan && p.status_pesanan !== 'selesai').length +
                                     pesananData.karyawan.filter(p => p.status === 'belum_setor').length;
 
             // Pesanan Selesai = pelanggan selesai + karyawan sudah setor
-            const pesananSelesai = pesananData.pelanggan.filter(p => p.status === 'selesai').length +
+            const pesananSelesai = pesananData.pelanggan.filter(p => p.status_pesanan === 'selesai').length +
                                    pesananData.karyawan.filter(p => p.status === 'sudah_setor').length;
 
-            // Total Revenue = hanya dari pelanggan yang selesai/lunas (selalu lunas saat dibuat)
+            // Total Revenue = semua pelanggan
             const totalRevenue = pesananData.pelanggan.reduce((sum, p) => sum + (p.total || 0), 0);
 
             document.getElementById('total-pesanan').textContent = totalPesanan;

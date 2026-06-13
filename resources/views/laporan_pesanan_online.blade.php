@@ -113,70 +113,52 @@
 
         <!-- Table Section -->
         <div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
-            <h5 style="font-weight: 700; margin-bottom: 20px; color: #333; font-size: 16px;">Daftar Pesanan Online</h5>
+            <h5 style="font-weight: 700; margin-bottom: 20px; color: #333; font-size: 16px;">Daftar Transaksi Online</h5>
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
                         <tr style="border-bottom: 2px solid #dee2e6; background: #f8f9fa;">
-                            <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Nama Pelanggan</th>
+                            <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Nama</th>
                             <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Produk</th>
-                            <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Jumlah</th>
-                            <th style="padding: 14px 12px; text-align: right; font-weight: 600; color: #495057;">Total Bayar</th>
-                            <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Tanggal Pesanan</th>
+                            <th style="padding: 14px 12px; text-align: right; font-weight: 600; color: #495057;">Total</th>
+                            <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Orderan Dibuat</th>
+                            <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Status Bayar</th>
+                            <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Tipe Pesanan</th>
                             <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #495057;">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($pesananData ?? [] as $item)
                             <tr style="border-bottom: 1px solid #e9ecef; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='white'">
-                                <td style="padding: 14px 12px; color: #333;">{{ $item['nama_pelanggan'] ?? 'Pelanggan' }}</td>
-                                <td style="padding: 14px 12px; color: #333;">{{ $item['produk'] ?? 'Produk' }}</td>
-                                <td style="padding: 14px 12px; text-align: center;">
-                                    <span style="background: #cfe2ff; color: #084298; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">
-                                        {{ $item['jumlah'] ?? 1 }}
-                                    </span>
-                                </td>
+                                <td style="padding: 14px 12px; color: #333; font-weight: 500;">{{ $item['nama'] ?? '-' }}</td>
+                                <td style="padding: 14px 12px; color: #333;">{{ $item['produk'] ?? '-' }}</td>
                                 <td style="padding: 14px 12px; text-align: right; font-weight: 600; color: #198754;">
-                                    Rp {{ number_format($item['total_bayar'] ?? 0, 0, ',', '.') }}
+                                    Rp {{ number_format($item['total'] ?? 0, 0, ',', '.') }}
                                 </td>
                                 <td style="padding: 14px 12px; text-align: center; color: #6c757d;">
-                                    {{ date('d-m-Y', strtotime($item['tanggal'] ?? now())) }}
+                                    {{ $item['created_at'] ?? '-' }}
                                 </td>
                                 <td style="padding: 14px 12px; text-align: center;">
-                                    @php
-                                        $status = $item['status'] ?? 'diproses';
-                                        $badgeStyle = match($status) {
-                                            'selesai' => 'background: #d1e7dd; color: #0f5132;',
-                                            'dikirim' => 'background: #cfe2ff; color: #084298;',
-                                            'dibatalkan' => 'background: #f8d7da; color: #842029;',
-                                            default => 'background: #fff3cd; color: #664d03;'
-                                        };
-                                    @endphp
-                                    <span style="{{ $badgeStyle }} padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
-                                        @switch($status)
-                                            @case('diproses')
-                                                <i class="fas fa-hourglass-half"></i> Diproses
-                                                @break
-                                            @case('dikirim')
-                                                <i class="fas fa-truck"></i> Dikirim
-                                                @break
-                                            @case('selesai')
-                                                <i class="fas fa-check"></i> Selesai
-                                                @break
-                                            @case('dibatalkan')
-                                                <i class="fas fa-times"></i> Dibatalkan
-                                                @break
-                                            @default
-                                                {{ ucfirst($status) }}
-                                        @endswitch
+                                    <span style="background: #d1e7dd; color: #0f5132; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                        <i class="fas fa-check-circle"></i> {{ $item['status_bayar'] ?? 'Lunas' }}
+                                    </span>
+                                </td>
+                                <td style="padding: 14px 12px; text-align: center;">
+                                    <span style="background: #fce7f3; color: #9b1c4a; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                        {{ $item['tipe'] ?? 'Pelanggan' }}
+                                    </span>
+                                </td>
+                                <td style="padding: 14px 12px; text-align: center;">
+                                    <span style="background: #d1e7dd; color: #0f5132; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">
+                                        {{ $item['status'] ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" style="padding: 32px 12px; text-align: center; color: #999;">
+                                <td colspan="7" style="padding: 32px 12px; text-align: center; color: #999;">
                                     <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-                                    Tidak ada data pesanan online
+                                    Tidak ada data transaksi online
                                 </td>
                             </tr>
                         @endforelse
@@ -192,19 +174,11 @@
     function filterData() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-        
-        if(startDate && endDate) {
-            const url = new URL(window.location);
-            url.searchParams.set('start_date', startDate);
-            url.searchParams.set('end_date', endDate);
-            window.location = url.toString();
-        }
-    }
 
-    document.getElementById('endDate').addEventListener('keypress', function(e) {
-        if(e.key === 'Enter') {
-            filterData();
-        }
-    });
+        const url = new URL(window.location);
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        window.location = url.toString();
+    }
 </script>
 @endsection

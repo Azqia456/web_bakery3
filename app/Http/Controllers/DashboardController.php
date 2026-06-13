@@ -548,30 +548,39 @@ class DashboardController extends Controller
         $onlineQuery = Pesanan::where('sumber_pesanan', 'online')
             ->whereBetween('tgl_pesan', [$start, $end]);
 
-        // Summary metrics
+        // Summary metrics (tetap seperti yang sudah ada)
         $totalPesanan = (clone $onlineQuery)->count();
         $totalPembayaran = (clone $onlineQuery)->sum('total_bayar') ?? 0;
         $pesananSelesai = (clone $onlineQuery)->where('status_pesanan', 'selesai')->count();
 
-        // Detail table: each row = one order item from online orders
-        $pesananData = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
-                $q->where('sumber_pesanan', 'online')
-                  ->whereBetween('tgl_pesan', [$start, $end]);
-            })
-            ->with(['pesanan.pelanggan', 'produk'])
+        // Data table: online, status_pembayaran = lunas (sama struktur seperti offline)
+        $pesananData = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'online')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$start, $end])
+            ->orderBy('tgl_pesan', 'desc')
             ->get()
-            ->map(function ($detail) {
+            ->map(function ($p) {
+                $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
+                $statusLabel = match($p->status_pesanan) {
+                    'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                    'diproses' => 'Diproses',
+                    'siap_diambil' => 'Siap Diambil',
+                    'dikirim' => 'Dikirim',
+                    'selesai' => 'Selesai',
+                    default => $p->status_pesanan ?? '-',
+                };
                 return [
-                    'nama_pelanggan' => $detail->pesanan->pelanggan->nama ?? 'Pelanggan',
-                    'produk' => $detail->produk->nama_produk ?? 'Produk',
-                    'jumlah' => (int) $detail->jumlah_pesan,
-                    'total_bayar' => (float) ($detail->produk->harga_produk ?? 0) * (int) $detail->jumlah_pesan,
-                    'tanggal' => $detail->pesanan->tgl_pesan->format('Y-m-d'),
-                    'status' => $detail->pesanan->status_pesanan ?? 'diproses',
+                    'nama' => $p->pelanggan->nama ?? '-',
+                    'produk' => $produk,
+                    'total' => (float) $p->total_bayar,
+                    'created_at' => $p->created_at->format('Y-m-d H:i'),
+                    'status_bayar' => 'Lunas',
+                    'tipe' => 'Pelanggan',
+                    'status' => $statusLabel,
                 ];
             })
-            ->values()
-            ->toArray();
+            ->values();
 
         return view('laporan_pesanan_online', compact(
             'totalPesanan',

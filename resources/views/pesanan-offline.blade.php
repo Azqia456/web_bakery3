@@ -1018,7 +1018,7 @@
                             <i class="fas fa-coins"></i>
                         </div>
                         <div class="stat-card-label">Total Revenue</div>
-                        <div class="stat-card-value" id="total-revenue">Rp {{ number_format(($pelangganItems ? collect($pelangganItems)->sum('total') : 0), 0, ',', '.') }}</div>
+                        <div class="stat-card-value" id="total-revenue">Rp {{ number_format($totalRevenue ?? 0, 0, ',', '.') }}</div>
                     </div>
                 </section>
 
@@ -2151,7 +2151,11 @@
                             <tfoot style="border-top: 2px solid var(--medium-gray);">
                                 <tr>
                                     <td style="padding: 12px 0; text-align: left; font-weight: 600;">Total Barang:</td>
-                                    <td colspan="2" style="text-align: right; padding: 12px 0; font-weight: 600; color: var(--primary-brown);">${totalBarang} Item</td>
+                                    <td colspan="2" style="text-align: right; padding: 12px 0; font-weight: 600;">${totalBarang} Item</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; text-align: left; font-weight: 600;">Total Bayar:</td>
+                                    <td colspan="2" style="text-align: right; padding: 12px 0; font-weight: 600; color: var(--primary-brown);">Rp ${(pesanan.total || 0).toLocaleString('id-ID')}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -2478,8 +2482,14 @@
             const pesananSelesai = pesananData.pelanggan.filter(p => p.status_pesanan === 'selesai').length +
                                    pesananData.karyawan.filter(p => p.status === 'sudah_setor').length;
 
-            // Total Revenue = semua pelanggan
-            const totalRevenue = pesananData.pelanggan.reduce((sum, p) => sum + (p.total || 0), 0);
+            // Total Revenue = karyawan lunas + pelanggan lunas
+            const revenueKaryawan = pesananData.karyawan
+                .filter(p => p.status_bayar === 'lunas')
+                .reduce((sum, p) => sum + (p.total || 0), 0);
+            const revenuePelanggan = pesananData.pelanggan
+                .filter(p => p.status_pembayaran === 'lunas')
+                .reduce((sum, p) => sum + (p.total || 0), 0);
+            const totalRevenue = revenueKaryawan + revenuePelanggan;
 
             document.getElementById('total-pesanan').textContent = totalPesanan;
             document.getElementById('pesanan-diproses').textContent = pesananDiproses;

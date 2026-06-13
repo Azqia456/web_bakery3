@@ -219,7 +219,19 @@ class PesananController extends Controller
             'selesai' => Pesanan::where('sumber_pesanan', 'offline')->where('status_pesanan', 'selesai')->count(),
         ];
 
-        return view('pesanan-offline', compact('karyawanItems', 'pelangganItems', 'stats'))->with([
+        $revenueKaryawan = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
+            ->sum('total_bayar');
+
+        $revenuePelanggan = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan')
+            ->where('status_pembayaran', 'lunas')
+            ->sum('total_bayar');
+
+        $totalRevenue = $revenueKaryawan + $revenuePelanggan;
+
+        return view('pesanan-offline', compact('karyawanItems', 'pelangganItems', 'stats', 'totalRevenue'))->with([
             'pageTitle' => 'Pesanan Offline',
             'totalNotifikasi' => $stats['diproses'] ?? 0
         ]);

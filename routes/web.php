@@ -213,8 +213,48 @@ Route::middleware('auth')->group(function () {
         return response()->stream($callback, 200, $headers);
     })->name('laporan-pesanan-online.export');
     // Route::get('/laporan-pesanan-offline', [DashboardController::class, 'laporanPesananOffline'])->name('laporan-pesanan-offline');
-    Route::get('/laporan-pembayaran', function () {
-        return view('laporan_pembayaran');
+    Route::get('/laporan-pembayaran', function (Request $request) {
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $lunasFilter = function ($query) {
+            $query->where(function ($q) {
+                $q->where('status_pembayaran', 'lunas')
+                  ->orWhere(function ($qk) {
+                      $qk->where('sumber_pesanan', 'offline')
+                         ->whereNotNull('id_karyawan')
+                         ->where('status_bayar', 'lunas');
+                  });
+            });
+        };
+
+        $query = Pesanan::with(['pelanggan', 'karyawan'])
+            ->whereBetween('created_at', [$start, $end]);
+
+        $totalPembayaran = (clone $query)->where($lunasFilter)->sum('total_bayar') ?? 0;
+        $transaksiLunas = (clone $query)->where($lunasFilter)->count();
+        $totalCount = (clone $query)->count();
+        $pembayaranPending = $totalCount - $transaksiLunas;
+
+        $pembayaranData = (clone $query)->orderBy('created_at', 'desc')->get()->map(function ($p) {
+            $isLunas = ($p->sumber_pesanan === 'offline' && $p->id_karyawan && $p->status_bayar === 'lunas')
+                || ($p->status_pembayaran === 'lunas');
+            return [
+                'nama_pelanggan' => $p->pelanggan->nama ?? $p->karyawan->nama ?? '-',
+                'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
+                'jumlah_pembayaran' => (float) $p->total_bayar,
+                'tanggal_pembayaran' => $p->created_at->format('Y-m-d'),
+                'status' => $isLunas ? 'lunas' : 'pending',
+            ];
+        });
+
+        return view('laporan_pembayaran', compact(
+            'totalPembayaran', 'transaksiLunas', 'pembayaranPending',
+            'pembayaranData', 'startDate', 'endDate'
+        ));
     })->name('laporan-pembayaran');
     Route::get('/laporan-pesanan-offline', function (Request $request) {
         $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));

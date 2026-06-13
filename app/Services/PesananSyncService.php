@@ -102,7 +102,7 @@ class PesananSyncService
             'id_pelanggan' => $pelanggan->id_pelanggan,
             'id_karyawan' => $karyawan->id_karyawan,
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
-            'sumber_pesanan' => $data['sumber_pesanan'] ?? 'online',
+            'sumber_pesanan' => $data['sumber_pesanan'] ?? 'offline',
             'metode_pengambilan' => $data['metode_pengambilan'] ?? $data['metode'] ?? 'pickup',
             'alamat_delivery' => $data['alamat_delivery'] ?? null,
             'tgl_delivery' => $data['tgl_delivery'] ?? null,

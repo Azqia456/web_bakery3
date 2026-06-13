@@ -21,7 +21,7 @@ class DashboardController extends Controller
         // Summary cards
         $totalPemesanan = Pesanan::count();
         $pendapatanBulanIni = Pesanan::whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])->sum('total_bayar') ?? 0;
-        $pesananBelumLunas = Pesanan::where('status_bayar', 'belum_lunas')->count();
+        $pesananBelumLunas = Pesanan::where('status_pembayaran', 'belum_bayar')->count();
         $setoranKaryawan = Pesanan::whereNotNull('id_karyawan')
             ->whereNull('id_pelanggan')
             ->sum('total_bayar') ?? 0;
@@ -33,11 +33,12 @@ class DashboardController extends Controller
         $pesananHariIni = Pesanan::whereDate('tgl_pesan', $today)->count();
 
         // Orders chart (last 7 days)
+        $hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
         $ordersChartLabels = [];
         $ordersChartData = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
-            $ordersChartLabels[] = $date->isoFormat('ddd');
+            $ordersChartLabels[] = $hari[$date->dayOfWeek];
             $ordersChartData[] = Pesanan::whereDate('tgl_pesan', $date)->count();
         }
 

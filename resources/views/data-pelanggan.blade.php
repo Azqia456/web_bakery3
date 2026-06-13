@@ -1030,7 +1030,7 @@
                 <div class="form-group">
                     <label for="inputStatus">Status</label>
                     <select id="inputStatus" name="status" required>
-                        <option value="Online">Online (Website/Aplikasi)</option>
+                        {{-- <option value="Online">Online (Website/Aplikasi)</option> --}}
                         <option value="Offline">Offline (Toko Langsung)</option>
                     </select>
                 </div>

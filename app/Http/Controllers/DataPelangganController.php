@@ -39,7 +39,7 @@ class DataPelangganController extends Controller
         // Add computed attributes for each customer
         $pelanggans->each(function ($pelanggan) {
             $pelanggan->total_pesanan = $pelanggan->pesanans()->count();
-            $pelanggan->terakhir_pesan = $pelanggan->pesanans()->latest('tgl_pesan')->first()?->tgl_pesan;
+            $pelanggan->terakhir_pesan = $pelanggan->pesanans()->latest('created_at')->first()?->created_at;
         });
 
         // Get statistics
@@ -47,7 +47,7 @@ class DataPelangganController extends Controller
             'total_pelanggan' => Pelanggan::count(),
             'pelanggan_online' => Pelanggan::where('status', 'Online')->count(),
             'pelanggan_offline' => Pelanggan::where('status', 'Offline')->count(),
-            'total_pesanan_hari_ini' => Pesanan::whereDate('tgl_pesan', Carbon::today())->count(),
+            'total_pesanan_hari_ini' => Pesanan::whereDate('created_at', Carbon::today())->count(),
         ];
 
         if ($request->ajax()) {
@@ -76,12 +76,12 @@ class DataPelangganController extends Controller
         $pelanggan = Pelanggan::with('pesanans')->findOrFail($id_pelanggan);
         
         $pelanggan->total_pesanan = $pelanggan->pesanans()->count();
-        $pelanggan->terakhir_pesan = $pelanggan->pesanans()->latest('tgl_pesan')->first()?->tgl_pesan;
+        $pelanggan->terakhir_pesan = $pelanggan->pesanans()->latest('created_at')->first()?->created_at;
 
         // Get order history
         $pesanans = $pelanggan->pesanans()
             ->with('detailPesanans')
-            ->latest('tgl_pesan')
+            ->latest('created_at')
             ->get();
 
         if (request()->ajax()) {
@@ -304,8 +304,8 @@ class DataPelangganController extends Controller
             'total_pelanggan' => Pelanggan::count(),
             'pelanggan_online' => Pelanggan::where('status', 'Online')->count(),
             'pelanggan_offline' => Pelanggan::where('status', 'Offline')->count(),
-            'total_pesanan_hari_ini' => Pesanan::whereDate('tgl_pesan', Carbon::today())->count(),
-            'total_pesanan_bulan_ini' => Pesanan::whereMonth('tgl_pesan', Carbon::now()->month)->count(),
+            'total_pesanan_hari_ini' => Pesanan::whereDate('created_at', Carbon::today())->count(),
+            'total_pesanan_bulan_ini' => Pesanan::whereMonth('created_at', Carbon::now()->month)->count(),
         ];
 
         return response()->json($stats);

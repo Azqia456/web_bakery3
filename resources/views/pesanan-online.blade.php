@@ -868,34 +868,60 @@
                         <strong>Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</strong>
                     </td>
                     <td>
-                        <div class="inline-editable" onclick="startInlineEdit(this, 'pembayaran', {{ $pesanan->id_pesanan }})">
-                            @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
-                                <span class="badge badge-lunas">Lunas</span>
-                            @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
-                                <span class="badge badge-menunggu">Menunggu</span>
-                            @else
-                                <span class="badge badge-belum-lunas">Belum Lunas</span>
-                            @endif
-                            <i class="fas fa-pen edit-icon"></i>
-                        </div>
+                        @if($pesanan->status_pesanan == 'selesai')
+                            <div>
+                                @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
+                                    <span class="badge badge-lunas">Lunas</span>
+                                @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
+                                    <span class="badge badge-menunggu">Menunggu</span>
+                                @else
+                                    <span class="badge badge-belum-lunas">Belum Lunas</span>
+                                @endif
+                            </div>
+                        @else
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'pembayaran', {{ $pesanan->id_pesanan }})">
+                                @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
+                                    <span class="badge badge-lunas">Lunas</span>
+                                @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
+                                    <span class="badge badge-menunggu">Menunggu</span>
+                                @else
+                                    <span class="badge badge-belum-lunas">Belum Lunas</span>
+                                @endif
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @endif
                     </td>
                     <td>
-                        <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
-                            @if($pesanan->status_pesanan == 'menunggu_konfirmasi')
+                        @if($pesanan->status_pesanan == 'menunggu_konfirmasi')
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
                                 <span class="badge status-menunggu-konfirmasi">Menunggu Konfirmasi</span>
-                            @elseif($pesanan->status_pesanan == 'diproses')
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @elseif($pesanan->status_pesanan == 'diproses')
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
                                 <span class="badge status-diproses">Diproses</span>
-                            @elseif($pesanan->status_pesanan == 'siap_diambil')
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @elseif($pesanan->status_pesanan == 'siap_diambil')
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
                                 <span class="badge status-siap-diambil">Siap Diambil</span>
-                            @elseif($pesanan->status_pesanan == 'dikirim')
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @elseif($pesanan->status_pesanan == 'dikirim')
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
                                 <span class="badge status-dikirim">Dikirim</span>
-                            @elseif($pesanan->status_pesanan == 'selesai')
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @elseif($pesanan->status_pesanan == 'selesai')
+                            <div>
                                 <span class="badge status-selesai">Selesai</span>
-                            @else
+                            </div>
+                        @else
+                            <div class="inline-editable" onclick="startInlineEdit(this, 'status', {{ $pesanan->id_pesanan }})">
                                 <span class="badge badge-menunggu">Menunggu Konfirmasi</span>
-                            @endif
-                            <i class="fas fa-pen edit-icon"></i>
-                        </div>
+                                <i class="fas fa-pen edit-icon"></i>
+                            </div>
+                        @endif
                     </td>
                     <td>
                         @if($pesanan->bukti_transfer)
@@ -915,7 +941,9 @@
                     <td>
                         <div class="action-group">
                             <button class="btn-action" onclick="showDetail({{ $pesanan->id_pesanan }})">Detail</button>
+                            @if($pesanan->status_pesanan != 'selesai')
                             <button class="btn-action btn-action-primary" onclick="submitOrder({{ $pesanan->id_pesanan }})">Submit</button>
+                            @endif
                         </div>
                     </td>
                 </tr>

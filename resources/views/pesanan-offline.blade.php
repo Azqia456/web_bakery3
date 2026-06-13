@@ -891,10 +891,10 @@
 
                 <!-- Tabs -->
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab(this, 'pelanggan')">
+                    <button class="tab" onclick="switchTab('pelanggan')">
                         <i class="fas fa-user"></i> Pesanan Pelanggan
                     </button>
-                    <button class="tab" onclick="switchTab(this, 'karyawan')">
+                    <button class="tab" onclick="switchTab('karyawan')">
                         <i class="fas fa-users"></i> Pesanan Karyawan
                     </button>
                 </div>
@@ -1187,7 +1187,7 @@
             karyawan: [],
             pelanggan: []
         };
-        let currentTab = 'pelanggan';
+        let currentTab = new URLSearchParams(window.location.search).get('tab') || 'pelanggan';
         let productCount = 0;
         const ITEMS_PER_PAGE = 10;
         let paginationState = {
@@ -1226,10 +1226,20 @@
 
         // Inisialisasi
         document.addEventListener('DOMContentLoaded', function() {
+            currentTab = new URLSearchParams(window.location.search).get('tab') || 'pelanggan';
+            updateTabUI();
             loadMasterProduk();
             renderTables();
             setupSearch();
             updateStats();
+        });
+
+        window.addEventListener('popstate', function() {
+            const tab = new URLSearchParams(window.location.search).get('tab') || 'pelanggan';
+            if (tab !== currentTab) {
+                currentTab = tab;
+                updateTabUI();
+            }
         });
 
         // Render Tables
@@ -1396,12 +1406,23 @@
         }
 
         // Tab Switching
-        function switchTab(button, tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            button.classList.add('active');
-            document.getElementById('tab-' + tab).classList.add('active');
+        function switchTab(tab) {
+            if (tab === currentTab) return;
+            if (!['pelanggan', 'karyawan'].includes(tab)) tab = 'pelanggan';
             currentTab = tab;
+            updateTabUI();
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tab);
+            history.pushState({}, '', url);
+        }
+
+        function updateTabUI() {
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.getAttribute('onclick').includes("'" + currentTab + "'"));
+            });
+            document.querySelectorAll('.tab-content').forEach(c => {
+                c.classList.toggle('active', c.id === 'tab-' + currentTab);
+            });
         }
 
         // Modal Functions
@@ -1763,7 +1784,7 @@
                 const metodePayment = document.querySelector('input[name="metodePayment"]:checked').value;
                 const pelangganData = $('#namaPelanggan').select2('data')[0];
                 const idPelanggan = pelangganData?.id;
-                const nama = pelangganData?.text?.split('_')[0] || '';
+                const nama = pelangganData?.text?.split(' (')[0] || '';
                 const noHp = pelangganData?.no_tlp || document.getElementById('noHpPelanggan').value;
 
                 if (!idPelanggan || !noHp) {

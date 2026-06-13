@@ -39,7 +39,7 @@ class PesananController extends Controller
             $query->where('status_pesanan', $request->status);
         }
 
-        $pesanans = $query->orderBy('tgl_pesan', 'desc')->get();
+        $pesanans = $query->orderBy('created_at', 'desc')->get();
 
         return view('dashboard.pesanan-pelanggan', compact('pelanggan', 'pesanans'));
     }
@@ -53,7 +53,7 @@ class PesananController extends Controller
             if ($pelanggan) {
                 return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
                     ->where('id_pelanggan', $pelanggan->id_pelanggan)
-                    ->orderBy('tgl_pesan', 'desc')
+                    ->orderBy('created_at', 'desc')
                     ->get();
             }
             return [];
@@ -66,7 +66,7 @@ class PesananController extends Controller
     {
         return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
             ->where('id_pelanggan', \App\Models\Pelanggan::where('id_user', Auth::user()->id_user)->first()->id_pelanggan)
-            ->orderBy('tgl_pesan', 'desc')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
@@ -88,7 +88,7 @@ class PesananController extends Controller
     {
         $pesanan = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk', 'pembayarans'])
             ->findOrFail($id_pesanan);
-        
+
         return response()->json($pesanan);
     }
 
@@ -153,8 +153,8 @@ class PesananController extends Controller
             $queryPelanggan->where('status_bayar', $request->status);
         }
 
-        $pesananKaryawan = $queryKaryawan->orderBy('tgl_pesan', 'desc')->get();
-        $pesananPelanggan = $queryPelanggan->orderBy('tgl_pesan', 'desc')->get();
+        $pesananKaryawan = $queryKaryawan->orderBy('created_at', 'desc')->get();
+        $pesananPelanggan = $queryPelanggan->orderBy('created_at', 'desc')->get();
 
         // Map to JS-friendly arrays
         $karyawanItems = $pesananKaryawan->map(function ($p) {
@@ -222,12 +222,13 @@ class PesananController extends Controller
 
     public function online(Request $request)
     {
+        // dd("masuk ke sini");
         $query = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
             ->where('sumber_pesanan', 'online');
 
         // Filter by date
         if ($request->filled('date')) {
-            $query->whereDate('tgl_pesan', $request->date);
+            $query->whereDate('created_at', $request->date);
         }
 
         // Filter by status
@@ -250,7 +251,7 @@ class PesananController extends Controller
             });
         }
 
-        $pesanans = $query->orderBy('tgl_pesan', 'desc')->paginate(10)->withQueryString();
+        $pesanans = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         // Calculate stats
         $stats = [

@@ -65,7 +65,7 @@
                 <a href="/laporan-pesanan-online" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-online') ? 'active' : '' }}">Laporan Pesanan Online</a>
                 <a href="/laporan-pesanan-offline" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-offline') ? 'active' : '' }}">Laporan Pesanan Offline</a>
                 <a href="/laporan-pembayaran" class="sidebar-submenu-item {{ Request::is('laporan-pembayaran') ? 'active' : '' }}">Laporan Pembayaran</a>
-                <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item {{ Request::is('laporan-setoran-karyawan') ? 'active' : '' }}">Laporan Setoran Karyawan</a>
+                {{-- <a href="/laporan-pesanan-offline" class="sidebar-submenu-item {{ Request::is('laporan-pesanan-offline') ? 'active' : '' }}">Laporan Pesanan Offline</a> --}}
             </div>
         </div>
 

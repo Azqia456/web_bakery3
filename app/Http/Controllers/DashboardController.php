@@ -12,6 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // dd("ini dashboard");s
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
@@ -20,10 +21,30 @@ class DashboardController extends Controller
 
         // Summary cards
         $totalPemesanan = Pesanan::count();
-        $pendapatanBulanIni = Pesanan::whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])->sum('total_bayar') ?? 0;
+
+        // Pendapatan Bulan Ini = offline (karyawan lunas + pelanggan lunas) + online (lunas)
+        $offlineKaryawanBulanIni = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
+            ->whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])
+            ->sum('total_bayar');
+        $offlinePelangganBulanIni = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])
+            ->sum('total_bayar');
+        $onlineBulanIni = Pesanan::where('sumber_pesanan', 'online')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$startOfMonth, $endOfMonth])
+            ->sum('total_bayar');
+        $pendapatanBulanIni = $offlineKaryawanBulanIni + $offlinePelangganBulanIni + $onlineBulanIni;
+
         $pesananBelumLunas = Pesanan::where('status_pembayaran', 'belum_bayar')->count();
-        $setoranKaryawan = Pesanan::whereNotNull('id_karyawan')
-            ->whereNull('id_pelanggan')
+
+        // Setoran Karyawan = offline karyawan yang sudah lunas (status_bayar)
+        $setoranKaryawan = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
             ->sum('total_bayar') ?? 0;
 
         // Statistics
@@ -48,9 +69,11 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Deposits chart (top karyawan by setoran)
+        // Deposits chart (top karyawan by setoran lunas)
         $topKaryawan = Karyawan::where('status', 'Aktif')
-            ->withSum('pesanans', 'total_bayar')
+            ->withSum(['pesanans' => function ($q) {
+                $q->where('sumber_pesanan', 'offline')->where('status_bayar', 'lunas');
+            }], 'total_bayar')
             ->orderBy('pesanans_sum_total_bayar', 'desc')
             ->limit(5)
             ->get();
@@ -63,8 +86,9 @@ class DashboardController extends Controller
         }
 
         // Recent deposits
-        $recentDeposits = Pesanan::whereNotNull('id_karyawan')
-            ->whereNull('id_pelanggan')
+        $recentDeposits = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
             ->with('karyawan')
             ->orderBy('tgl_pesan', 'desc')
             ->limit(5)

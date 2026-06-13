@@ -622,14 +622,14 @@
                         <a href="/laporan-pesanan-online" class="sidebar-submenu-item @if(request()->path() === 'laporan-pesanan-online') active @endif">Laporan Pesanan Online</a>
                         <a href="/laporan-pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'laporan-pesanan-offline') active @endif">Laporan Pesanan Offline</a>
                         <a href="/laporan-pembayaran" class="sidebar-submenu-item @if(request()->path() === 'laporan-pembayaran') active @endif">Laporan Pembayaran</a>
-                        <a href="/laporan-setoran-karyawan" class="sidebar-submenu-item @if(request()->path() === 'laporan-setoran-karyawan') active @endif">Laporan Setoran Karyawan</a>
+                        {{-- <a href="/laporan-pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'laporan-pesanan-offline') active @endif">Laporan Pesanan Offline</a> --}}
                     </div>
                 </div>
-                <div class="sidebar-menu-item" style="margin-top: auto;">
+                {{-- <div class="sidebar-menu-item" style="margin-top: auto;">
                     <x-logout-form buttonClass="sidebar-menu-toggle" style="width:100%;">
                         <span>Logout</span>
                     </x-logout-form>
-                </div>
+                </div> --}}
             </nav>
         </aside>
 

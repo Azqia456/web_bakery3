@@ -157,46 +157,85 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
     Route::get('/laporan-penjualan', [DashboardController::class, 'laporanPenjualan'])->name('laporan-penjualan');
     Route::get('/laporan-pesanan-online', [DashboardController::class, 'laporanPesananOnline'])->name('laporan-pesanan-online');
-    Route::get('/laporan-pesanan-offline', [DashboardController::class, 'laporanPesananOffline'])->name('laporan-pesanan-offline');
+    // Route::get('/laporan-pesanan-offline', [DashboardController::class, 'laporanPesananOffline'])->name('laporan-pesanan-offline');
     Route::get('/laporan-pembayaran', function () {
         return view('laporan_pembayaran');
     })->name('laporan-pembayaran');
-    Route::get('/laporan-setoran-karyawan', function (Request $request) {
+    Route::get('/laporan-pesanan-offline', function (Request $request) {
         $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
+        $tipe = $request->input('tipe', 'semua');
 
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
 
-        $query = Pesanan::with(['karyawan', 'detailPesanans.produk'])
+        // Karyawan: offline, id_karyawan NOT NULL, status_bayar = lunas
+        $qKaryawan = Pesanan::with(['karyawan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
             ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
             ->whereBetween('tgl_pesan', [$start, $end]);
 
-        $totalSetoran = (clone $query)->sum('total_bayar') ?? 0;
-        $jumlahSetoran = (clone $query)->count();
-        $setoranBelumDicek = (clone $query)->where('status_bayar', 'belum_lunas')->count();
+        // Pelanggan: offline, id_pelanggan NOT NULL, status_pembayaran = lunas
+        $qPelanggan = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$start, $end]);
 
-        $setoranData = (clone $query)
-            ->orderBy('tgl_pesan', 'desc')
-            ->get()
-            ->map(function ($pesanan) {
-                $produkNames = $pesanan->detailPesanans
-                    ->pluck('produk.nama_produk')
-                    ->filter()
-                    ->implode(', ');
-                return [
-                    'nama_karyawan' => $pesanan->karyawan->nama ?? 'Karyawan',
-                    'produk_diambil' => $produkNames ?: 'Produk',
-                    'total_setoran' => (float) $pesanan->total_bayar,
-                    'tanggal_setoran' => $pesanan->tgl_pesan->format('Y-m-d'),
-                    'status' => $pesanan->status_bayar === 'lunas' ? 'sudah_dicek' : 'belum_dicek',
-                ];
-            });
+        // Stats: aggregate sebelum filter tipe
+        $totalSetoran = (clone $qKaryawan)->sum('total_bayar') + (clone $qPelanggan)->sum('total_bayar');
+        $jumlahSetoran = (clone $qKaryawan)->count() + (clone $qPelanggan)->count();
+
+        $mapKaryawan = function ($p) {
+            $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
+            return [
+                'nama' => $p->karyawan->nama ?? '-',
+                'produk' => $produk,
+                'total' => (float) $p->total_bayar,
+                'created_at' => $p->created_at->format('Y-m-d H:i'),
+                'status_bayar' => 'Lunas',
+                'tipe' => 'Karyawan',
+                'status' => 'Sudah Setor',
+            ];
+        };
+
+        $mapPelanggan = function ($p) {
+            $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
+            $statusPesanan = $p->status_pesanan;
+            $statusLabel = match($statusPesanan) {
+                'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                'diproses' => 'Diproses',
+                'siap_diambil' => 'Siap Diambil',
+                'dikirim' => 'Dikirim',
+                'selesai' => 'Selesai',
+                default => $statusPesanan ?? '-',
+            };
+            return [
+                'nama' => $p->pelanggan->nama ?? '-',
+                'produk' => $produk,
+                'total' => (float) $p->total_bayar,
+                'created_at' => $p->created_at->format('Y-m-d H:i'),
+                'status_bayar' => 'Lunas',
+                'tipe' => 'Pelanggan',
+                'status' => $statusLabel,
+            ];
+        };
+
+        if ($tipe === 'karyawan') {
+            $setoranData = (clone $qKaryawan)->orderBy('tgl_pesan', 'desc')->get()->map($mapKaryawan)->values();
+        } elseif ($tipe === 'pelanggan') {
+            $setoranData = (clone $qPelanggan)->orderBy('tgl_pesan', 'desc')->get()->map($mapPelanggan)->values();
+        } else {
+            $karyawanData = (clone $qKaryawan)->get()->map($mapKaryawan);
+            $pelangganData = (clone $qPelanggan)->get()->map($mapPelanggan);
+            $setoranData = $karyawanData->concat($pelangganData)->sortByDesc('created_at')->values();
+        }
 
         return view('laporan_setoran_karyawan', compact(
-            'totalSetoran', 'jumlahSetoran', 'setoranBelumDicek', 'setoranData', 'startDate', 'endDate'
+            'totalSetoran', 'jumlahSetoran', 'setoranData', 'startDate', 'endDate', 'tipe'
         ));
-    })->name('laporan-setoran-karyawan');
+    })->name('laporan-pesanan-offline');
 });
 
 Route::get('test-aja', function () {

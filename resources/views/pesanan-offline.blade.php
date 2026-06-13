@@ -1102,6 +1102,7 @@
                                     <th>ID Pesanan</th>
                                     <th>Nama Karyawan</th>
                                     <th>Total Barang</th>
+                                    <th>Total Amount</th>
                                     <th>Status Setor</th>
                                     <th>Tanggal Ambil</th>
                                     <th style="min-width: 140px;">Aksi</th>
@@ -1405,7 +1406,7 @@
             if (pag.currentPage > totalPages) pag.currentPage = totalPages;
 
             if (totalItems === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--dark-gray); padding: 40px;">
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--dark-gray); padding: 40px;">
                     <i class="fas fa-inbox" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
                     Belum ada pesanan karyawan
                 </td></tr>`;
@@ -1428,6 +1429,7 @@
                     <td>${item.id}</td>
                     <td>${item.nama}</td>
                     <td>${totalBarang}</td>
+                    <td>Rp ${(item.total || 0).toLocaleString('id-ID')}</td>
                     <td><span class="status-badge ${statusBadge}">${statusText}</span></td>
                     <td>${item.tanggal_pickup || '-'}</td>
                     <td>

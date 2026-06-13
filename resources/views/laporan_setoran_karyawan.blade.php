@@ -101,6 +101,9 @@
                 <button onclick="filterData()" style="background: #198754; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <i class="fas fa-filter"></i> Filter
                 </button>
+                <button onclick="exportData()" style="background: #0d6efd; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
             </div>
         </div>
 
@@ -111,6 +114,7 @@
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
                         <tr style="border-bottom: 2px solid #dee2e6; background: #f8f9fa;">
+                            <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">No. Pesanan</th>
                             <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Nama</th>
                             <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #495057;">Produk</th>
                             <th style="padding: 14px 12px; text-align: right; font-weight: 600; color: #495057;">Total</th>
@@ -123,6 +127,7 @@
                     <tbody>
                         @forelse($setoranData ?? [] as $item)
                             <tr style="border-bottom: 1px solid #e9ecef; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='white'">
+                                <td style="padding: 14px 12px; color: #333; font-weight: 700; font-size: 12px;">{{ $item['no_pesanan'] ?? '-' }}</td>
                                 <td style="padding: 14px 12px; color: #333; font-weight: 500;">{{ $item['nama'] ?? '-' }}</td>
                                 <td style="padding: 14px 12px; color: #333;">{{ $item['produk'] ?? '-' }}</td>
                                 <td style="padding: 14px 12px; text-align: right; font-weight: 600; color: #198754;">
@@ -155,7 +160,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="padding: 32px 12px; text-align: center; color: #999;">
+                                <td colspan="8" style="padding: 32px 12px; text-align: center; color: #999;">
                                     <i class="fas fa-inbox" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
                                     Tidak ada data transaksi offline
                                 </td>
@@ -176,6 +181,18 @@
         const tipe = document.getElementById('tipe').value;
 
         const url = new URL(window.location);
+        url.searchParams.set('start_date', startDate);
+        url.searchParams.set('end_date', endDate);
+        url.searchParams.set('tipe', tipe);
+        window.location = url.toString();
+    }
+
+    function exportData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const tipe = document.getElementById('tipe').value;
+
+        const url = new URL('/laporan-pesanan-offline/export', window.location.origin);
         url.searchParams.set('start_date', startDate);
         url.searchParams.set('end_date', endDate);
         url.searchParams.set('tipe', tipe);

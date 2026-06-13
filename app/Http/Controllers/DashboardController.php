@@ -571,6 +571,7 @@ class DashboardController extends Controller
                     default => $p->status_pesanan ?? '-',
                 };
                 return [
+                    'no_pesanan' => '#ON-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                     'nama' => $p->pelanggan->nama ?? '-',
                     'produk' => $produk,
                     'total' => (float) $p->total_bayar,

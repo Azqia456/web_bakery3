@@ -157,6 +157,61 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
     Route::get('/laporan-penjualan', [DashboardController::class, 'laporanPenjualan'])->name('laporan-penjualan');
     Route::get('/laporan-pesanan-online', [DashboardController::class, 'laporanPesananOnline'])->name('laporan-pesanan-online');
+    Route::get('/laporan-pesanan-online/export', function (Request $request) {
+        $startDate = $request->input('start_date', now()->subDays(6)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $pesananData = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'online')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$start, $end])
+            ->orderBy('tgl_pesan', 'desc')
+            ->get()
+            ->map(function ($p) {
+                $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
+                $statusLabel = match($p->status_pesanan) {
+                    'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                    'diproses' => 'Diproses',
+                    'siap_diambil' => 'Siap Diambil',
+                    'dikirim' => 'Dikirim',
+                    'selesai' => 'Selesai',
+                    default => $p->status_pesanan ?? '-',
+                };
+                return [
+                    '#ON-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
+                    $p->pelanggan->nama ?? '-',
+                    $produk,
+                    (float) $p->total_bayar,
+                    $p->created_at->format('Y-m-d H:i'),
+                    'Lunas',
+                    'Pelanggan',
+                    $statusLabel,
+                ];
+            });
+
+        $filename = 'laporan-pesanan-online-' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($pesananData) {
+            $output = fopen('php://output', 'w');
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($output, ['No. Pesanan', 'Nama', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Tipe Pesanan', 'Status']);
+
+            foreach ($pesananData as $row) {
+                fputcsv($output, $row);
+            }
+
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    })->name('laporan-pesanan-online.export');
     // Route::get('/laporan-pesanan-offline', [DashboardController::class, 'laporanPesananOffline'])->name('laporan-pesanan-offline');
     Route::get('/laporan-pembayaran', function () {
         return view('laporan_pembayaran');
@@ -190,6 +245,7 @@ Route::middleware('auth')->group(function () {
         $mapKaryawan = function ($p) {
             $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
             return [
+                'no_pesanan' => '#OFF-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                 'nama' => $p->karyawan->nama ?? '-',
                 'produk' => $produk,
                 'total' => (float) $p->total_bayar,
@@ -212,6 +268,7 @@ Route::middleware('auth')->group(function () {
                 default => $statusPesanan ?? '-',
             };
             return [
+                'no_pesanan' => '#OFF-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                 'nama' => $p->pelanggan->nama ?? '-',
                 'produk' => $produk,
                 'total' => (float) $p->total_bayar,
@@ -236,6 +293,90 @@ Route::middleware('auth')->group(function () {
             'totalSetoran', 'jumlahSetoran', 'setoranData', 'startDate', 'endDate', 'tipe'
         ));
     })->name('laporan-pesanan-offline');
+
+    Route::get('/laporan-pesanan-offline/export', function (Request $request) {
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+        $tipe = $request->input('tipe', 'semua');
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $qKaryawan = Pesanan::with(['karyawan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
+            ->whereBetween('tgl_pesan', [$start, $end]);
+
+        $qPelanggan = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+            ->where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan')
+            ->where('status_pembayaran', 'lunas')
+            ->whereBetween('tgl_pesan', [$start, $end]);
+
+        $mapFn = function ($p, $tipe) {
+            $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
+            $no = '#OFF-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT);
+            if ($tipe === 'karyawan') {
+                return [
+                    $no,
+                    $p->karyawan->nama ?? '-',
+                    $produk,
+                    (float) $p->total_bayar,
+                    $p->created_at->format('Y-m-d H:i'),
+                    'Lunas',
+                    'Karyawan',
+                    'Sudah Setor',
+                ];
+            }
+            $statusLabel = match($p->status_pesanan) {
+                'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
+                'diproses' => 'Diproses',
+                'siap_diambil' => 'Siap Diambil',
+                'dikirim' => 'Dikirim',
+                'selesai' => 'Selesai',
+                default => $p->status_pesanan ?? '-',
+            };
+            return [
+                $no,
+                $p->pelanggan->nama ?? '-',
+                $produk,
+                (float) $p->total_bayar,
+                $p->created_at->format('Y-m-d H:i'),
+                'Lunas',
+                'Pelanggan',
+                $statusLabel,
+            ];
+        };
+
+        if ($tipe === 'karyawan') {
+            $rows = (clone $qKaryawan)->orderBy('tgl_pesan', 'desc')->get()->map(fn($p) => $mapFn($p, 'karyawan'));
+        } elseif ($tipe === 'pelanggan') {
+            $rows = (clone $qPelanggan)->orderBy('tgl_pesan', 'desc')->get()->map(fn($p) => $mapFn($p, 'pelanggan'));
+        } else {
+            $k = (clone $qKaryawan)->get()->map(fn($p) => $mapFn($p, 'karyawan'));
+            $p = (clone $qPelanggan)->get()->map(fn($p) => $mapFn($p, 'pelanggan'));
+            $rows = $k->concat($p);
+        }
+
+        $filename = 'laporan-pesanan-offline-' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($rows) {
+            $output = fopen('php://output', 'w');
+            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($output, ['No. Pesanan', 'Nama', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Tipe Pesanan', 'Status']);
+            foreach ($rows as $row) {
+                fputcsv($output, $row);
+            }
+            fclose($output);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    })->name('laporan-pesanan-offline.export');
 });
 
 Route::get('test-aja', function () {

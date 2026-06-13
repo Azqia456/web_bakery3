@@ -605,32 +605,42 @@ class DashboardController extends Controller
         $start = Carbon::parse($startDate)->startOfDay();
         $end = Carbon::parse($endDate)->endOfDay();
 
+        // Hanya pesanan yang sudah lunas sesuai rumus
+        $lunasFilter = function ($query) {
+            $query->where(function ($q) {
+                $q->where('status_pembayaran', 'lunas')
+                  ->orWhere(function ($qk) {
+                      $qk->where('sumber_pesanan', 'offline')
+                         ->whereNotNull('id_karyawan')
+                         ->where('status_bayar', 'lunas');
+                  });
+            });
+        };
+
         // Metrics: total harian, mingguan, bulanan
-        $totalHarian = Pesanan::whereDate('tgl_pesan', $today)->sum('total_bayar') ?? 0;
-        $totalMingguan = Pesanan::whereBetween('tgl_pesan', [
+        $totalHarian = Pesanan::whereDate('created_at', $today)
+            ->where($lunasFilter)
+            ->sum('total_bayar') ?? 0;
+        $totalMingguan = Pesanan::whereBetween('created_at', [
             $now->copy()->startOfWeek(), $now->copy()->endOfWeek()
-        ])->sum('total_bayar') ?? 0;
-        $totalBulanan = Pesanan::whereBetween('tgl_pesan', [
+        ])->where($lunasFilter)->sum('total_bayar') ?? 0;
+        $totalBulanan = Pesanan::whereBetween('created_at', [
             $now->copy()->startOfMonth(), $now->copy()->endOfMonth()
-        ])->sum('total_bayar') ?? 0;
-        $jumlahTransaksi = Pesanan::whereBetween('tgl_pesan', [$start, $end])->count();
+        ])->where($lunasFilter)->sum('total_bayar') ?? 0;
+        $jumlahTransaksi = Pesanan::whereBetween('created_at', [$start, $end])
+            ->where($lunasFilter)->count();
 
         // Daily sales data for chart and table
-        $salesData = Pesanan::whereBetween('tgl_pesan', [$start, $end])
-            ->selectRaw('DATE(tgl_pesan) as tanggal, COUNT(*) as jumlah_transaksi, SUM(total_bayar) as total_pendapatan')
+        $salesData = Pesanan::whereBetween('created_at', [$start, $end])
+            ->where($lunasFilter)
+            ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as jumlah_transaksi, SUM(total_bayar) as total_pendapatan')
             ->groupBy('tanggal')
             ->orderBy('tanggal', 'asc')
             ->get()
             ->toArray();
 
         return view('laporan_penjualan', compact(
-            'totalHarian',
-            'totalMingguan',
-            'totalBulanan',
-            'jumlahTransaksi',
-            'salesData',
-            'startDate',
-            'endDate'
+            'totalHarian', 'totalMingguan', 'totalBulanan', 'jumlahTransaksi', 'salesData', 'startDate', 'endDate'
         ));
     }
 }

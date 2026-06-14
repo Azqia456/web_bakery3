@@ -600,7 +600,7 @@
                     </button>
                     <div class="sidebar-submenu @if(request()->is('pesanan*')) open @endif">
                         <a href="/pesanan-online" class="sidebar-submenu-item @if(request()->path() === 'pesanan-online') active @endif">Pesanan Online @if($pesananOnlineBadge > 0)<span class="sidebar-badge">{{ $pesananOnlineBadge }}</span>@endif</a>
-                        <a href="/pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'pesanan-offline') active @endif">Pesanan Offline @if($pesananOfflineBadge > 0)<span class="sidebar-badge">{{ $pesananOfflineBadge }}</span>@endif</a>
+                        <a href="/pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'pesanan-offline') active @endif">Pesanan Offline</a>
                     </div>
                 </div>
                 <div class="sidebar-menu-item">

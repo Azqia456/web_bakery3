@@ -801,7 +801,7 @@
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Status Pembayaran</div>
-                        <div class="detail-value">${transaksi.status_bayar === 'lunas' ? 'Lunas' : 'Belum Lunas'}</div>
+                        <div class="detail-value">${transaksi.status_pembayaran === 'lunas' ? 'Lunas' : (transaksi.status_pembayaran === 'menunggu_verifikasi' ? 'Menunggu Verifikasi' : 'Belum Bayar')}</div>
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Status Pesanan</div>

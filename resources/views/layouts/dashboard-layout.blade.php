@@ -174,6 +174,19 @@
             padding-left: 52px;
         }
 
+        .sidebar-badge {
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            min-width: 18px;
+            text-align: center;
+            font-weight: 600;
+            line-height: 14px;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -586,8 +599,8 @@
                         <i class="fas fa-chevron-down toggle-arrow @if(request()->is('pesanan*')) open @endif"></i>
                     </button>
                     <div class="sidebar-submenu @if(request()->is('pesanan*')) open @endif">
-                        <a href="/pesanan-online" class="sidebar-submenu-item @if(request()->path() === 'pesanan-online') active @endif">Pesanan Online</a>
-                        <a href="/pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'pesanan-offline') active @endif">Pesanan Offline</a>
+                        <a href="/pesanan-online" class="sidebar-submenu-item @if(request()->path() === 'pesanan-online') active @endif">Pesanan Online @if($pesananOnlineBadge > 0)<span class="sidebar-badge">{{ $pesananOnlineBadge }}</span>@endif</a>
+                        <a href="/pesanan-offline" class="sidebar-submenu-item @if(request()->path() === 'pesanan-offline') active @endif">Pesanan Offline @if($pesananOfflineBadge > 0)<span class="sidebar-badge">{{ $pesananOfflineBadge }}</span>@endif</a>
                     </div>
                 </div>
                 <div class="sidebar-menu-item">

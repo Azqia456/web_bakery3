@@ -20,10 +20,10 @@
 
         <!-- Notification Button -->
         <div class="notification-menu">
-            <button type="button" class="notification-btn" id="notificationMenuButton" aria-haspopup="true" aria-expanded="false" title="Notifikasi">
+            {{-- <button type="button" class="notification-btn" id="notificationMenuButton" aria-haspopup="true" aria-expanded="false" title="Notifikasi">
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge">{{ $totalNotifikasi ?? 0 }}</span>
-            </button>
+            </button> --}}
 
             <!-- Notification Dropdown -->
             <div class="notification-dropdown" id="notificationDropdown">

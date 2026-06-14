@@ -397,6 +397,21 @@
             animation: none;
         }
 
+        @media (min-width: 768px) {
+            #cartModal.modal.fullscreen {
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+            }
+
+            #cartModal.modal.fullscreen .modal-content {
+                max-width: 500px;
+                max-height: 90vh;
+                height: auto;
+                border-radius: var(--border-radius-xl);
+            }
+        }
+
         .modal-content {
             background: var(--white);
             width: 100%;
@@ -2070,9 +2085,7 @@
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <div class="sidebar-brand">
-                    <div class="brand-logo">
-                        <i class="fas fa-bread-slice"></i>
-                    </div>
+                  
                     <div class="brand-text">
                         <h1>Three D Bakery</h1>
                         <span>Freshly Baked Happiness</span>
@@ -2110,10 +2123,6 @@
                     <a href="/pelanggan/pesanan" class="nav-tab {{ request()->is('pelanggan/pesanan*') && request('status') !== 'selesai' ? 'active' : '' }}">
                         <i class="fas fa-shopping-bag"></i>
                         Pesanan Saya
-                    </a>
-                    <a href="/pelanggan/pesanan?status=selesai" class="nav-tab {{ request()->is('pelanggan/pesanan*') && request('status') === 'selesai' ? 'active' : '' }}">
-                        <i class="fas fa-clock"></i>
-                        Riwayat Pesanan
                     </a>
                     <a href="{{ route('pelanggan.profile.edit') }}" class="nav-tab {{ request()->routeIs('pelanggan.profile.edit') ? 'active' : '' }}">
                         <i class="fas fa-user"></i>

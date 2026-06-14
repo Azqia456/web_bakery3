@@ -339,7 +339,7 @@
 @section('content')
     <div class="container-wrapper">
         <!-- Header -->
-        <div class="header">
+        {{-- <div class="header">
             <div class="header-content">
                 <div class="brand-logo">
                     <i class="fas fa-store"></i>
@@ -355,7 +355,7 @@
                     Kembali ke Dashboard
                 </a>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Main Content -->
         <div class="main-content">

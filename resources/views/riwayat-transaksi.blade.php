@@ -662,9 +662,9 @@
                     $metodeText = $metode == 'cash' ? 'Cash' : 'Transfer';
                     $metodeBadge = 'metode-' . $metode;
 
-                    $trxId = $sumber == 'online'
+                    $trxId = $pesanan->sumber_pesanan === 'online'
                         ? '#ON-' . \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('dmY') . '-' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT)
-                        : '#TRX-' . str_pad($pesanan->id_pesanan, 4, '0', STR_PAD_LEFT);
+                        : '#OFF-' . \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('dmY') . '-' . str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT);
                 @endphp
                 <tr data-tipe="{{ $tipe }}" data-sumber="{{ $sumber }}" data-metode="{{ $metode }}" data-tanggal="{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('Y-m-d') }}">
                     <td><strong>{{ $trxId }}</strong></td>

@@ -420,7 +420,7 @@ class DashboardController extends Controller
     public function riwayatTransaksi(Request $request)
     {
         $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk'])
-            ->orderBy('tgl_pesan', 'desc');
+            ->orderBy('created_at', 'desc');
 
         // Filter by tipe (pelanggan/karyawan)
         if ($request->filled('tipe')) {
@@ -463,13 +463,28 @@ class DashboardController extends Controller
 
         $pesanans = $query->paginate(15)->withQueryString();
 
-        // Calculate stats
+        // Calculate stats — only lunas per rumus, use created_at
         $today = Carbon::today();
+        $lunasFilter = function ($query) {
+            $query->where(function ($q) {
+                $q->where('status_pembayaran', 'lunas')
+                  ->orWhere(function ($qk) {
+                      $qk->where('sumber_pesanan', 'offline')
+                         ->whereNotNull('id_karyawan')
+                         ->where('status_bayar', 'lunas');
+                  });
+            });
+        };
+
         $stats = [
             'total' => Pesanan::count(),
-            'pemasukan_hari_ini' => Pesanan::whereDate('tgl_pesan', $today)->sum('total_bayar') ?? 0,
-            'transaksi_pelanggan' => Pesanan::whereNotNull('id_pelanggan')->whereDate('tgl_pesan', $today)->count(),
-            'stor_karyawan' => Pesanan::whereNull('id_pelanggan')->whereNotNull('id_karyawan')->whereDate('tgl_pesan', $today)->count(),
+            'pemasukan_hari_ini' => Pesanan::whereDate('created_at', $today)
+                ->where($lunasFilter)->sum('total_bayar') ?? 0,
+            'transaksi_pelanggan' => Pesanan::whereNotNull('id_pelanggan')
+                ->whereDate('created_at', $today)->count(),
+            'stor_karyawan' => Pesanan::whereNotNull('id_karyawan')
+                ->whereNull('id_pelanggan')
+                ->whereDate('created_at', $today)->count(),
         ];
 
         return view('riwayat-transaksi', compact('pesanans', 'stats'));

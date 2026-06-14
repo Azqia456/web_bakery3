@@ -251,7 +251,7 @@
 
         function updateCartBadge() {
             const badge = document.getElementById('cartBadge');
-            const total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const total = cart.length;
             badge.textContent = total > 0 ? total : '0';
         }
 

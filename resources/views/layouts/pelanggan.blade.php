@@ -1660,7 +1660,7 @@
         }
 
         .qty-stepper-input {
-            width: 28px;
+            width: 48px;
             text-align: center;
             border: none;
             outline: none;

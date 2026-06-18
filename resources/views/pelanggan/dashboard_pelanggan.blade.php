@@ -15,7 +15,7 @@
                 <div class="promo-banner">
                     <div class="promo-content">
                         <h3>Roti segar setiap hari!</h3>
-                        <p>Pesan sekarang, siap dalam 2-3 jam</p>
+                        <p>Pemensanan maksimal H-2.</p>
                     </div>
                     <button class="promo-btn">
                         <i class="fas fa-arrow-right"></i> Lihat Keranjang

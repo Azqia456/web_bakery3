@@ -614,8 +614,8 @@
                 <img class="brand-illustration" src="/image/rotibulat.png" alt="Logo Roti" style="object-fit:contain; width:400px; height:400px;" />
 
                 <h1 class="brand-title">Three D Bakery</h1>
-                <p class="brand-subtitle">Kebahagiaan yang baru dipanggang</p>
-                <p class="brand-tagline">Toko roti favorit</p>
+                <p class="brand-subtitle">Nikmati Hangatnya roti di Setiap Gigitan</p>
+                <p class="brand-tagline"></p>
             </div>
         </div>
 

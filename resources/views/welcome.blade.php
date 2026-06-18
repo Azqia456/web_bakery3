@@ -1,671 +1,379 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three D Bakery - Roti Premium Indonesia</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts: Playfair Display for elegant headings, Inter for modern body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#FBF7F1',  // --light-cream
+                            100: '#F5E6D3', // --primary-cream
+                            400: '#A0826D', // --secondary-brown
+                            500: '#8B6F47', // --primary-brown
+                            800: '#6B5639', // --dark-brown
+                            900: '#333333', // Body text
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(139, 111, 71, 0.1)',
+                        'float': '0 30px 60px -20px rgba(139, 111, 71, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --primary-brown: #8B6F47;
-            --primary-cream: #F5E6D3;
-            --secondary-brown: #A0826D;
-            --dark-brown: #6B5639;
-            --light-cream: #FBF7F1;
+        /* Custom Utilities for extra polish */
+        .glass-nav {
+            background: rgba(251, 247, 241, 0.85); /* brand-50 with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(245, 230, 211, 0.5); /* brand-100 */
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #6B5639 0%, #8B6F47 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
+        .blob-shape {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morph 8s ease-in-out infinite both alternate;
         }
 
-        /* ===== NAVBAR ===== */
-        .navbar-landing {
-            background: linear-gradient(135deg, #fff 0%, #FAF8F4 100%);
-            border-bottom: 1px solid #E8D9C4;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(139, 111, 71, 0.08);
-        }
-
-        .navbar-landing .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark-brown) !important;
-            letter-spacing: -0.5px;
-        }
-
-        .navbar-landing .nav-link {
-            color: #555 !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0.75rem !important;
-        }
-
-        .navbar-landing .nav-link:hover {
-            color: var(--primary-brown) !important;
-        }
-
-        .btn-login-nav {
-            background: var(--primary-brown);
-            color: white !important;
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-login-nav:hover {
-            background: var(--dark-brown);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
-        }
-
-        /* ===== HERO SECTION ===== */
-        .hero-section {
-            background: linear-gradient(135deg, var(--light-cream) 0%, #FFFFFF 100%);
-            padding: 80px 0;
-            min-height: 90vh;
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-content {
-            z-index: 2;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--dark-brown);
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 2rem;
-            line-height: 1.8;
-        }
-
-        .btn-hero {
-            padding: 0.75rem 2.5rem;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            margin-right: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .btn-hero-primary {
-            background: var(--primary-brown);
-            color: white;
-            border: 2px solid var(--primary-brown);
-        }
-
-        .btn-hero-primary:hover {
-            background: var(--dark-brown);
-            border-color: var(--dark-brown);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(139, 111, 71, 0.3);
-            color: white;
-        }
-
-        .btn-hero-secondary {
-            background: transparent;
-            color: var(--primary-brown);
-            border: 2px solid var(--primary-brown);
-        }
-
-        .btn-hero-secondary:hover {
-            background: var(--primary-brown);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(139, 111, 71, 0.2);
-        }
-
-        .hero-image {
-            text-align: center;
-            z-index: 1;
-        }
-
-        .hero-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(139, 111, 71, 0.15);
-        }
-
-        /* ===== PRODUCT SECTION ===== */
-        .product-section {
-            background: #FFFFFF;
-            padding: 100px 0;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--dark-brown);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 4rem;
-            font-size: 1.1rem;
-        }
-
-        .product-card {
-            background: #FFFFFF;
-            border: 1px solid #E8D9C4;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(139, 111, 71, 0.15);
-            border-color: var(--primary-brown);
-        }
-
-        .product-image {
-            height: 250px;
-            overflow: hidden;
-            background: var(--light-cream);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.08);
-        }
-
-        .product-body {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .product-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 0.5rem;
-        }
-
-        .product-desc {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-            flex-grow: 1;
-        }
-
-        .product-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #E8D9C4;
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary-brown);
-        }
-
-        .btn-add-cart {
-            background: var(--primary-brown);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            font-size: 0.95rem;
-        }
-
-        .btn-add-cart:hover {
-            background: var(--dark-brown);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
-            color: white;
-        }
-
-        /* ===== FEATURES SECTION ===== */
-        .features-section {
-            background: linear-gradient(135deg, var(--light-cream) 0%, #FFFFFF 100%);
-            padding: 100px 0;
-        }
-
-        .feature-box {
-            text-align: center;
-            padding: 2.5rem 1.5rem;
-            background: #FFFFFF;
-            border-radius: 12px;
-            border: 1px solid #E8D9C4;
-            transition: all 0.4s ease;
-            height: 100%;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(139, 111, 71, 0.12);
-            border-color: var(--primary-brown);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            color: var(--primary-brown);
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 1rem;
-        }
-
-        .feature-desc {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* ===== FOOTER ===== */
-        .footer-section {
-            background: var(--dark-brown);
-            color: var(--light-cream);
-            padding: 4rem 0 1rem;
-        }
-
-        .footer-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #FFFFFF;
-        }
-
-        .footer-link {
-            color: var(--light-cream);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: block;
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-link:hover {
-            color: var(--primary-cream);
-            padding-left: 0.5rem;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .social-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            background: var(--primary-brown);
-            border-radius: 50%;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-icon:hover {
-            background: var(--primary-cream);
-            color: var(--dark-brown);
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 2rem;
-            padding-top: 2rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 60px 0;
-                min-height: auto;
-            }
-
-            .hero-title {
-                font-size: 2.2rem;
-                margin-bottom: 1rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .btn-hero {
-                padding: 0.6rem 2rem;
-                font-size: 0.9rem;
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 0.75rem;
-            }
-
-            .hero-image {
-                margin-top: 2rem;
-            }
-
-            .hero-image img {
-                border-radius: 10px;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .product-section,
-            .features-section {
-                padding: 60px 0;
-            }
-
-            .product-card {
-                margin-bottom: 1.5rem;
-            }
-
-            .feature-box {
-                margin-bottom: 1.5rem;
-            }
-
-            .navbar-landing .navbar-brand {
-                font-size: 1.3rem;
-            }
-
-            .navbar-landing .nav-link {
-                margin: 0.25rem 0;
-                padding: 0.5rem 0 !important;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .hero-title {
-                font-size: 1.8rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.95rem;
-            }
-
-            .section-title {
-                font-size: 1.5rem;
-            }
-
-            .product-price {
-                font-size: 1.2rem;
-            }
-
-            .feature-icon {
-                font-size: 2.5rem;
-            }
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
         }
     </style>
 </head>
-<body>
+<body class="font-sans text-brand-900 bg-brand-50 antialiased selection:bg-brand-500 selection:text-white">
 
     <!-- ===== NAVBAR ===== -->
-    <nav class="navbar navbar-expand-lg navbar-landing">
-        <div class="container">
-            <a class="navbar-brand" href="#">🍰 Three D Bakery</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#beranda">Beranda</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#produk">Produk</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#tentang">Tentang Kami</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#testimoni">Testimoni</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#kontak">Kontak</a>
-                    </li>
-                    <li class="nav-item ms-2">
-                        @auth
-                            @if(auth()->user()->role === 'owner')
-                                <a href="{{ route('dashboard') }}" class="btn btn-login-nav">Dashboard</a>
-                            @else
-                                <a href="{{ route('pelanggan.dashboard') }}" class="btn btn-login-nav">Dashboard</a>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-login-nav">Login</a>
-                        @endauth
-                    </li>
-                </ul>
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <span class="text-2xl transition-transform group-hover:scale-110">🍞</span>
+                    <span class="font-serif font-bold text-xl tracking-tight text-brand-800">Three D <span class="text-brand-500">Bakery</span></span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#beranda" class="text-gray-600 hover:text-brand-500 font-medium text-sm transition-colors">Beranda</a>
+                    <a href="#produk" class="text-gray-600 hover:text-brand-500 font-medium text-sm transition-colors">Produk</a>
+                    <a href="#tentang" class="text-gray-600 hover:text-brand-500 font-medium text-sm transition-colors">Tentang Kami</a>
+                    <a href="#kontak" class="text-gray-600 hover:text-brand-500 font-medium text-sm transition-colors">Kontak</a>
+                    
+                    <!-- BLADE: Auth Logic Here -->
+                <div class="pl-4 border-l border-brand-100">
+                   @auth
+                     @if(auth()->user()->role === 'owner')
+                     <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all bg-brand-500 rounded-full hover:bg-brand-800 hover:shadow-lg hover:-translate-y-0.5">
+                     <i class="bi bi-speedometer2 mr-2"></i> Dashboard
+                  </a>
+                      @else
+                 <a href="{{ route('pelanggan.dashboard') }}" class="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all bg-brand-500 rounded-full hover:bg-brand-800 hover:shadow-lg hover:-translate-y-0.5">
+                    <i class="bi bi-speedometer2 mr-2"></i> Dashboard
+                 </a>
+                      @endif
+                      @else
+                      <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all bg-brand-500 rounded-full hover:bg-brand-800 hover:shadow-lg hover:-translate-y-0.5">
+                          <i class="bi bi-person-circle mr-2"></i> Login
+                      </a>
+                 @endauth
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-brand-800 hover:text-brand-500 focus:outline-none">
+                        <i class="bi bi-list text-3xl"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- ===== HERO SECTION ===== -->
-    <section class="hero-section" id="beranda">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 hero-content">
-                    <h1 class="hero-title">Three D Bakery</h1>
-                    <p class="hero-subtitle">Roti premium dengan cita rasa internasional dan bahan berkualitas terbaik. Dipanggang segar setiap hari untuk kepuasan Anda.</p>
-                    <div>
-                        @auth
-                            @if(auth()->user()->role === 'owner')
-                                <a href="{{ route('dashboard') }}" class="btn btn-hero btn-hero-primary">📊 Dashboard</a>
-                            @else
-                                <a href="{{ route('pelanggan.dashboard') }}" class="btn btn-hero btn-hero-primary">🛒 Belanja Sekarang</a>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-hero btn-hero-primary">🛒 Belanja Sekarang</a>
-                        @endauth
-                        <a href="#produk" class="btn btn-hero btn-hero-secondary">📋 Lihat Produk</a>
+    <section id="beranda" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <!-- Background Decorative Elements -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-brand-100/50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-white rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <!-- Text Content -->
+                <div class="max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-100 text-brand-800 text-sm font-semibold mb-6">
+                        <span class="relative flex h-3 w-3">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-500"></span>
+                        </span>
+                        Dipanggang Setiap Hari
+                    </div>
+                    <h1 class="font-serif text-5xl lg:text-7xl font-bold leading-tight mb-6 text-brand-800">
+                        Three <span class="text-gradient">D Bakery.
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
+                        Nikmati roti hangat dengan cita rasa yang khas dan bahan berkualitas terbaik. 
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#produk" class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-white transition-all duration-300 bg-brand-500 rounded-full hover:bg-brand-800 shadow-float hover:-translate-y-1">
+                            <i class="bi bi-cart3 mr-2"></i> Belanja Sekarang
+                        </a>
                     </div>
                 </div>
-                <div class="col-lg-6 hero-image">
-                    <img src="{{ asset('image/strawberry.jpg') }}" alt="Roti Premium Three D Bakery">
+                <div class="relative lg:ml-auto w-full mt-8 lg:mt-0">
+                    <div class="absolute inset-0 bg-brand-500 blob-shape transform translate-x-4 translate-y-4 opacity-20"></div>
+                    
+                    <div class="relative rounded-[2rem] overflow-hidden shadow-2xl z-10 aspect-[4/3] lg:aspect-video w-full mx-auto">
+                    <img src="{{ asset('image/coklat.jpg') }}"
+                             alt="Roti Premium Three D Bakery" 
+                             class="object-cover w-full h-full transform hover:scale-105 transition-transform duration-700">
+
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ===== PRODUCT SECTION ===== -->
-    <section class="product-section" id="produk">
-        <div class="container">
-            <h2 class="section-title">Our Best Selection</h2>
-            <p class="section-subtitle">Koleksi roti premium pilihan kami yang paling dicintai pelanggan</p>
+    <section id="produk" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-brand-500 font-semibold tracking-wider uppercase text-sm mb-2 block">Pilihan Favorit</span>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-brand-800 mb-4">Best Sellers</h2>
+                <p class="text-gray-600 text-lg">Koleksi roti kami yang paling di Rekomendasikan, dipanggang dengan teknik khusus untuk menghasilkan tekstur dan rasa yang sempurna.</p>
+            </div>
             
-            <div class="row g-4">
-                @forelse($produks as $produk)
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card">
-                        <div class="product-image">
-                            @if($produk->gambar)
-                                <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}">
-                            @else
-                                <img src="{{ asset('image/rotibulat.png') }}" alt="{{ $produk->nama_produk }}">
-                            @endif
-                        </div>
-                        <div class="product-body">
-                            <h5 class="product-name">{{ $produk->nama_produk }}</h5>
-                            <p class="product-desc">{{ $produk->deskripsi ?? 'Roti premium dengan cita rasa terbaik.' }}</p>
-                            <div class="product-footer">
-                                <span class="product-price">Rp {{ number_format($produk->harga_produk, 0, ',', '.') }}</span>
-                                @auth
-                                    @if(auth()->user()->role === 'owner')
-                                        <a href="{{ route('dashboard') }}" class="btn-add-cart">Dashboard</a>
-                                    @else
-                                        <a href="{{ route('pelanggan.dashboard') }}" class="btn-add-cart">
-                                            <i class="bi bi-bag-plus"></i> Pesan
-                                        </a>
-                                    @endif
-                                @else
-                                    <a href="{{ route('login') }}" class="btn-add-cart">
-                                        <i class="bi bi-bag-plus"></i> Pesan
-                                    </a>
-                                @endauth
-                            </div>
+            <!-- BLADE: @forelse($produks as $produk) ... @empty ... @endforelse -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Product Card 1: Kelapa -->
+                <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
+                        <img src="{{ asset('image/kelapa.jpg') }}" alt="Roti Kelapa" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
+                            Rp 1.300
                         </div>
                     </div>
+                    <div class="px-2 flex-grow flex flex-col">
+                        <div class="mb-2">
+                            <h5 class="font-serif text-xl font-bold text-brand-800">Kelapa Lumer</h5>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti super lembut dengan isian krim kelapa manis yang lumer di mulut dan taburan kelapa parut gurih di atasnya.</p>
+                        
+                        <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
+                            <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
+                        </a>
+                    </div>
                 </div>
-                @empty
-                <div class="col-12 text-center">
-                    <p class="text-muted">Belum ada produk tersedia saat ini.</p>
+
+                <!-- Product Card 2: Strawberry -->
+                <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
+                        <img src="{{ asset('image/strawberry.jpg') }}" alt="Roti Strawberry" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
+                            Rp 1.300
+                        </div>
+                    </div>
+                    <div class="px-2 flex-grow flex flex-col">
+                        <div class="mb-2">
+                            <h5 class="font-serif text-xl font-bold text-brand-800">Strawberry Lumer</h5>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti manis dengan isian selai stroberi segar melimpah dan taburan bubuk stroberi yang memberikan sensasi asam manis menyegarkan.</p>
+                        
+                        <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
+                            <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
+                        </a>
+                    </div>
                 </div>
-                @endforelse
+
+                <!-- Product Card 3: Blueberry -->
+                <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
+                        <img src="{{ asset('image/bluberry.jpg') }}" alt="Roti Blueberry" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
+                            Rp 1.300
+                        </div>
+                        <div class="absolute top-4 left-4 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                            New
+                        </div>
+                    </div>
+                    <div class="px-2 flex-grow flex flex-col">
+                        <div class="mb-2">
+                            <h5 class="font-serif text-xl font-bold text-brand-800">Blueberry Lumer</h5>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti artisan dengan filling blueberry premium yang kaya rasa dan buah asli, memberikan ledakan rasa lezat di setiap gigitan.</p>
+
+                        <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
+                            <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
+                        </a>
+                    </div>
+                </div>             
             </div>
         </div>
     </section>
 
     <!-- ===== FEATURES SECTION ===== -->
-    <section class="features-section" id="tentang">
-        <div class="container">
-            <h2 class="section-title">Kenapa Pilih Three D Bakery?</h2>
-            <p class="section-subtitle">Kami berkomitmen untuk memberikan yang terbaik</p>
+    <section id="tentang" class="py-24 bg-brand-800 text-white relative overflow-hidden">
+        <!-- Abstract shape in background -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mt-10 -mr-10"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-brand-500 opacity-20 rounded-full blur-3xl -mb-20 -ml-20"></div>
 
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="bi bi-gem"></i>
-                        </div>
-                        <h5 class="feature-title">Bahan Premium</h5>
-                        <p class="feature-desc">Menggunakan bahan-bahan pilihan terbaik dari supplier terpercaya untuk kualitas maksimal.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="font-serif text-3xl md:text-5xl font-bold mb-4">Kenapa Memilih Kami?</h2>
+                <p class="text-brand-100/80 text-lg">Dedikasi kami untuk menyajikan kualitas terbaik di setiap potongan roti yang Anda nikmati.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white/5 backdrop-blur-lg border border-brand-100/10 p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 hover:bg-white/10">
+                    <div class="w-14 h-14 bg-brand-500/20 text-brand-100 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                        <i class="bi bi-gem"></i>
                     </div>
+                    <h5 class="text-xl font-bold mb-3 text-brand-50">Bahan Premium</h5>
+                    <p class="text-brand-100/70 text-sm leading-relaxed">Menggunakan tepung, mentega, dan bahan-bahan impor pilihan untuk tekstur & rasa sempurna.</p>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
-                        <h5 class="feature-title">Fresh Setiap Hari</h5>
-                        <p class="feature-desc">Dipanggang fresh setiap pagi untuk memastikan kesegaran dan kelezatan optimal.</p>
+                <!-- Feature 2 -->
+                <div class="bg-white/5 backdrop-blur-lg border border-brand-100/10 p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 hover:bg-white/10">
+                    <div class="w-14 h-14 bg-brand-500/20 text-brand-100 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                        <i class="bi bi-clock-history"></i>
                     </div>
+                    <h5 class="text-xl font-bold mb-3 text-brand-50">Fresh Setiap Hari</h5>
+                    <p class="text-brand-100/70 text-sm leading-relaxed">Semua produk kami panggang di hari yang sama untuk menjamin kesegaran optimal.</p>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="bi bi-star-fill"></i>
-                        </div>
-                        <h5 class="feature-title">Rasa Terjamin</h5>
-                        <p class="feature-desc">Resep rahasia yang telah teruji menghasilkan rasa yang konsisten dan lezat.</p>
+                <!-- Feature 3 -->
+                <div class="bg-white/5 backdrop-blur-lg border border-brand-100/10 p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 hover:bg-white/10">
+                    <div class="w-14 h-14 bg-brand-500/20 text-brand-100 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                        <i class="bi bi-heart"></i>
                     </div>
+                    <h5 class="text-xl font-bold mb-3 text-brand-50">Dibuat Dengan Hati</h5>
+                    <p class="text-brand-100/70 text-sm leading-relaxed">Setiap roti diproses oleh artisan baker kami dengan resep tradisional dan sentuhan cinta.</p>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="bi bi-lightning-fill"></i>
-                        </div>
-                        <h5 class="feature-title">Pengiriman Cepat</h5>
-                        <p class="feature-desc">Sistem logistik efisien untuk memastikan produk sampai dalam kondisi terbaik.</p>
+                <!-- Feature 4 -->
+                <div class="bg-white/5 backdrop-blur-lg border border-brand-100/10 p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 hover:bg-white/10">
+                    <div class="w-14 h-14 bg-brand-500/20 text-brand-100 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                        <i class="bi bi-box-seam"></i>
                     </div>
+                    <h5 class="text-xl font-bold mb-3 text-brand-50">Pengemasan Aman</h5>
+                    <p class="text-brand-100/70 text-sm leading-relaxed">Kemasan modern, higienis, dan eco-friendly untuk menjaga bentuk serta kualitas rasa.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="footer-section" id="kontak">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="footer-title">🍰 Three D Bakery</h5>
-                    <p style="line-height: 1.8;">Roti premium dengan cita rasa internasional. Dibuat dengan cinta dan bahan terbaik untuk keluarga Indonesia.</p>
-                    <div class="social-icons">
-                        <a href="#" class="social-icon" title="Facebook">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-                        <a href="#" class="social-icon" title="Instagram">
+    <footer id="kontak" class="bg-brand-800 text-brand-50 pt-20 pb-8 border-t border-brand-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+                
+                <!-- Brand Info -->
+                <div class="lg:col-span-4">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <span class="font-serif font-bold text-2xl tracking-tight text-white">Three D <span class="text-brand-400">Bakery</span></span>
+                    </a>
+                    <p class="text-brand-100/80 text-sm leading-relaxed mb-8 max-w-sm">
+                        Menghadirkan kehangatan dan kebahagiaan ke meja makan Anda melalui kreasi roti artisan premium berkualitas tinggi.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-colors duration-300 text-brand-100">
                             <i class="bi bi-instagram"></i>
                         </a>
-                        <a href="#" class="social-icon" title="WhatsApp">
-                            <i class="bi bi-whatsapp"></i>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-colors duration-300 text-brand-100">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-colors duration-300 text-brand-100">
+                            <i class="bi bi-tiktok"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="footer-title">Menu</h5>
-                    <a href="#beranda" class="footer-link">Beranda</a>
-                    <a href="#produk" class="footer-link">Produk</a>
-                    <a href="#tentang" class="footer-link">Tentang Kami</a>
-                    <a href="#kontak" class="footer-link">Kontak</a>
+                <!-- Links -->
+                <div class="lg:col-span-2">
+                    <h4 class="text-lg font-bold mb-6 font-serif text-white">Menu Cepat</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#beranda" class="text-brand-100/80 hover:text-white transition-colors text-sm">Beranda</a></li>
+                        <li><a href="#produk" class="text-brand-100/80 hover:text-white transition-colors text-sm">Semua Produk</a></li>
+                        <li><a href="#tentang" class="text-brand-100/80 hover:text-white transition-colors text-sm">Tentang Kami</a></li>
+                        <li><a href="#kontak" class="text-brand-100/80 hover:text-white transition-colors text-sm">Kontak</a></li>
+                    </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="footer-title">Kontak</h5>
-                    <p style="margin-bottom: 1rem;">
-                        <i class="bi bi-telephone"></i> +62 812-3456-7890
-                    </p>
-                    <p style="margin-bottom: 1rem;">
-                        <i class="bi bi-envelope"></i> info@3dbakery.com
-                    </p>
-                    <p>
-                        <i class="bi bi-geo-alt"></i> Jl. Roti Premium No. 123, Jakarta
-                    </p>
+                <!-- Contact -->
+                <div class="lg:col-span-3">
+                    <h4 class="text-lg font-bold mb-6 font-serif text-white">Hubungi Kami</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="bi bi-geo-alt mt-1 text-brand-400"></i>
+                            <span class="text-brand-100/80 text-sm leading-relaxed">Jl. Griya Mas, Cengkong, Kec. Purwasari, Karawang, Jawa Barat.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="bi bi-telephone text-brand-400"></i>
+                            <span class="text-brand-100/80 text-sm">+62 857-8003-0321</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="bi bi-envelope text-brand-400"></i>
+                            <span class="text-brand-100/80 text-sm">ThreedBakery@gmail.com</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="footer-title">Jam Operasional</h5>
-                    <p>
-                        <strong>Senin - Jumat</strong><br>
-                        07:00 - 19:00 WIB
-                    </p>
-                    <p>
-                        <strong>Sabtu - Minggu</strong><br>
-                        08:00 - 20:00 WIB
-                    </p>
+                <!-- Newsletter / Hours -->
+                <div class="lg:col-span-3">
+                    <h4 class="text-lg font-bold mb-6 font-serif text-white">Jam Operasional</h4>
+                    <div class="bg-white/5 rounded-2xl p-5 border border-white/5">
+                        <div class="flex justify-between items-center mb-3 pb-3 border-b border-white/10">
+                            <span class="text-brand-100/80 text-sm">Senin - Jumat</span>
+                            <span class="text-white font-medium text-sm">07:00 - 19:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-brand-100/80 text-sm">Sabtu - Minggu</span>
+                            <span class="text-white font-medium text-sm">08:00 - 20:00</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2024 Three D Bakery. Semua hak cipta dilindungi. | Dibuat dengan ❤️ untuk Anda</p>
+            <!-- Copyright -->
+            <div class="pt-8 border-t border-brand-500/20 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-brand-100/60 text-sm">
+                    &copy; 2024 Three D Bakery. Hak Cipta Dilindungi. | Dibuat dengan ❤️ untuk Anda
+                </p>
+                <div class="flex gap-6 text-sm text-brand-100/60">
+                    <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                    <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

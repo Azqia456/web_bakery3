@@ -52,6 +52,7 @@ class PesananSyncService
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
             'status_pesanan' => $data['status_pesanan'] ?? 'menunggu_konfirmasi',
             'total_bayar' => $data['total_bayar'] ?? 0,
+            'ongkir' => $data['ongkir'] ?? 0,
         ]);
 
         // Tambahkan detail pesanan (produk-produk)
@@ -97,22 +98,40 @@ class PesananSyncService
             throw new \Exception('Karyawan tidak ditemukan');
         }
 
+        // Hitung ongkir: manual (dari form) atau otomatis dari kecamatan
+        $ongkir = 0;
+        $isManualOngkir = isset($data['ongkir']);
+
+        if ($isManualOngkir) {
+            $ongkir = (float) $data['ongkir'];
+        } elseif (($data['metode_pengambilan'] ?? 'pickup') === 'delivery' && !empty($data['id_kecamatan'])) {
+            $kecamatan = \App\Models\Kecamatan::find($data['id_kecamatan']);
+            $ongkir = $kecamatan ? (float) $kecamatan->ongkir : 0;
+        }
+
+        // total_bayar manual sudah include ongkir, auto-calculate perlu ditambah
+        $totalBayar = $isManualOngkir ? ($data['total_bayar'] ?? 0) : (($data['total_bayar'] ?? 0) + $ongkir);
+
         // Buat pesanan baru
         $pesanan = Pesanan::create([
             'id_pelanggan' => $pelanggan->id_pelanggan,
             'id_karyawan' => $karyawan->id_karyawan,
+            'id_kecamatan' => $data['id_kecamatan'] ?? null,
             'tgl_pesan' => $data['tgl_pesan'] ?? now(),
             'sumber_pesanan' => $data['sumber_pesanan'] ?? 'offline',
             'metode_pengambilan' => $data['metode_pengambilan'] ?? $data['metode'] ?? 'pickup',
             'alamat_delivery' => $data['alamat_delivery'] ?? null,
+            'alamat_detail' => $data['alamat_detail'] ?? null,
             'tgl_delivery' => $data['tgl_delivery'] ?? null,
+            'tgl_pickup' => $data['tgl_pickup'] ?? null,
             'metode_pembayaran' => $data['metode_pembayaran'] ?? 'cash',
             'status_pembayaran' => $data['status_pembayaran'] ?? self::getDefaultPaymentStatus($data['metode_pembayaran'] ?? 'cash'),
             'status_pesanan' => $data['status_pesanan'] ?? 'menunggu_konfirmasi',
             'bukti_transfer' => $data['bukti_transfer'] ?? null,
             'catatan_pesanan' => $data['catatan_pesanan'] ?? null,
             'status_bayar' => $data['status_bayar'] ?? 'belum_lunas',
-            'total_bayar' => $data['total_bayar'] ?? 0,
+            'total_bayar' => $totalBayar,
+            'ongkir' => $ongkir,
         ]);
 
         // Tambahkan detail pesanan (produk-produk)
@@ -187,6 +206,18 @@ class PesananSyncService
             if (isset($data['total_bayar'])) {
                 $updateData['total_bayar'] = $data['total_bayar'];
             }
+            if (isset($data['ongkir'])) {
+                $updateData['ongkir'] = $data['ongkir'];
+            }
+            if (isset($data['id_kecamatan'])) {
+                $updateData['id_kecamatan'] = $data['id_kecamatan'];
+                if (isset($data['metode_pengambilan']) && $data['metode_pengambilan'] === 'delivery') {
+                    $kecamatan = \App\Models\Kecamatan::find($data['id_kecamatan']);
+                    if ($kecamatan) {
+                        $updateData['ongkir'] = (float) $kecamatan->ongkir;
+                    }
+                }
+            }
             if (isset($data['status_bayar'])) {
                 $updateData['status_bayar'] = $data['status_bayar'];
             }
@@ -212,8 +243,14 @@ class PesananSyncService
             if (isset($data['alamat_delivery'])) {
                 $updateData['alamat_delivery'] = $data['alamat_delivery'];
             }
+            if (isset($data['alamat_detail'])) {
+                $updateData['alamat_detail'] = $data['alamat_detail'];
+            }
             if (isset($data['tgl_delivery'])) {
                 $updateData['tgl_delivery'] = $data['tgl_delivery'];
+            }
+            if (isset($data['tgl_pickup'])) {
+                $updateData['tgl_pickup'] = $data['tgl_pickup'];
             }
             if (isset($data['tgl_verifikasi'])) {
                 $updateData['tgl_verifikasi'] = $data['tgl_verifikasi'];

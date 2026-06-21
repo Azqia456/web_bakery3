@@ -169,11 +169,16 @@
                     alert('Keranjang masih kosong!');
                     return;
                 }
+                const lowQtyItem = cart.find(item => (item.quantity || 1) < 100);
+                if (lowQtyItem) {
+                    showNotification('Minimal pembelian 100 unit per produk. "' + lowQtyItem.nama_produk + '" hanya ' + (lowQtyItem.quantity || 1) + ' unit.', 'error');
+                    return;
+                }
                 cartModal.classList.remove('show');
                 setTimeout(() => {
                     document.getElementById('paymentModal').classList.add('show');
                     updatePaymentTotal();
-                    resetMetodePengambilan();
+                    resetMetodePengambilanGlobal();
                 }, 300);
             });
         }
@@ -244,9 +249,11 @@
             }).join('');
 
             const subtotal = cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0);
+            const shipping = typeof selectedOngkir !== 'undefined' ? selectedOngkir : 0;
+            const total = subtotal + shipping;
             document.getElementById('subtotal').textContent = `Rp ${parseInt(subtotal).toLocaleString('id-ID')}`;
-            document.getElementById('shipping').textContent = 'Rp 0';
-            document.getElementById('total').textContent = `Rp ${parseInt(subtotal).toLocaleString('id-ID')}`;
+            document.getElementById('shipping').textContent = `Rp ${parseInt(shipping).toLocaleString('id-ID')}`;
+            document.getElementById('total').textContent = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
         }
 
         function updateCartBadge() {
@@ -259,46 +266,36 @@
             localStorage.setItem('bakery_cart', JSON.stringify(cart));
         }
 
-        function toggleMetodePengambilan() {
-            const metode = document.querySelector('input[name="metode_pengambilan"]:checked');
-            const deliveryFields = document.getElementById('deliveryFields');
-            const alamatInput = document.getElementById('alamatDeliveryInput');
-            if (deliveryFields) {
-                const isDelivery = metode && metode.value === 'delivery';
-                deliveryFields.style.display = isDelivery ? 'block' : 'none';
-                if (isDelivery && alamatInput && !alamatInput.value.trim()) {
-                    alamatInput.value = deliveryFields.dataset.alamat || '';
-                }
-            }
-        }
+
 
         function resetMetodePengambilan() {
-            const pickupRadio = document.querySelector('input[name="metode_pengambilan"][value="pickup"]');
-            if (pickupRadio) pickupRadio.checked = true;
-            toggleMetodePengambilan();
+            resetMetodePengambilanGlobal();
         }
 
         function updatePaymentTotal() {
-            const total = cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.harga_produk * item.quantity), 0);
+            const shipping = typeof selectedOngkir !== 'undefined' ? selectedOngkir : 0;
+            const total = subtotal + shipping;
             const formattedTotal = `Rp ${parseInt(total).toLocaleString('id-ID')}`;
+            const formattedSubtotal = `Rp ${parseInt(subtotal).toLocaleString('id-ID')}`;
             document.getElementById('paymentTotal').textContent = formattedTotal;
-            document.getElementById('paymentSubtotal').textContent = formattedTotal;
-            document.getElementById('nominalTransferInput').value = Math.max(0, Math.round(total));
+            document.getElementById('paymentSubtotal').textContent = formattedSubtotal;
+            const ongkirRow = document.getElementById('paymentOngkirRow');
+            const ongkirAmount = document.getElementById('paymentOngkirAmount');
+            if (ongkirRow && ongkirAmount) {
+                if (shipping > 0) {
+                    ongkirRow.style.display = 'flex';
+                    ongkirAmount.textContent = `Rp ${parseInt(shipping).toLocaleString('id-ID')}`;
+                } else {
+                    ongkirRow.style.display = 'none';
+                }
+            }
 
             const orderDate = new Date();
             const datePart = orderDate.toISOString().slice(0, 10);
             const orderSuffix = String(Math.floor(Math.random() * 9000) + 1000);
             const orderReference = `#TRX-${datePart}-${orderSuffix}`;
             document.getElementById('paymentOrderId').textContent = orderReference;
-            document.getElementById('paymentOrderReferenceInput').value = orderReference;
-
-            const paymentItemsInput = document.getElementById('paymentItemsInput');
-            paymentItemsInput.value = JSON.stringify(cart.map(item => ({
-                id_produk: item.id_produk,
-                nama_produk: item.nama_produk,
-                harga_produk: Number(item.harga_produk),
-                quantity: Number(item.quantity || 1),
-            })));
 
             const paymentOrderItems = document.getElementById('paymentOrderItems');
             if (!paymentOrderItems) return;
@@ -325,58 +322,76 @@
             }).join('');
         }
 
-        async function submitPayment() {
+        async function submitXenditPayment() {
+            const lowQtyItem = cart.find(item => (item.quantity || 1) < 100);
+            if (lowQtyItem) {
+                showNotification('Minimal pembelian 100 unit per produk. "' + lowQtyItem.nama_produk + '" hanya ' + (lowQtyItem.quantity || 1) + ' unit.', 'error');
+                return;
+            }
+            const metodePengambilan = document.querySelector('input[name="metode_pengambilan"]:checked');
+            const metode = metodePengambilan ? metodePengambilan.value : 'pickup';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const minDate = new Date(today);
+            minDate.setDate(today.getDate() + 2);
+            const minDateStr = minDate.toISOString().slice(0, 10);
+            const tglPickup = document.getElementById('tglPickupInput')?.value || '';
+            const tglDelivery = document.getElementById('tglDeliveryInput')?.value || '';
+            const tglValue = metode === 'pickup' ? tglPickup : tglDelivery;
+            if (!tglValue) {
+                showNotification('Silakan pilih tanggal ' + (metode === 'pickup' ? 'pickup' : 'delivery') + '.', 'error');
+                return;
+            }
+            if (tglValue < minDateStr) {
+                showNotification('Tanggal ' + (metode === 'pickup' ? 'pickup' : 'delivery') + ' minimal ' + minDate.toLocaleDateString('id-ID') + '.', 'error');
+                return;
+            }
             try {
-                const form = document.getElementById('paymentForm');
-                const formData = new FormData(form);
-                formData.set('items', JSON.stringify(cart.map(item => ({
-                    id_produk: item.id_produk,
-                    nama_produk: item.nama_produk,
-                    harga_produk: Number(item.harga_produk),
-                    quantity: Number(item.quantity || 1),
-                }))));
+                const idKecamatan = document.getElementById('kecamatanSelect')?.value || '';
+                const alamatDetail = document.getElementById('alamatDetailInput')?.value || '';
+                const tglDelivery = document.getElementById('tglDeliveryInput')?.value || '';
+                const tglPickup = document.getElementById('tglPickupInput')?.value || '';
+                const alamatDelivery = generateAlamatDelivery();
 
-                const response = await fetch(form.dataset.paymentEndpoint || '/pelanggan/pembayaran/konfirmasi', {
+                const payload = {
+                    items: JSON.stringify(cart.map(item => ({
+                        id_produk: item.id_produk,
+                        nama_produk: item.nama_produk,
+                        harga_produk: Number(item.harga_produk),
+                        quantity: Number(item.quantity || 1),
+                    }))),
+                    metode_pengambilan: metode,
+                    id_kecamatan: idKecamatan || '',
+                    alamat_detail: alamatDetail,
+                    alamat_delivery: alamatDelivery,
+                    tgl_delivery: tglDelivery,
+                    tgl_pickup: tglPickup,
+                };
+
+                const response = await fetch('/api/xendit/invoice', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
-                    body: formData,
+                    body: JSON.stringify(payload),
                 });
 
-                const contentType = response.headers.get('content-type') || '';
-                const result = contentType.includes('application/json')
-                    ? await response.json()
-                    : { message: await response.text() };
+                const result = await response.json();
 
-                if (!response.ok) throw new Error(result.message || 'Gagal mengirim bukti pembayaran');
-                finalizeManualPayment(result.message || 'Bukti pembayaran berhasil dikirim.', 'success');
+                if (!response.ok) {
+                    throw new Error(result.message || 'Gagal membuat pembayaran');
+                }
+
+                if (result.success && result.data.invoice_url) {
+                    window.location.href = result.data.invoice_url;
+                } else {
+                    throw new Error('URL pembayaran tidak ditemukan');
+                }
             } catch (error) {
-                finalizeManualPayment(error.message, 'error');
+                showNotification('Gagal memproses pembayaran: ' + error.message, 'error');
             }
-        }
-
-        function finalizeManualPayment(message, type) {
-            showNotification(message, type);
-            if (type === 'success') {
-                cart = [];
-                saveCart();
-                updateCartBadge();
-                renderCart();
-            }
-            document.getElementById('paymentModal').classList.remove('show');
-            resetForm();
-        }
-
-        function resetForm() {
-            const form = document.getElementById('paymentForm');
-            if (form) form.reset();
-            document.getElementById('paymentConfirmCheckbox').checked = false;
-            const proofDropzone = document.getElementById('proofDropzone');
-            const proofFileLabel = document.getElementById('proofFileLabel');
-            if (proofDropzone) proofDropzone.classList.remove('has-file');
-            if (proofFileLabel) proofFileLabel.textContent = 'Pilih File';
         }
 
         function initializePaymentModal() {
@@ -384,10 +399,6 @@
             const paymentModalClose = document.getElementById('paymentModalClose');
             const backToCartBtn = document.getElementById('backToCartBtn');
             const submitPaymentBtn = document.getElementById('submitPaymentBtn');
-            const proofInput = document.getElementById('buktiTransferInput');
-            const proofDropzone = document.getElementById('proofDropzone');
-            const proofFileLabel = document.getElementById('proofFileLabel');
-            const paymentConfirmCheckbox = document.getElementById('paymentConfirmCheckbox');
 
             paymentModalClose.addEventListener('click', () => paymentModal.classList.remove('show'));
             backToCartBtn.addEventListener('click', () => {
@@ -396,38 +407,14 @@
             });
             paymentModal.addEventListener('click', (e) => { if (e.target === paymentModal) paymentModal.classList.remove('show'); });
 
-            if (proofInput && proofFileLabel && proofDropzone) {
-                const updateProofLabel = () => {
-                    const selectedFile = proofInput.files && proofInput.files[0];
-                    proofFileLabel.textContent = selectedFile ? selectedFile.name : 'Pilih File';
-                    proofDropzone.classList.toggle('has-file', !!selectedFile);
-                };
-                proofInput.addEventListener('change', updateProofLabel);
-                updateProofLabel();
+            const xenditBtn = document.getElementById('payWithXenditBtn');
+            if (xenditBtn) {
+                xenditBtn.addEventListener('click', () => {
+                    submitXenditPayment();
+                });
             }
 
-            submitPaymentBtn.addEventListener('click', () => {
-                if (!proofInput || !proofInput.files || !proofInput.files[0]) {
-                    showNotification('Bukti pembayaran wajib diunggah.', 'error');
-                    return;
-                }
-                const proofFile = proofInput.files[0];
-                const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-                const maxSize = 2 * 1024 * 1024;
-                if (!allowedTypes.includes(proofFile.type)) {
-                    showNotification('Format bukti harus JPG, PNG, atau PDF.', 'error');
-                    return;
-                }
-                if (proofFile.size > maxSize) {
-                    showNotification('Ukuran bukti maksimal 2 MB.', 'error');
-                    return;
-                }
-                if (paymentConfirmCheckbox && !paymentConfirmCheckbox.checked) {
-                    showNotification('Silakan centang konfirmasi pembayaran.', 'error');
-                    return;
-                }
-                submitPayment();
-            });
+            if (submitPaymentBtn) submitPaymentBtn.style.display = 'none';
         }
 
         function showNotification(message, type = 'info') {

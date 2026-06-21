@@ -2230,122 +2230,89 @@
                     </div>
                     <div>
                         <h2>Konfirmasi Pembayaran</h2>
-                        <p>Silakan transfer lalu unggah bukti pembayaran agar pesanan diproses.</p>
+                        <p>Selesaikan pesanan Anda dengan pembayaran online.</p>
                     </div>
-                </div>
-                <div class="payment-security-note">
-                    <i class="fas fa-shield-alt"></i>
-                    Verifikasi manual toko
                 </div>
                 <button class="modal-close" id="paymentModalClose" aria-label="Tutup modal">&times;</button>
             </div>
 
             <div class="payment-modal-grid">
                 <div class="payment-panel methods">
-                    <div class="payment-panel-title">Informasi Pembayaran</div>
-                    <p class="payment-note">Bayar melalui rekening di bawah ini, lalu kirim bukti transfer untuk diverifikasi oleh tim kami.</p>
-
-                    <div class="bank-card">
-                        <div class="bank-card-header">
-                            <div class="bank-card-icon"><i class="fas fa-landmark"></i></div>
-                            <div class="bank-card-copy">
-                                <strong>BCA</strong>
-                                <span>Rekening tujuan Three D Bakery</span>
-                            </div>
+                    <div class="payment-panel-title">Bayar</div>
+                    <p class="payment-note">Pilih metode pembayaran favorit Anda: QRIS, Virtual Account, Indomaret, Alfamart, dan lainnya.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0;">
+                        <div style="background: #f8f9fa; border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; border: 1px solid var(--medium-gray);">
+                            <i class="fas fa-qrcode" style="font-size: 20px; color: var(--primary-brown);"></i>
+                            <span>QRIS</span>
                         </div>
-                        <div class="bank-card-number">1234 5678 90</div>
-                        <div class="bank-card-owner">a.n. Three D Bakery</div>
-                    </div>
-
-                    <div class="bank-card-list">
-                        <div class="bank-mini-card">
-                            <i class="fas fa-circle-info"></i>
-                            <div>
-                                <strong>Wajib sesuai nominal</strong>
-                                <span>Transfer harus sama dengan total tagihan agar cepat diverifikasi.</span>
-                            </div>
+                        <div style="background: #f8f9fa; border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; border: 1px solid var(--medium-gray);">
+                            <i class="fas fa-university" style="font-size: 20px; color: var(--primary-brown);"></i>
+                            <span>Virtual Account</span>
                         </div>
-                        <div class="bank-mini-card">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <strong>Verifikasi manual</strong>
-                                <span>Bukti pembayaran akan dicek oleh admin pada jam operasional.</span>
-                            </div>
+                        <div style="background: #f8f9fa; border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; border: 1px solid var(--medium-gray);">
+                            <i class="fas fa-store" style="font-size: 20px; color: var(--primary-brown);"></i>
+                            <span>Indomaret / Alfamart</span>
                         </div>
                     </div>
+                    <p style="font-size: 13px; color: var(--dark-gray); margin-bottom: 20px;">
+                        <i class="fas fa-bolt"></i> Pembayaran diproses secara otomatis. Pesanan langsung diproses setelah pembayaran berhasil.
+                    </p>
 
-                    <form class="payment-form" id="paymentForm" enctype="multipart/form-data" data-payment-endpoint="{{ route('pelanggan.pembayaran.konfirmasi') }}">
-                        <input type="hidden" name="items" id="paymentItemsInput">
-                        <input type="hidden" name="order_reference" id="paymentOrderReferenceInput">
-
-                        <label class="upload-dropzone" id="proofDropzone" for="buktiTransferInput">
-                            <input type="file" name="bukti_transfer" id="buktiTransferInput" accept=".jpg,.jpeg,.png,.pdf" required>
-                            <div class="upload-dropzone-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                            <div class="upload-dropzone-copy">
-                                <strong id="proofFileLabel">Pilih File</strong>
-                                <span>JPG, PNG, atau PDF. Maksimal 2 MB.</span>
-                            </div>
-                        </label>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Nama Pengirim</label>
-                                <input class="form-input" type="text" name="nama_pengirim" id="namaPengirimInput" placeholder="Masukkan nama pengirim">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Bank / E-Wallet Pengirim</label>
-                                <input class="form-input" type="text" name="bank_pengirim" id="bankPengirimInput" placeholder="Contoh: BCA, Mandiri, ShopeePay">
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label">Metode Pengambilan</label>
+                        <div style="display: flex; gap: 16px; margin-top: 4px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metode_pengambilan" value="pickup" onchange="toggleMetodePengambilan()" checked>
+                                Pickup
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
+                                <input type="radio" name="metode_pengambilan" value="delivery" onchange="toggleMetodePengambilan()">
+                                Delivery
+                            </label>
                         </div>
+                    </div>
 
+                    <div id="pickupFields" style="display: block;">
                         <div class="form-group">
-                            <label class="form-label">Metode Pengambilan</label>
-                            <div style="display: flex; gap: 16px; margin-top: 4px;">
-                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
-                                    <input type="radio" name="metode_pengambilan" value="pickup" onchange="toggleMetodePengambilan()" checked>
-                                    Pickup
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 8px; font-weight: 400; cursor: pointer;">
-                                    <input type="radio" name="metode_pengambilan" value="delivery" onchange="toggleMetodePengambilan()">
-                                    Delivery
-                                </label>
-                            </div>
+                            <label class="form-label">Tanggal Pickup</label>
+                            <input class="form-input" type="date" id="tglPickupInput">
                         </div>
+                    </div>
 
-                        <div id="deliveryFields" style="display: none;" data-alamat="{{ auth()->user()->pelanggan->alamat ?? '' }}">
-                            <div class="form-group">
-                                <label class="form-label">Alamat Delivery</label>
-                                <input class="form-input" type="text" name="alamat_delivery" id="alamatDeliveryInput" placeholder="Masukkan alamat lengkap pengiriman">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Tanggal Delivery</label>
-                                <input class="form-input" type="date" name="tgl_delivery" id="tglDeliveryInput">
-                            </div>
+                    <div id="deliveryFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Kabupaten / Kota</label>
+                            <select class="form-input" id="kabupatenSelect" onchange="loadKecamatan()">
+                                <option value="">Pilih Kabupaten / Kota</option>
+                            </select>
                         </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Nominal Transfer</label>
-                                <input class="form-input" type="number" name="nominal_transfer" id="nominalTransferInput" min="0" readonly>
-                                <div class="payment-summary-note">Sesuai total tagihan yang tampil di ringkasan.</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Catatan (Opsional)</label>
-                                <input class="form-input" type="text" name="catatan_pembayaran" id="catatanPembayaranInput" placeholder="Contoh: transfer pagi, atas nama saya">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Kecamatan</label>
+                            <select class="form-input" id="kecamatanSelect" onchange="updateOngkir()">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
                         </div>
+                        <div id="ongkirDisplay" style="font-size: 13px; color: var(--primary-brown); font-weight: 600; margin-bottom: 10px; display: none;">
+                            Ongkir: <span id="ongkirAmount">Rp 0</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alamat Detail (Jalan, No. Rumah, RT/RW)</label>
+                            <input class="form-input" type="text" id="alamatDetailInput" placeholder="Contoh: Jl. Merdeka No. 123, RT 01 RW 02">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tanggal Delivery</label>
+                            <input class="form-input" type="date" id="tglDeliveryInput">
+                        </div>
+                    </div>
 
-                        <label class="payment-check">
-                            <input type="checkbox" id="paymentConfirmCheckbox">
-                            <span>Saya telah melakukan transfer sesuai total tagihan dan mengunggah bukti pembayaran yang valid.</span>
-                        </label>
-                    </form>
+                    <button class="btn btn-primary" id="payWithXenditBtn" type="button" style="width: 100%; margin-top: 20px; padding: 14px; font-size: 16px;">
+                        <i class="fas fa-credit-card"></i> Bayar
+                    </button>
                 </div>
 
                 <div class="payment-panel summary">
                     <div class="payment-summary-card">
                         <h3>Ringkasan Pesanan</h3>
-                        <div class="payment-status-pill"><i class="fas fa-hourglass-half"></i> Menunggu verifikasi</div>
                         <div class="payment-summary-row">
                             <span>Order ID</span>
                             <strong id="paymentOrderId">#TRX-0000</strong>
@@ -2353,6 +2320,10 @@
                         <div class="payment-summary-row">
                             <span>Total Belanja</span>
                             <strong id="paymentSubtotal">Rp 0</strong>
+                        </div>
+                        <div class="payment-summary-row" id="paymentOngkirRow" style="display: none;">
+                            <span>Ongkir</span>
+                            <strong id="paymentOngkirAmount">Rp 0</strong>
                         </div>
                         <div class="payment-summary-total">
                             <span>Total Pembayaran</span>
@@ -2369,17 +2340,17 @@
 
                     <div class="payment-assurance-card">
                         <h3>Keamanan & Verifikasi</h3>
-                        <p>Bukti pembayaran disimpan dengan aman dan hanya digunakan untuk pengecekan manual oleh admin toko.</p>
+                        <p>Data pembayaran Anda aman dan diproses oleh <strong>Xendit</strong> sebagai penyedia layanan pembayaran terpercaya.</p>
                         <div class="payment-trust-row">
                             <div class="trust-chip"><i class="fas fa-shield-alt"></i>Data Aman</div>
                             <div class="trust-chip"><i class="fas fa-bolt"></i>Respon Cepat</div>
-                            <div class="trust-chip"><i class="fas fa-user-check"></i>Verifikasi Manual</div>
+                            <div class="trust-chip"><i class="fas fa-user-check"></i>Verifikasi Otomatis</div>
                         </div>
                     </div>
 
                     <div class="payment-help-card">
                         <h3>Butuh bantuan?</h3>
-                        <p>Hubungi kami di 0822-xxxx-xxxx atau email <a href="mailto:support@threedbakery.com">support@threedbakery.com</a> jika bukti transfer bermasalah.</p>
+                        <p>Hubungi kami di 0822-xxxx-xxxx atau email <a href="mailto:support@threedbakery.com">support@threedbakery.com</a> jika mengalami kendala pembayaran.</p>
                     </div>
                 </div>
             </div>
@@ -2387,9 +2358,6 @@
             <div class="payment-modal-footer">
                 <button class="btn btn-secondary" id="backToCartBtn">
                     <i class="fas fa-arrow-left"></i> Kembali Belanja
-                </button>
-                <button class="btn btn-primary" id="submitPaymentBtn" type="button">
-                    <i class="fas fa-paper-plane"></i> Kirim Bukti Pembayaran
                 </button>
             </div>
         </div>
@@ -2410,6 +2378,146 @@
                     profileDropdown.classList.remove('show');
                 }
             });
+        }
+
+        // Ongkir helpers
+        let selectedOngkir = 0;
+
+        async function loadKabupaten() {
+            const select = document.getElementById('kabupatenSelect');
+            if (!select) return;
+            try {
+                const res = await fetch('/api/kabupaten');
+                const data = await res.json();
+                select.innerHTML = '<option value="">Pilih Kabupaten / Kota</option>';
+                data.forEach(k => {
+                    select.innerHTML += `<option value="${k.id_kabupaten}">${k.nama_kabupaten}</option>`;
+                });
+            } catch (e) {
+                console.error('Gagal load kabupaten', e);
+            }
+        }
+
+        async function loadKecamatan() {
+            const kabSelect = document.getElementById('kabupatenSelect');
+            const kecSelect = document.getElementById('kecamatanSelect');
+            const ongkirDisplay = document.getElementById('ongkirDisplay');
+            if (!kabSelect || !kecSelect) return;
+            const idKab = kabSelect.value;
+            kecSelect.innerHTML = '<option value="">Pilih Kecamatan</option>';
+            if (ongkirDisplay) ongkirDisplay.style.display = 'none';
+            selectedOngkir = 0;
+            if (!idKab) return;
+            try {
+                const res = await fetch(`/api/kecamatan?id_kabupaten=${idKab}`);
+                const data = await res.json();
+                data.forEach(k => {
+                    kecSelect.innerHTML += `<option value="${k.id_kecamatan}" data-ongkir="${k.ongkir}">${k.nama_kecamatan}</option>`;
+                });
+            } catch (e) {
+                console.error('Gagal load kecamatan', e);
+            }
+        }
+
+        async function updateOngkir() {
+            const kecSelect = document.getElementById('kecamatanSelect');
+            const ongkirDisplay = document.getElementById('ongkirDisplay');
+            const ongkirAmount = document.getElementById('ongkirAmount');
+            const selected = kecSelect.options[kecSelect.selectedIndex];
+            if (!selected || !selected.value) {
+                if (ongkirDisplay) ongkirDisplay.style.display = 'none';
+                selectedOngkir = 0;
+                updateCartOngkir(0);
+                updatePaymentModalTotal(0);
+                return;
+            }
+            const ongkir = parseFloat(selected.dataset.ongkir || 0);
+            selectedOngkir = ongkir;
+            if (ongkirAmount) ongkirAmount.textContent = `Rp ${parseInt(ongkir).toLocaleString('id-ID')}`;
+            if (ongkirDisplay) ongkirDisplay.style.display = 'block';
+            updateCartOngkir(ongkir);
+            updatePaymentModalTotal(ongkir);
+        }
+
+        function updatePaymentModalTotal(ongkir) {
+            const paymentTotal = document.getElementById('paymentTotal');
+            const paymentSubtotal = document.getElementById('paymentSubtotal');
+            const ongkirRow = document.getElementById('paymentOngkirRow');
+            const ongkirAmount = document.getElementById('paymentOngkirAmount');
+            if (!paymentTotal || !paymentSubtotal) return;
+            // Get subtotal from paymentSubtotal text
+            const rawSubtotal = paymentSubtotal.textContent.replace(/[^\d]/g, '');
+            const subtotal = parseInt(rawSubtotal) || 0;
+            if (ongkir > 0) {
+                if (ongkirRow) ongkirRow.style.display = 'flex';
+                if (ongkirAmount) ongkirAmount.textContent = `Rp ${parseInt(ongkir).toLocaleString('id-ID')}`;
+                paymentTotal.textContent = `Rp ${parseInt(subtotal + ongkir).toLocaleString('id-ID')}`;
+            } else {
+                if (ongkirRow) ongkirRow.style.display = 'none';
+                paymentTotal.textContent = paymentSubtotal.textContent;
+            }
+        }
+
+        function updateCartOngkir(ongkir) {
+            const shippingEl = document.getElementById('shipping');
+            const totalEl = document.getElementById('total');
+            const subtotalEl = document.getElementById('subtotal');
+            if (!shippingEl || !totalEl || !subtotalEl) return;
+            const subtotal = typeof cart !== 'undefined' && Array.isArray(cart)
+                ? cart.reduce((sum, item) => sum + (item.harga_produk * (item.quantity || 1)), 0)
+                : 0;
+            shippingEl.textContent = `Rp ${parseInt(ongkir).toLocaleString('id-ID')}`;
+            totalEl.textContent = `Rp ${parseInt(subtotal + ongkir).toLocaleString('id-ID')}`;
+        }
+
+        function toggleMetodePengambilan() {
+            const metode = document.querySelector('input[name="metode_pengambilan"]:checked');
+            const pickupFields = document.getElementById('pickupFields');
+            const deliveryFields = document.getElementById('deliveryFields');
+            const isDelivery = metode && metode.value === 'delivery';
+
+            if (pickupFields) pickupFields.style.display = isDelivery ? 'none' : 'block';
+            if (deliveryFields) {
+                deliveryFields.style.display = isDelivery ? 'block' : 'none';
+                if (isDelivery) loadKabupaten();
+            }
+            if (!isDelivery) {
+                selectedOngkir = 0;
+                updateCartOngkir(0);
+                updatePaymentModalTotal(0);
+            }
+        }
+
+        function setMinDates() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const minDate = new Date(today);
+            minDate.setDate(today.getDate() + 2);
+            const minDateStr = minDate.toISOString().slice(0, 10);
+            const pickupInput = document.getElementById('tglPickupInput');
+            const deliveryInput = document.getElementById('tglDeliveryInput');
+            if (pickupInput) pickupInput.setAttribute('min', minDateStr);
+            if (deliveryInput) deliveryInput.setAttribute('min', minDateStr);
+        }
+
+        function resetMetodePengambilanGlobal() {
+            const pickupRadio = document.querySelector('input[name="metode_pengambilan"][value="pickup"]');
+            if (pickupRadio) pickupRadio.checked = true;
+            document.getElementById('pickupFields').style.display = 'block';
+            document.getElementById('deliveryFields').style.display = 'none';
+            selectedOngkir = 0;
+            updateCartOngkir(0);
+            setMinDates();
+        }
+
+        function generateAlamatDelivery() {
+            const kecSelect = document.getElementById('kecamatanSelect');
+            const alamatDetail = document.getElementById('alamatDetailInput');
+            if (!kecSelect || !alamatDetail) return '';
+            const selected = kecSelect.options[kecSelect.selectedIndex];
+            const namaKecamatan = selected ? selected.text : '';
+            const detail = alamatDetail.value.trim();
+            return [detail, namaKecamatan].filter(Boolean).join(', ');
         }
 
         @stack('scripts')

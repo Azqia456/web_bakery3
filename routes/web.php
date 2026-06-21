@@ -93,6 +93,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verify-otp', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'verifyOtp'])->name('email.verify-otp');
 });
 
+// Xendit Callback (no auth)
+Route::post('/api/xendit/callback', [App\Http\Controllers\XenditController::class, 'callback']);
+
 // Protected Routes
 Route::middleware('auth')->group(function () {
 
@@ -147,6 +150,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'show'])->name('karyawans.show');
     Route::put('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'update'])->name('karyawans.update');
     Route::delete('/api/karyawans/{id_karyawan}', [KaryawanController::class, 'destroy'])->name('karyawans.destroy');
+
+    // ONGKIR API
+    Route::get('/api/kabupaten', [App\Http\Controllers\OngkirController::class, 'kabupaten']);
+    Route::get('/api/kecamatan', [App\Http\Controllers\OngkirController::class, 'kecamatan']);
+    Route::post('/api/ongkir/cek', [App\Http\Controllers\OngkirController::class, 'cekOngkir']);
+
+    // XENDIT
+    Route::post('/api/xendit/invoice', [App\Http\Controllers\XenditController::class, 'createInvoice']);
+    Route::get('/xendit/success', [App\Http\Controllers\XenditController::class, 'success'])->name('xendit.success');
+    Route::get('/xendit/failed', [App\Http\Controllers\XenditController::class, 'failed'])->name('xendit.failed');
+    Route::get('/xendit/pending', [App\Http\Controllers\XenditController::class, 'pending'])->name('xendit.pending');
 
     // PRODUK
     Route::get('/produk', [DashboardController::class, 'produk'])->name('produk');

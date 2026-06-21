@@ -840,9 +840,10 @@
                     <th>Pelanggan</th>
                     <th>Produk</th>
                     <th>Total</th>
+                    <th>Ongkir</th>
+                    <th>Tgl Ambil/Delivery</th>
                     <th>Pembayaran</th>
                     <th>Status</th>
-                    <th>Bukti Transfer</th>
                     <th>Waktu</th>
                     <th>Aksi</th>
                 </tr>
@@ -866,6 +867,18 @@
                     </td>
                     <td>
                         <strong>Rp {{ number_format($pesanan->total_bayar, 0, ',', '.') }}</strong>
+                    </td>
+                    <td>
+                        <span class="ongkir-badge">Rp {{ number_format($pesanan->ongkir ?? 0, 0, ',', '.') }}</span>
+                    </td>
+                    <td>
+                        @if($pesanan->metode_pengambilan === 'pickup' && $pesanan->tgl_pickup)
+                            <span style="font-size: 12px;">{{ \Carbon\Carbon::parse($pesanan->tgl_pickup)->format('d/m/Y') }}<br><small style="color: var(--dark-gray);">Pickup</small></span>
+                        @elseif($pesanan->metode_pengambilan === 'delivery' && $pesanan->tgl_delivery)
+                            <span style="font-size: 12px;">{{ \Carbon\Carbon::parse($pesanan->tgl_delivery)->format('d/m/Y') }}<br><small style="color: var(--dark-gray);">Delivery</small></span>
+                        @else
+                            <span style="color: var(--dark-gray); font-size: 13px;">-</span>
+                        @endif
                     </td>
                     <td>
                         @if($pesanan->status_pesanan == 'selesai')
@@ -924,15 +937,6 @@
                         @endif
                     </td>
                     <td>
-                        @if($pesanan->bukti_transfer)
-                            <button class="btn-action btn-action-primary" onclick="showBuktiTransfer('{{ asset('storage/' . $pesanan->bukti_transfer) }}')">
-                                <i class="fas fa-image"></i> Lihat
-                            </button>
-                        @else
-                            <span style="color: var(--dark-gray); font-size: 13px;">-</span>
-                        @endif
-                    </td>
-                    <td>
                         <div class="time-info">
                             <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('d/m/Y') }}</div>
                             <div class="time-hour">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('H:i') }} WIB</div>
@@ -949,7 +953,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="10">
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <p>Belum ada pesanan online</p>
@@ -1019,21 +1023,6 @@
     </div>
 </div>
 
-<!-- Bukti Transfer Modal -->
-<div id="buktiTransferModal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 500px; text-align: center;">
-        <div class="modal-header">
-            <h3 class="modal-title">Bukti Transfer</h3>
-            <button class="modal-close" onclick="closeBuktiTransferModal()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <img id="buktiTransferImage" src="" alt="Bukti Transfer" style="max-width: 100%; border-radius: 8px;" />
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeBuktiTransferModal()">Tutup</button>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('additional-scripts')
@@ -1058,8 +1047,16 @@
                             <div class="detail-value">${data.pelanggan?.no_tlp || '-'}</div>
                         </div>
                         <div class="detail-row">
-                            <div class="detail-label">Total</div>
-                            <div class="detail-value">Rp ${parseInt(data.total_bayar).toLocaleString('id-ID')}</div>
+                            <div class="detail-label">Total Belanja</div>
+                            <div class="detail-value">Rp ${parseInt((data.total_bayar || 0) - (data.ongkir || 0)).toLocaleString('id-ID')}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Ongkir</div>
+                            <div class="detail-value">Rp ${parseInt(data.ongkir || 0).toLocaleString('id-ID')}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Total Pembayaran</div>
+                            <div class="detail-value"><strong>Rp ${parseInt(data.total_bayar).toLocaleString('id-ID')}</strong></div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Status Pembayaran</div>
@@ -1077,6 +1074,16 @@
                             <div class="detail-label">Metode Pengambilan</div>
                             <div class="detail-value">${data.metode_pengambilan || '-'}</div>
                         </div>
+                        ${data.metode_pengambilan === 'delivery' ? `
+                        <div class="detail-row">
+                            <div class="detail-label">Alamat Delivery</div>
+                            <div class="detail-value">${data.alamat_delivery || data.alamat_detail || '-'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Kecamatan</div>
+                            <div class="detail-value">${data.kecamatan ? data.kecamatan.nama_kecamatan : (data.id_kecamatan ? 'ID: ' + data.id_kecamatan : '-')}</div>
+                        </div>
+                        ` : ''}
                         <div class="detail-row">
                             <div class="detail-label">Metode Pembayaran</div>
                             <div class="detail-value">${data.metode_pembayaran || '-'}</div>
@@ -1142,19 +1149,6 @@
     // Close modal on outside click
     document.getElementById('detailModal').addEventListener('click', function(e) {
         if (e.target === this) closeDetailModal();
-    });
-
-    function showBuktiTransfer(url) {
-        document.getElementById('buktiTransferImage').src = url;
-        document.getElementById('buktiTransferModal').style.display = 'flex';
-    }
-
-    function closeBuktiTransferModal() {
-        document.getElementById('buktiTransferModal').style.display = 'none';
-    }
-
-    document.getElementById('buktiTransferModal').addEventListener('click', function(e) {
-        if (e.target === this) closeBuktiTransferModal();
     });
 
     const paymentOptions = [

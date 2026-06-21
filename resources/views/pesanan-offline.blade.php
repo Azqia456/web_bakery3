@@ -1229,10 +1229,24 @@
                     </div>
                 </div>
 
+                <!-- Ongkir Section -->
+                <div class="form-group">
+                    <label class="form-label">Ongkos Kirim</label>
+                    <input type="number" class="form-control" id="ongkirInput" value="0" min="0" oninput="updateTotal()">
+                </div>
+
                 <!-- Total Section -->
                 <div class="total-section">
-                    <span>Total Pesanan:</span>
-                    <span id="totalPesanan">Rp 0</span>
+                    <span>Subtotal:</span>
+                    <span id="subtotalPesanan">Rp 0</span>
+                </div>
+                <div class="total-section" id="totalOngkirDisplay" style="border-top: none; padding-top: 0;">
+                    <span>Ongkir:</span>
+                    <span id="ongkirDisplayText">Rp 0</span>
+                </div>
+                <div class="total-section" style="border-top: 2px solid var(--primary-brown); color: var(--primary-brown);">
+                    <span style="font-weight: 700;">Total Pesanan:</span>
+                    <span id="totalPesanan" style="font-weight: 700;">Rp 0</span>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1621,6 +1635,9 @@
             editingType = null;
             productCount = 0;
             document.getElementById('productList').innerHTML = '';
+            document.getElementById('ongkirInput').value = '0';
+            document.getElementById('subtotalPesanan').textContent = 'Rp 0';
+            document.getElementById('ongkirDisplayText').textContent = 'Rp 0';
             document.getElementById('totalPesanan').textContent = 'Rp 0';
             document.querySelector('input[name="tipePesanan"][value="karyawan"]').checked = true;
             document.querySelector('input[name="metodeMetode"][value="pickup"]').checked = true;
@@ -1834,7 +1851,7 @@
                 </div>
                 <div class="product-item-controls" style="flex: 0.5;">
                     <label>Jumlah</label>
-                    <input type="number" min="1" value="1" class="form-control" onchange="updateTotal()">
+                    <input type="number" min="1" value="1" class="form-control" onchange="updateTotal()" oninput="updateTotal()">
                 </div>
                 <button type="button" class="btn-delete-product" onclick="deleteProductRow(${productCount})">Hapus</button>
             `;
@@ -1850,7 +1867,7 @@
         }
 
         function updateTotal() {
-            let total = 0;
+            let subtotal = 0;
             const products = document.querySelectorAll('.product-item');
             products.forEach(p => {
                 const select = p.querySelector('select');
@@ -1858,9 +1875,13 @@
                 if (select.value && input.value) {
                     const parts = select.value.split('|');
                     const price = parseInt(parts[1]);
-                    total += price * parseInt(input.value);
+                    subtotal += price * parseInt(input.value);
                 }
             });
+            const ongkir = parseInt(document.getElementById('ongkirInput')?.value || 0);
+            const total = subtotal + ongkir;
+            document.getElementById('subtotalPesanan').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+            document.getElementById('ongkirDisplayText').textContent = 'Rp ' + ongkir.toLocaleString('id-ID');
             document.getElementById('totalPesanan').textContent = 'Rp ' + total.toLocaleString('id-ID');
         }
 
@@ -1886,10 +1907,12 @@
                 }
             });
 
-            const totalAmount = produk.reduce((sum, p) => {
+            const subtotalAmount = produk.reduce((sum, p) => {
                 const item = masterProduk.find(mp => mp.id_produk == p.id_produk);
                 return sum + ((item ? item.harga_produk : 0) * p.jumlah_pesan);
             }, 0);
+            const ongkirValue = parseInt(document.getElementById('ongkirInput')?.value || 0);
+            const totalAmount = subtotalAmount + ongkirValue;
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
@@ -1897,6 +1920,7 @@
             if (editingId) {
                 let payload = {
                     total_bayar: totalAmount,
+                    ongkir: ongkirValue,
                     products: produk
                 };
 
@@ -1953,6 +1977,7 @@
                 tipe_pesanan: type,
                 tgl_pesan: new Date().toISOString().split('T')[0],
                 total_bayar: totalAmount,
+                ongkir: ongkirValue,
                 products: produk
             };
 

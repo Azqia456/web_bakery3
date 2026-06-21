@@ -621,14 +621,22 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="order-total">
-                                <span class="order-total-label">Total Pesanan</span>
+                            <div class="order-total" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="order-total-label">Total Pesanan</div>
+                                    @if($order->ongkir > 0)
+                                        <div style="font-size: 11px; color: var(--dark-gray);">Termasuk Ongkir Rp {{ number_format($order->ongkir, 0, ',', '.') }}</div>
+                                    @endif
+                                </div>
                                 <span class="order-total-value">Rp {{ number_format($order->total_bayar ?? 0, 0, ',', '.') }}</span>
                             </div>
-                            <div class="order-meta" style="margin-bottom: 12px; display: flex; gap: 12px; font-size: 12px; color: var(--dark-gray);">
+                            <div class="order-meta" style="margin-bottom: 12px; display: flex; gap: 12px; font-size: 12px; color: var(--dark-gray); flex-wrap: wrap;">
                                 <span><i class="fas {{ $order->metode_pengambilan === 'delivery' ? 'fa-truck' : 'fa-store' }}"></i> {{ $order->metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup' }}</span>
                                 @if($order->metode_pengambilan === 'delivery' && $order->alamat_delivery)
                                     <span><i class="fas fa-map-marker-alt"></i> {{ $order->alamat_delivery }}</span>
+                                @endif
+                                @if($order->metode_pengambilan === 'delivery' && $order->kecamatan)
+                                    <span><i class="fas fa-location-dot"></i> {{ optional($order->kecamatan)->nama_kecamatan ?? '-' }}@if($order->kecamatan->kabupaten), {{ $order->kecamatan->kabupaten->nama_kabupaten }}@endif</span>
                                 @endif
                             </div>
                             <div class="timeline-container">

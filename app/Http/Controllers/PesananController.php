@@ -32,7 +32,7 @@ class PesananController extends Controller
             );
         }
 
-        $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+        $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk', 'kecamatan.kabupaten'])
             ->where('id_pelanggan', $pelanggan->id_pelanggan);
 
         if ($request->filled('status') && $request->status !== 'all') {
@@ -51,7 +51,7 @@ class PesananController extends Controller
         if ($user && $user->role === 'pelanggan') {
             $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id_user)->first();
             if ($pelanggan) {
-                return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+                return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk', 'kecamatan.kabupaten'])
                     ->where('id_pelanggan', $pelanggan->id_pelanggan)
                     ->orderBy('created_at', 'desc')
                     ->get();
@@ -64,7 +64,7 @@ class PesananController extends Controller
 
     public function pelangganOrders()
     {
-        return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk'])
+        return Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans', 'detailPesanans.produk', 'kecamatan.kabupaten'])
             ->where('id_pelanggan', \App\Models\Pelanggan::where('id_user', Auth::user()->id_user)->first()->id_pelanggan)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -86,7 +86,7 @@ class PesananController extends Controller
 
     public function show($id_pesanan)
     {
-        $pesanan = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk', 'pembayarans'])
+        $pesanan = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk', 'pembayarans', 'kecamatan.kabupaten'])
             ->findOrFail($id_pesanan);
 
         return response()->json($pesanan);
@@ -119,6 +119,7 @@ class PesananController extends Controller
 
     public function offline(Request $request)
     {
+        // dd("masuk ke offline");
         // Query pesanan karyawan (offline, id_pelanggan null)
         $queryKaryawan = Pesanan::with(['karyawan', 'detailPesanans.produk'])
             ->where('sumber_pesanan', 'offline')
@@ -196,8 +197,10 @@ class PesananController extends Controller
                 'metode_pengambilan' => $p->metode_pengambilan ?? 'pickup',
                 'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
                 'total' => (float) $p->total_bayar,
+                'ongkir' => (float) $p->ongkir,
                 'total_item' => $p->detailPesanans->sum('jumlah_pesan'),
                 'alamat_delivery' => $p->alamat_delivery,
+                'alamat_detail' => $p->alamat_detail,
                 'tanggal_delivery' => $p->tgl_delivery ? $p->tgl_delivery->format('Y-m-d') : null,
                 'tanggal_pickup' => $p->tgl_pesan->format('Y-m-d'),
                 'bukti_transfer' => $p->bukti_transfer,
@@ -240,7 +243,7 @@ class PesananController extends Controller
     public function online(Request $request)
     {
         // dd("masuk ke sini");
-        $query = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
+        $query = Pesanan::with(['pelanggan', 'detailPesanans.produk', 'kecamatan.kabupaten'])
             ->where('sumber_pesanan', 'online');
 
         // Filter by date
@@ -320,6 +323,8 @@ class PesananController extends Controller
             'nominal_transfer' => 'nullable|numeric|min:0',
             'metode_pengambilan' => 'nullable|in:pickup,delivery',
             'alamat_delivery' => 'nullable|string|max:500',
+            'id_kecamatan' => 'nullable|integer|exists:kecamatans,id_kecamatan',
+            'alamat_detail' => 'nullable|string|max:500',
             'tgl_delivery' => 'nullable|date',
             'bukti_transfer' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'catatan_pembayaran' => 'nullable|string|max:1000',
@@ -372,7 +377,9 @@ class PesananController extends Controller
             'tgl_pesan' => now(),
             'sumber_pesanan' => 'online',
             'metode_pengambilan' => $validated['metode_pengambilan'] ?? 'pickup',
+            'id_kecamatan' => $validated['id_kecamatan'] ?? null,
             'alamat_delivery' => $validated['alamat_delivery'] ?? null,
+            'alamat_detail' => $validated['alamat_detail'] ?? null,
             'tgl_delivery' => $validated['tgl_delivery'] ?? null,
             'metode_pembayaran' => 'transfer',
             'status_pembayaran' => 'menunggu_verifikasi',

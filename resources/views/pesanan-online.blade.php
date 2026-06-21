@@ -852,7 +852,7 @@
                 <tr>
                     <td>
                         <span class="order-number">
-                            #ON-{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('dmY') }}-{{ str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT) }}
+                            #ON-{{ \Carbon\Carbon::parse($pesanan->created_at)->format('dmY') }}-{{ str_pad($pesanan->id_pesanan, 3, '0', STR_PAD_LEFT) }}
                         </span>
                     </td>
                     <td>
@@ -934,8 +934,8 @@
                     </td>
                     <td>
                         <div class="time-info">
-                            <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('d/m/Y') }}</div>
-                            <div class="time-hour">{{ \Carbon\Carbon::parse($pesanan->tgl_pesan)->format('H:i') }} WIB</div>
+                            <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('d/m/Y') }}</div>
+                            <div class="time-hour">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('H:i') }} WIB</div>
                         </div>
                     </td>
                     <td>
@@ -1047,7 +1047,7 @@
                     <div class="detail-section">
                         <div class="detail-row">
                             <div class="detail-label">No. Pesanan</div>
-                            <div class="detail-value">#ON-${data.tgl_pesan.substring(0,10).replace(/-/g,'')}-${String(data.id_pesanan).padStart(3,'0')}</div>
+                            <div class="detail-value">#ON-${data.created_at.substring(0,10).replace(/-/g,'')}-${String(data.id_pesanan).padStart(3,'0')}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Pelanggan</div>
@@ -1071,7 +1071,7 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Tanggal Pesan</div>
-                            <div class="detail-value">${new Date(data.tgl_pesan).toLocaleString('id-ID')}</div>
+                            <div class="detail-value">${new Date(data.created_at).toLocaleString('id-ID')}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Metode Pengambilan</div>

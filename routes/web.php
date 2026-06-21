@@ -15,6 +15,8 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PasswordResetController;
 use App\Models\Pesanan;
 use Carbon\Carbon;
+use OpenSpout\Writer\XLSX\Writer;
+use OpenSpout\Common\Entity\Row;
 
 Route::get('/', [WelcomeController::class, 'index']);
 
@@ -156,6 +158,7 @@ Route::middleware('auth')->group(function () {
     // LAPORAN
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
     Route::get('/laporan-penjualan', [DashboardController::class, 'laporanPenjualan'])->name('laporan-penjualan');
+    Route::get('/laporan-penjualan/export', [DashboardController::class, 'exportLaporanPenjualan'])->name('laporan-penjualan.export');
     Route::get('/laporan-pesanan-online', [DashboardController::class, 'laporanPesananOnline'])->name('laporan-pesanan-online');
     Route::get('/laporan-pesanan-online/export', function (Request $request) {
         $startDate = $request->input('start_date', now()->subDays(6)->format('Y-m-d'));
@@ -181,36 +184,30 @@ Route::middleware('auth')->group(function () {
                     default => $p->status_pesanan ?? '-',
                 };
                 return [
-                    '#ON-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                     $p->pelanggan->nama ?? '-',
+                    '#ON-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                     $produk,
                     (float) $p->total_bayar,
                     $p->created_at->format('Y-m-d H:i'),
                     'Lunas',
-                    'Pelanggan',
                     $statusLabel,
                 ];
             });
 
-        $filename = 'laporan-pesanan-online-' . date('Y-m-d') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+        $filename = 'laporan-pesanan-online-' . date('Y-m-d') . '.xlsx';
 
-        $callback = function () use ($pesananData) {
-            $output = fopen('php://output', 'w');
-            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            fputcsv($output, ['No. Pesanan', 'Nama', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Tipe Pesanan', 'Status']);
+        $writer = new \OpenSpout\Writer\XLSX\Writer();
+        $writer->openToBrowser($filename);
 
-            foreach ($pesananData as $row) {
-                fputcsv($output, $row);
-            }
+        $headerRow = \OpenSpout\Common\Entity\Row::fromValues(['Nama', 'No. Pesanan', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Status']);
+        $writer->addRow($headerRow);
 
-            fclose($output);
-        };
+        foreach ($pesananData as $row) {
+            $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues($row));
+        }
 
-        return response()->stream($callback, 200, $headers);
+        $writer->close();
+        exit;
     })->name('laporan-pesanan-online.export');
     // Route::get('/laporan-pesanan-offline', [DashboardController::class, 'laporanPesananOffline'])->name('laporan-pesanan-offline');
     Route::get('/laporan-pembayaran', function (Request $request) {
@@ -256,6 +253,61 @@ Route::middleware('auth')->group(function () {
             'pembayaranData', 'startDate', 'endDate'
         ));
     })->name('laporan-pembayaran');
+    Route::get('/laporan-pembayaran/export', function (Request $request) {
+        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->format('Y-m-d'));
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $lunasFilter = function ($query) {
+            $query->where(function ($q) {
+                $q->where('status_pembayaran', 'lunas')
+                  ->orWhere(function ($qk) {
+                      $qk->where('sumber_pesanan', 'offline')
+                         ->whereNotNull('id_karyawan')
+                         ->where('status_bayar', 'lunas');
+                  });
+            });
+        };
+
+        $query = Pesanan::with(['pelanggan', 'karyawan'])
+            ->whereBetween('created_at', [$start, $end]);
+
+        $pembayaranData = (clone $query)->where($lunasFilter)->orderBy('created_at', 'desc')->get()->map(function ($p) {
+            $isLunas = ($p->sumber_pesanan === 'offline' && $p->id_karyawan && $p->status_bayar === 'lunas')
+                || ($p->status_pembayaran === 'lunas');
+            return [
+                'nama_pelanggan' => $p->pelanggan->nama ?? $p->karyawan->nama ?? '-',
+                'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
+                'jumlah_pembayaran' => (float) $p->total_bayar,
+                'tanggal_pembayaran' => $p->created_at->format('Y-m-d'),
+                'status' => $isLunas ? 'lunas' : 'pending',
+            ];
+        });
+
+        $filename = 'laporan-pembayaran-' . $startDate . '-sampai-' . $endDate . '.xlsx';
+
+        $writer = new Writer();
+        $writer->openToBrowser($filename);
+
+        $headerRow = Row::fromValues(['Nama Pelanggan', 'Metode Pembayaran', 'Jumlah Pembayaran', 'Tanggal Pembayaran', 'Status']);
+        $writer->addRow($headerRow);
+
+        foreach ($pembayaranData as $item) {
+            $row = Row::fromValues([
+                $item['nama_pelanggan'],
+                ucfirst($item['metode_pembayaran']),
+                $item['jumlah_pembayaran'],
+                $item['tanggal_pembayaran'],
+                ucfirst($item['status']),
+            ]);
+            $writer->addRow($row);
+        }
+
+        $writer->close();
+        exit;
+    })->name('laporan-pembayaran.export');
     Route::get('/laporan-pesanan-offline', function (Request $request) {
         $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
@@ -359,13 +411,12 @@ Route::middleware('auth')->group(function () {
             $no = '#OFF-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT);
             if ($tipe === 'karyawan') {
                 return [
-                    $no,
                     $p->karyawan->nama ?? '-',
+                    $no,
                     $produk,
                     (float) $p->total_bayar,
                     $p->created_at->format('Y-m-d H:i'),
                     'Lunas',
-                    'Karyawan',
                     'Sudah Setor',
                 ];
             }
@@ -378,13 +429,12 @@ Route::middleware('auth')->group(function () {
                 default => $p->status_pesanan ?? '-',
             };
             return [
-                $no,
                 $p->pelanggan->nama ?? '-',
+                $no,
                 $produk,
                 (float) $p->total_bayar,
                 $p->created_at->format('Y-m-d H:i'),
                 'Lunas',
-                'Pelanggan',
                 $statusLabel,
             ];
         };
@@ -399,23 +449,20 @@ Route::middleware('auth')->group(function () {
             $rows = $k->concat($p);
         }
 
-        $filename = 'laporan-pesanan-offline-' . date('Y-m-d') . '.csv';
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+        $filename = 'laporan-pesanan-offline-' . date('Y-m-d') . '.xlsx';
 
-        $callback = function () use ($rows) {
-            $output = fopen('php://output', 'w');
-            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            fputcsv($output, ['No. Pesanan', 'Nama', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Tipe Pesanan', 'Status']);
-            foreach ($rows as $row) {
-                fputcsv($output, $row);
-            }
-            fclose($output);
-        };
+        $writer = new \OpenSpout\Writer\XLSX\Writer();
+        $writer->openToBrowser($filename);
 
-        return response()->stream($callback, 200, $headers);
+        $headerRow = \OpenSpout\Common\Entity\Row::fromValues(['Nama', 'No. Pesanan', 'Produk', 'Total', 'Orderan Dibuat', 'Status Bayar', 'Status']);
+        $writer->addRow($headerRow);
+
+        foreach ($rows as $row) {
+            $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues($row));
+        }
+
+        $writer->close();
+        exit;
     })->name('laporan-pesanan-offline.export');
 });
 

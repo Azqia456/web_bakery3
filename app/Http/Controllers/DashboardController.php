@@ -7,12 +7,14 @@ use App\Models\Karyawan;
 use App\Models\Pelanggan;
 use App\Models\Pesanan;
 use Carbon\Carbon;
+use OpenSpout\Writer\XLSX\Writer;
+use OpenSpout\Common\Entity\Row;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // dd("ini dashboard");s
+        // dd("ini dashboard");
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
@@ -39,7 +41,18 @@ class DashboardController extends Controller
             ->sum('total_bayar');
         $pendapatanBulanIni = $offlineKaryawanBulanIni + $offlinePelangganBulanIni + $onlineBulanIni;
 
-        $pesananBelumLunas = Pesanan::where('status_pembayaran', 'belum_bayar')->count();
+        $offlineKaryawanLunas = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_karyawan')
+            ->where('status_bayar', 'lunas')
+            ->count();
+        $offlinePelangganLunas = Pesanan::where('sumber_pesanan', 'offline')
+            ->whereNotNull('id_pelanggan')
+            ->where('status_pembayaran', 'lunas')
+            ->count();
+        $onlineLunas = Pesanan::where('sumber_pesanan', 'online')
+            ->where('status_pembayaran', 'lunas')
+            ->count();
+        $pesananBelumLunas = $totalPemesanan - ($offlineKaryawanLunas + $offlinePelangganLunas + $onlineLunas);
 
         // Setoran Karyawan = offline karyawan yang sudah lunas (status_bayar)
         $setoranKaryawan = Pesanan::where('sumber_pesanan', 'offline')
@@ -507,20 +520,20 @@ class DashboardController extends Controller
         $end = Carbon::parse($endDate)->endOfDay();
 
         $offlineQuery = Pesanan::where('sumber_pesanan', 'offline')
-            ->whereBetween('tgl_pesan', [$start, $end]);
+            ->whereBetween('created_at', [$start, $end]);
 
         // Summary metrics
         $totalTransaksi = (clone $offlineQuery)->count();
         $totalPembayaran = (clone $offlineQuery)->sum('total_bayar') ?? 0;
         $produkTerjual = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
                 $q->where('sumber_pesanan', 'offline')
-                  ->whereBetween('tgl_pesan', [$start, $end]);
+                  ->whereBetween('created_at', [$start, $end]);
             })->sum('jumlah_pesan') ?? 0;
 
         // Detail table: each row = one order item from offline orders
         $transaksiData = \App\Models\Detail_Pesanan::whereHas('pesanan', function ($q) use ($start, $end) {
                 $q->where('sumber_pesanan', 'offline')
-                  ->whereBetween('tgl_pesan', [$start, $end]);
+                  ->whereBetween('created_at', [$start, $end]);
             })
             ->with(['pesanan.pelanggan', 'pesanan.karyawan', 'produk'])
             ->get()
@@ -533,7 +546,7 @@ class DashboardController extends Controller
                     'produk' => $detail->produk->nama_produk ?? 'Produk',
                     'jumlah' => (int) $detail->jumlah_pesan,
                     'total_pembayaran' => (float) ($detail->produk->harga_produk ?? 0) * (int) $detail->jumlah_pesan,
-                    'tanggal' => $detail->pesanan->tgl_pesan->format('Y-m-d'),
+                    'tanggal' => $detail->pesanan->created_at->format('Y-m-d'),
                 ];
             })
             ->values()
@@ -572,8 +585,8 @@ class DashboardController extends Controller
         $pesananData = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
             ->where('sumber_pesanan', 'online')
             ->where('status_pembayaran', 'lunas')
-            ->whereBetween('tgl_pesan', [$start, $end])
-            ->orderBy('tgl_pesan', 'desc')
+            ->whereBetween('created_at', [$start, $end])
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($p) {
                 $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';
@@ -586,7 +599,7 @@ class DashboardController extends Controller
                     default => $p->status_pesanan ?? '-',
                 };
                 return [
-                    'no_pesanan' => '#ON-' . $p->tgl_pesan->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
+                    'no_pesanan' => '#ON-' . $p->created_at->format('dmY') . '-' . str_pad($p->id_pesanan, 3, '0', STR_PAD_LEFT),
                     'nama' => $p->pelanggan->nama ?? '-',
                     'produk' => $produk,
                     'total' => (float) $p->total_bayar,
@@ -657,5 +670,54 @@ class DashboardController extends Controller
         return view('laporan_penjualan', compact(
             'totalHarian', 'totalMingguan', 'totalBulanan', 'jumlahTransaksi', 'salesData', 'startDate', 'endDate'
         ));
+    }
+
+    public function exportLaporanPenjualan(Request $request)
+    {
+        $today = Carbon::today();
+
+        $endDate = $request->input('end_date', $today->toDateString());
+        $startDate = $request->input('start_date', $today->copy()->subDays(29)->toDateString());
+
+        $start = Carbon::parse($startDate)->startOfDay();
+        $end = Carbon::parse($endDate)->endOfDay();
+
+        $lunasFilter = function ($query) {
+            $query->where(function ($q) {
+                $q->where('status_pembayaran', 'lunas')
+                  ->orWhere(function ($qk) {
+                      $qk->where('sumber_pesanan', 'offline')
+                         ->whereNotNull('id_karyawan')
+                         ->where('status_bayar', 'lunas');
+                  });
+            });
+        };
+
+        $salesData = Pesanan::whereBetween('created_at', [$start, $end])
+            ->where($lunasFilter)
+            ->selectRaw('DATE(created_at) as tanggal, COUNT(*) as jumlah_transaksi, SUM(total_bayar) as total_pendapatan')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        $filename = 'laporan-penjualan-' . $startDate . '-sampai-' . $endDate . '.xlsx';
+
+        $writer = new Writer();
+        $writer->openToBrowser($filename);
+
+        $headerRow = Row::fromValues(['Tanggal', 'Jumlah Transaksi', 'Total Pendapatan']);
+        $writer->addRow($headerRow);
+
+        foreach ($salesData as $item) {
+            $row = Row::fromValues([
+                \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y'),
+                (int) $item->jumlah_transaksi,
+                (float) $item->total_pendapatan,
+            ]);
+            $writer->addRow($row);
+        }
+
+        $writer->close();
+        exit;
     }
 }

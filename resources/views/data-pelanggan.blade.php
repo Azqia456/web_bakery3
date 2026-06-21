@@ -1014,7 +1014,7 @@
 
                 <div class="form-group">
                     <label for="inputNoTlp">Nomor HP</label>
-                    <input type="tel" id="inputNoTlp" name="no_tlp" placeholder="0812-1234-5678" required>
+                    <input type="tel" id="inputNoTlp" name="no_tlp" placeholder="081234567890" inputmode="numeric" pattern="[0-9]+" title="Hanya angka yang diperbolehkan" required>
                 </div>
 
                 <div class="form-group">
@@ -1318,7 +1318,20 @@
         openModal('modalPelanggan');
     });
 
+    document.getElementById('inputNoTlp').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById('inputNoTlp').addEventListener('keypress', function(e) {
+        if (e.key < '0' || e.key > '9') e.preventDefault();
+    });
+
     function submitFormPelanggan() {
+        const noTlp = document.getElementById('inputNoTlp').value;
+        if (noTlp && !/^[0-9]+$/.test(noTlp)) {
+            showToast('Nomor HP hanya boleh berisi angka', 'error');
+            return;
+        }
         const formData = new FormData(document.getElementById('formPelanggan'));
         const pelangganId = document.getElementById('pelangganId').value;
         const url = pelangganId ? `${API_BASE_URL}/pelanggans/${pelangganId}` : `${API_BASE_URL}/pelanggans`;

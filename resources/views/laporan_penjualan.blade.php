@@ -99,7 +99,12 @@
 
         <!-- Table Section -->
         <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h5 style="font-weight: 700; margin-bottom: 20px; color: #333;">Detail Penjualan</h5>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h5 style="font-weight: 700; margin: 0; color: #333;">Detail Penjualan</h5>
+                <a href="{{ route('laporan-penjualan.export', request()->query()) }}" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.3s;">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </a>
+            </div>
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>

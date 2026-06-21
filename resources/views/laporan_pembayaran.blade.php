@@ -105,9 +105,14 @@
                     <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #333;">Tanggal Akhir</label>
                     <input type="date" id="endDate" style="width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 13px; font-family: inherit;" value="{{ $endDate ?? date('Y-m-d') }}">
                 </div>
-                <button onclick="filterData()" style="background: #198754; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; width: 100%; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i class="fas fa-filter"></i> Filter
-                </button>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button onclick="filterData()" style="background: #198754; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; flex: 1; transition: background 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <a href="{{ route('laporan-pembayaran.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}" style="background: #0d6efd; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; text-decoration: none; flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s;">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </a>
+                </div>
             </div>
         </div>
 

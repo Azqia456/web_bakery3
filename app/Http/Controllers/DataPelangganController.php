@@ -101,7 +101,7 @@ class DataPelangganController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'no_tlp' => 'required|string|max:50|unique:pelanggans,no_tlp',
+            'no_tlp' => 'required|regex:/^[0-9]+$/|max:20|unique:pelanggans,no_tlp',
             'email' => 'nullable|email|unique:pelanggans,email',
             'alamat' => 'required|string',
             'status' => 'required|in:Online,Offline',
@@ -157,7 +157,7 @@ class DataPelangganController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'no_tlp' => 'required|string|max:50|unique:pelanggans,no_tlp,' . $id_pelanggan . ',id_pelanggan',
+            'no_tlp' => 'required|regex:/^[0-9]+$/|max:20|unique:pelanggans,no_tlp,' . $id_pelanggan . ',id_pelanggan',
             'email' => 'nullable|email|unique:pelanggans,email,' . $id_pelanggan . ',id_pelanggan',
             'alamat' => 'required|string',
             'status' => 'required|in:Online,Offline',

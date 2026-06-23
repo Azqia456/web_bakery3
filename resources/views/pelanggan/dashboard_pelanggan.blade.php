@@ -703,6 +703,14 @@
                 showNotification('Tanggal ' + (metode === 'pickup' ? 'pickup' : 'delivery') + ' minimal ' + minDate.toLocaleDateString('id-ID') + '.', 'error');
                 return;
             }
+
+            const xenditBtn = document.getElementById('payWithXenditBtn');
+            const originalBtnHtml = xenditBtn ? xenditBtn.innerHTML : '';
+            if (xenditBtn) {
+                xenditBtn.disabled = true;
+                xenditBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses pembayaran...';
+            }
+
             try {
                 const idKecamatan = document.getElementById('kecamatanSelect')?.value || '';
                 const alamatDetail = document.getElementById('alamatDetailInput')?.value || '';
@@ -747,6 +755,10 @@
                     throw new Error('URL pembayaran tidak ditemukan');
                 }
             } catch (error) {
+                if (xenditBtn) {
+                    xenditBtn.disabled = false;
+                    xenditBtn.innerHTML = originalBtnHtml;
+                }
                 showNotification('Gagal memproses pembayaran: ' + error.message, 'error');
             }
         }

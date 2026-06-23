@@ -18,6 +18,9 @@
     </style>
 </head>
 <body>
+<script>
+    localStorage.removeItem('bakery_cart');
+</script>
     <div class="card">
         <div class="icon">✅</div>
         <h1>Pembayaran Berhasil!</h1>

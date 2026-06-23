@@ -11,7 +11,7 @@ class WelcomeController extends Controller
         $produks = Produk::where('status', 'Aktif')
             ->withCount('detailPesanans')
             ->orderByDesc('detail_pesanans_count')
-            ->limit(6)
+            ->limit(3)
             ->get();
 
         return view('welcome', compact('produks'));

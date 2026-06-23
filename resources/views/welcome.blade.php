@@ -169,70 +169,35 @@
                 <p class="text-gray-600 text-lg">Koleksi roti kami yang paling di Rekomendasikan, dipanggang dengan teknik khusus untuk menghasilkan tekstur dan rasa yang sempurna.</p>
             </div>
             
-            <!-- BLADE: @forelse($produks as $produk) ... @empty ... @endforelse -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Product Card 1: Kelapa -->
+                @forelse($produks as $produk)
                 <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
                     <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
-                        <img src="{{ asset('image/kelapa.jpg') }}" alt="Roti Kelapa" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
+                        @if($produk->gambar)
+                        <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama_produk }}" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" onerror="this.src='{{ asset('image/rotibulat.png') }}'">
+                        @else
+                        <img src="{{ asset('image/rotibulat.png') }}" alt="{{ $produk->nama_produk }}" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
+                        @endif
                         <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
-                            Rp 1.300
+                            Rp {{ number_format($produk->harga_produk, 0, ',', '.') }}
                         </div>
                     </div>
                     <div class="px-2 flex-grow flex flex-col">
                         <div class="mb-2">
-                            <h5 class="font-serif text-xl font-bold text-brand-800">Kelapa Lumer</h5>
+                            <h5 class="font-serif text-xl font-bold text-brand-800">{{ $produk->nama_produk }}</h5>
                         </div>
-                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti super lembut dengan isian krim kelapa manis yang lumer di mulut dan taburan kelapa parut gurih di atasnya.</p>
-                        
+                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">{{ $produk->deskripsi ?? 'Produk berkualitas dari Three D Bakery.' }}</p>
+
                         <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
                             <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
                         </a>
                     </div>
                 </div>
-
-                <!-- Product Card 2: Strawberry -->
-                <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
-                        <img src="{{ asset('image/strawberry.jpg') }}" alt="Roti Strawberry" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
-                            Rp 1.300
-                        </div>
-                    </div>
-                    <div class="px-2 flex-grow flex flex-col">
-                        <div class="mb-2">
-                            <h5 class="font-serif text-xl font-bold text-brand-800">Strawberry Lumer</h5>
-                        </div>
-                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti manis dengan isian selai stroberi segar melimpah dan taburan bubuk stroberi yang memberikan sensasi asam manis menyegarkan.</p>
-                        
-                        <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
-                            <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
-                        </a>
-                    </div>
+                @empty
+                <div class="col-span-full text-center py-12 text-gray-500">
+                    <p class="text-lg">Belum ada produk tersedia.</p>
                 </div>
-
-                <!-- Product Card 3: Blueberry -->
-                <div class="group bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-soft transition-all duration-300 border border-brand-100/50 flex flex-col h-full">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/3] mb-6 bg-brand-50">
-                        <img src="{{ asset('image/bluberry.jpg') }}" alt="Roti Blueberry" class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-brand-800 shadow-sm border border-brand-100">
-                            Rp 1.300
-                        </div>
-                        <div class="absolute top-4 left-4 bg-brand-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                            New
-                        </div>
-                    </div>
-                    <div class="px-2 flex-grow flex flex-col">
-                        <div class="mb-2">
-                            <h5 class="font-serif text-xl font-bold text-brand-800">Blueberry Lumer</h5>
-                        </div>
-                        <p class="text-gray-500 text-sm mb-6 flex-grow leading-relaxed">Roti artisan dengan filling blueberry premium yang kaya rasa dan buah asli, memberikan ledakan rasa lezat di setiap gigitan.</p>
-
-                        <a href="{{ route('login') }}" class="w-full py-3.5 rounded-xl font-semibold text-brand-800 bg-brand-50 hover:bg-brand-500 hover:text-white transition-colors duration-300 flex justify-center items-center gap-2 border border-brand-100/50 hover:border-transparent">
-                            <i class="bi bi-bag-plus"></i> Tambah ke Keranjang
-                        </a>
-                    </div>
-                </div>             
+                @endforelse
             </div>
         </div>
     </section>

@@ -51,7 +51,7 @@
                 <div class="products-section">
                     <h2 class="section-title">
                         {{-- <i class="fas fa-star"></i> --}}
-                        Pilihan Produk
+                        Produk Best Seller
                     </h2>
                     <div class="products-grid" id="productsGrid">
                         <!-- Products will be loaded here -->

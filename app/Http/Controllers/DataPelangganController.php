@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Writer\XLSX\Writer;
 
 class DataPelangganController extends Controller
 {
@@ -206,6 +208,49 @@ class DataPelangganController extends Controller
         }
 
         return redirect()->route('data-pelanggan')->with('success', 'Pelanggan berhasil dihapus');
+    }
+
+    /**
+     * Export all pelanggan data to XLSX
+     */
+    public function export(Request $request)
+    {
+        $status = $request->get('status', '');
+
+        $query = Pelanggan::query();
+
+        if ($status && in_array($status, ['Online', 'Offline'])) {
+            $query->where('status', $status);
+        }
+
+        $pelanggans = $query->orderBy('nama')->get();
+
+        $filename = 'data-pelanggan-' . date('Y-m-d') . '.xlsx';
+
+        $writer = new Writer();
+        $writer->openToBrowser($filename);
+
+        $headerRow = Row::fromValues(['No', 'Nama', 'No. HP', 'Email', 'Alamat', 'Status', 'Total Pesanan', 'Terakhir Pesan']);
+        $writer->addRow($headerRow);
+
+        foreach ($pelanggans as $i => $p) {
+            $terakhirPesan = $p->pesanans()->latest('created_at')->first()?->created_at?->format('Y-m-d H:i') ?? '-';
+            $totalPesanan = $p->pesanans()->count();
+
+            $writer->addRow(Row::fromValues([
+                $i + 1,
+                $p->nama,
+                $p->no_tlp,
+                $p->email ?? '-',
+                $p->alamat,
+                $p->status,
+                $totalPesanan,
+                $terakhirPesan,
+            ]));
+        }
+
+        $writer->close();
+        exit;
     }
 
     /**

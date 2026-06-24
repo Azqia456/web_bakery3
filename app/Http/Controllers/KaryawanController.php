@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Writer\XLSX\Writer;
 
 class KaryawanController extends Controller
 {
@@ -79,25 +82,23 @@ class KaryawanController extends Controller
     public function export()
     {
         $karyawans = Karyawan::all();
-        $filename = 'data-karyawan-' . date('Y-m-d') . '.csv';
+        $filename = 'data-karyawan-' . date('Y-m-d') . '.xlsx';
+        $tempPath = tempnam(sys_get_temp_dir(), 'xlsx');
 
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
+        $writer = new Writer();
+        $writer->openToFile($tempPath);
 
-        $callback = function () use ($karyawans) {
-            $output = fopen('php://output', 'w');
-            fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            fputcsv($output, ['No', 'Nama Karyawan', 'No HP', 'Alamat', 'Status']);
+        $headerStyle = (new Style())->withFontBold(true);
+        $writer->addRow(Row::fromValuesWithStyle(['No', 'Nama Karyawan', 'No HP', 'Alamat', 'Status'], $headerStyle));
 
-            foreach ($karyawans as $i => $k) {
-                fputcsv($output, [$i + 1, $k->nama, $k->no_tlp, $k->alamat, $k->status]);
-            }
+        foreach ($karyawans as $i => $k) {
+            $writer->addRow(Row::fromValues([$i + 1, $k->nama, $k->no_tlp, $k->alamat, $k->status]));
+        }
 
-            fclose($output);
-        };
+        $writer->close();
 
-        return response()->stream($callback, 200, $headers);
+        return response()->download($tempPath, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 }

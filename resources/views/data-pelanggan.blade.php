@@ -891,10 +891,10 @@
                 <h2>Daftar Pelanggan</h2>
                 <span>Daftar pelanggan terbaru Three D Bakery</span>
             </div>
-            <button class="btn-ghost" type="button">
+            <a href="{{ route('data-pelanggan.export') }}" class="btn-ghost" style="text-decoration: none;">
                 <i class="fas fa-file-export"></i>
                 Export
-            </button>
+            </a>
         </div>
         <div class="table-wrap">
             <table>

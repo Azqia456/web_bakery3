@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
     // DATA
     Route::get('/data-karyawan', [DashboardController::class, 'dataKaryawan'])->name('data-karyawan');
     Route::get('/data-pelanggan', [DataPelangganController::class, 'index'])->name('data-pelanggan');
+    Route::get('/data-pelanggan/export', [DataPelangganController::class, 'export'])->name('data-pelanggan.export');
     
     // PELANGGAN AJAX ENDPOINTS
     Route::post('/api/pelanggans', [DataPelangganController::class, 'store'])->name('pelanggans.store');

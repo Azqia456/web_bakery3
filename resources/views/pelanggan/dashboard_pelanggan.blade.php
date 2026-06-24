@@ -134,9 +134,9 @@
                                 />
                                 <span class="product-emoji">${product.emoji || '🍞'}</span>
                             </div>
-                            <button class="product-fav" type="button" aria-label="Favorit">
+                            {{-- <button class="product-fav" type="button" aria-label="Favorit">
                                 <i class="far fa-heart"></i>
-                            </button>
+                            </button> --}}
                         </div>
                         <div class="product-info">
                             <div class="product-name">${productName}</div>

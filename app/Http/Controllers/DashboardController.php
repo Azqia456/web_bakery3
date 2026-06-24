@@ -43,6 +43,7 @@ class DashboardController extends Controller
 
         $offlineKaryawanLunas = Pesanan::where('sumber_pesanan', 'offline')
             ->whereNotNull('id_karyawan')
+            ->whereNull('id_pelanggan')
             ->where('status_bayar', 'lunas')
             ->count();
         $offlinePelangganLunas = Pesanan::where('sumber_pesanan', 'offline')

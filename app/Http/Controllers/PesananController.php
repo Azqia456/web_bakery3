@@ -244,7 +244,8 @@ class PesananController extends Controller
     {
         // dd("masuk ke sini");
         $query = Pesanan::with(['pelanggan', 'detailPesanans.produk', 'kecamatan.kabupaten'])
-            ->where('sumber_pesanan', 'online');
+            ->where('sumber_pesanan', 'online')
+            ->where('status_pembayaran', 'lunas');
 
         // Filter by date
         if ($request->filled('date')) {
@@ -275,12 +276,12 @@ class PesananController extends Controller
 
         // Calculate stats
         $stats = [
-            'semua' => Pesanan::where('sumber_pesanan', 'online')->count(),
-            'menunggu_konfirmasi' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'menunggu_konfirmasi')->count(),
-            'diproses' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'diproses')->count(),
-            'siap_diambil' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'siap_diambil')->count(),
-            'dikirim' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'dikirim')->count(),
-            'selesai' => Pesanan::where('sumber_pesanan', 'online')->where('status_pesanan', 'selesai')->count(),
+            'semua' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->count(),
+            'menunggu_konfirmasi' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->where('status_pesanan', 'menunggu_konfirmasi')->count(),
+            'diproses' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->where('status_pesanan', 'diproses')->count(),
+            'siap_diambil' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->where('status_pesanan', 'siap_diambil')->count(),
+            'dikirim' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->where('status_pesanan', 'dikirim')->count(),
+            'selesai' => Pesanan::where('sumber_pesanan', 'online')->where('status_pembayaran', 'lunas')->where('status_pesanan', 'selesai')->count(),
         ];
 
         return view('pesanan-online', compact('pesanans', 'stats'))->with([

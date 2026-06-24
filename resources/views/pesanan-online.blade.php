@@ -881,21 +881,13 @@
                         @endif
                     </td>
                     <td>
-                        @if($pesanan->status_pesanan == 'selesai')
+                        @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
                             <div>
-                                @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
-                                    <span class="badge badge-lunas">Lunas</span>
-                                @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
-                                    <span class="badge badge-menunggu">Menunggu</span>
-                                @else
-                                    <span class="badge badge-belum-lunas">Belum Lunas</span>
-                                @endif
+                                <span class="badge badge-lunas">Lunas</span>
                             </div>
                         @else
                             <div class="inline-editable" onclick="startInlineEdit(this, 'pembayaran', {{ $pesanan->id_pesanan }})">
-                                @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
-                                    <span class="badge badge-lunas">Lunas</span>
-                                @elseif($pesanan->status_pembayaran == 'menunggu_verifikasi')
+                                @if($pesanan->status_pembayaran == 'menunggu_verifikasi')
                                     <span class="badge badge-menunggu">Menunggu</span>
                                 @else
                                     <span class="badge badge-belum-lunas">Belum Lunas</span>

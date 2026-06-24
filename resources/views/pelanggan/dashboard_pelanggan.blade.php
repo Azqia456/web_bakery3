@@ -50,7 +50,7 @@
                 <!-- Products Section -->
                 <div class="products-section">
                     <h2 class="section-title">
-                        <i class="fas fa-star"></i>
+                        {{-- <i class="fas fa-star"></i> --}}
                         Pilihan Produk
                     </h2>
                     <div class="products-grid" id="productsGrid">

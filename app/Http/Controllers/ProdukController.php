@@ -9,8 +9,18 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->has('best_seller')) {
+            $limit = (int) $request->input('best_seller', 4);
+            $produks = Produk::where('status', 'Aktif')
+                ->withCount('detailPesanans')
+                ->orderByDesc('detail_pesanans_count')
+                ->limit($limit)
+                ->get();
+            return response()->json($produks);
+        }
+
         // Sinkronkan data produk dan tampilkan
         $produks = ProdukSyncService::syncAll();
         return response()->json($produks);

@@ -98,7 +98,7 @@
         // Load Products
         async function loadProducts() {
             try {
-                const response = await fetch('/api/produks');
+                const response = await fetch('/api/produks?best_seller=4');
                 if (!response.ok) throw new Error('Failed to load products');
 
                 const data = await response.json();

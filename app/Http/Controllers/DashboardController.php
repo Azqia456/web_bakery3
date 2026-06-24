@@ -127,6 +127,7 @@ class DashboardController extends Controller
 
     public function pelanggan()
     {
+        // dd("masuk ke dashboard pelanggan");
         $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
         return view('pelanggan.dashboard_pelanggan', compact('pelanggan'));
     }

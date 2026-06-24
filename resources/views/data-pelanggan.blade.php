@@ -949,9 +949,11 @@
                                         <i class="fas fa-pen"></i>
                                     </button>
                                     @endif
+                                    @if($pelanggan->status == 'Offline')
                                     <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="{{ $pelanggan->id_pelanggan }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -1226,9 +1228,9 @@
                         ${pel.status === 'Offline' ? `<button class="action-btn btn-edit" type="button" aria-label="Edit" data-id="${pel.id_pelanggan}">
                             <i class="fas fa-pen"></i>
                         </button>` : ''}
-                        <button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="${pel.id_pelanggan}">
+                        ${pel.status === 'Offline' ? `<button class="action-btn danger btn-delete" type="button" aria-label="Hapus" data-id="${pel.id_pelanggan}">
                             <i class="fas fa-trash"></i>
-                        </button>
+                        </button>` : ''}
                     </div>
                 </td>
             </tr>`;

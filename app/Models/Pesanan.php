@@ -18,6 +18,7 @@ class Pesanan extends Model
         'tgl_verifikasi' => 'datetime',
         'total_bayar' => 'decimal:2',
         'ongkir' => 'decimal:2',
+        'checkout_expired_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -40,6 +41,8 @@ class Pesanan extends Model
         'alamat_delivery',
         'alamat_detail',
         'tgl_verifikasi',
+        'checkout_url',
+        'checkout_expired_at',
     ];
 
     public function pelanggan()

@@ -603,6 +603,15 @@
                                     {{ $statusLabel }}
                                 </span>
                             </div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                                <span class="order-status-badge {{ $order->status_pembayaran === 'lunas' ? 'selesai' : ($order->status_pembayaran === 'menunggu_verifikasi' ? 'menunggu' : '') }}" style="font-size: 11px; padding: 4px 10px;">
+                                    <i class="fas {{ $order->status_pembayaran === 'lunas' ? 'fa-check-circle' : ($order->status_pembayaran === 'menunggu_verifikasi' ? 'fa-clock' : 'fa-exclamation-circle') }}"></i>
+                                    {{ $order->status_pembayaran === 'lunas' ? 'Lunas' : ($order->status_pembayaran === 'menunggu_verifikasi' ? 'Menunggu Verifikasi' : 'Belum Bayar') }}
+                                </span>
+                                {{-- <span style="font-size: 11px; color: var(--dark-gray); padding: 4px 0;">
+                                    <i class="fas fa-credit-card"></i> {{ $order->metode_pembayaran === 'xendit' ? 'Xendit' : ucfirst($order->metode_pembayaran ?? '-') }}
+                                </span> --}}
+                            </div>
                             <div class="order-items">
                                 @foreach($order->detailPesanans as $item)
                                     <div class="order-item">
@@ -657,6 +666,18 @@
                                     @endforeach
                                 </div>
                             </div>
+                            @if($order->status_pembayaran === 'belum_bayar' && $order->checkout_url && $order->metode_pembayaran === 'xendit')
+                            <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--medium-gray); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <a href="{{ $order->checkout_url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--primary-brown); color: white; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none;">
+                                    <i class="fas fa-credit-card"></i> Bayar Sekarang
+                                </a>
+                                @if($order->checkout_expired_at)
+                                    <span style="font-size: 12px; color: var(--dark-gray);">
+                                        <i class="far fa-clock"></i> Kedaluwarsa {{ $order->checkout_expired_at->locale('id')->isoFormat('D MMM YYYY HH:mm') }}
+                                    </span>
+                                @endif
+                            </div>
+                            @endif
                         </div>
                     @empty
                         <div class="empty-state" style="display:block; grid-column: 1 / -1;">

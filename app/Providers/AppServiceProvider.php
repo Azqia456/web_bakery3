@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('layouts.dashboard-layout', function ($view) {
             $view->with('pesananOnlineBadge', Pesanan::where('sumber_pesanan', 'online')
+                ->where('status_pembayaran', 'lunas')
                 ->where('status_pesanan', 'menunggu_konfirmasi')
                 ->count());
 

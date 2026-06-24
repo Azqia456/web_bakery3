@@ -69,6 +69,29 @@ class XenditController extends Controller
             }
         }
 
+        $activeInvoice = \App\Models\Pesanan::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('status_pembayaran', 'belum_bayar')
+            ->where('metode_pembayaran', 'xendit')
+            ->whereNotNull('checkout_url')
+            ->where(function ($q) {
+                $q->whereNull('checkout_expired_at')
+                  ->orWhere('checkout_expired_at', '>', now());
+            })
+            ->latest()
+            ->first();
+
+        if ($activeInvoice) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Lanjutkan pembayaran Anda.',
+                'data' => [
+                    'id_pesanan' => $activeInvoice->id_pesanan,
+                    'invoice_url' => $activeInvoice->checkout_url,
+                    'external_id' => 'BAKERY-' . $activeInvoice->id_pesanan . '-',
+                ],
+            ]);
+        }
+
         $pesanan = \App\Services\PesananSyncService::createPesananPelanggan([
             'id_pelanggan' => $pelanggan->id_pelanggan,
             'id_karyawan' => null,
@@ -148,7 +171,7 @@ class XenditController extends Controller
             $pesanan->update([
                 'status_pembayaran' => 'lunas',
                 'status_bayar' => 'lunas',
-                'status_pesanan' => 'diproses',
+                // 'status_pesanan' => 'diproses',
                 'tgl_verifikasi' => now(),
             ]);
 

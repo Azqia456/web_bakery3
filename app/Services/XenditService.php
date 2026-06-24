@@ -62,6 +62,18 @@ class XenditService
 
         $invoice = $this->invoiceApi->createInvoice($request);
 
+        $expiryDate = null;
+        try {
+            $expiryDate = $invoice->getExpiryDate();
+        } catch (\Exception $e) {
+            $expiryDate = now()->addDays(1);
+        }
+
+        $pesanan->update([
+            'checkout_url' => $invoice->getInvoiceUrl(),
+            'checkout_expired_at' => $expiryDate,
+        ]);
+
         return [
             'invoice_url' => $invoice->getInvoiceUrl(),
             'external_id' => $invoice->getExternalId(),

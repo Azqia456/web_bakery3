@@ -1510,6 +1510,7 @@
 
             tbody.innerHTML = pageItems.map((item, index) => {
                 const isSelesai = item.status_pesanan === 'selesai';
+                const isLunas = item.status_pembayaran === 'lunas' || item.status_bayar === 'lunas';
                 const statusBayar = statusBayarMap[item.status_pembayaran] ||
                     (item.status_bayar === 'lunas' ? statusBayarMap['lunas'] : statusBayarMap['belum_bayar']);
                 const statusPesanan = statusPesananMap[item.status_pesanan] || statusPesananMap['menunggu_konfirmasi'];
@@ -1518,7 +1519,7 @@
                 const dateParts = orderDate.split('-');
                 const orderNo = `#OFF-${dateParts[2] || ''}${dateParts[1] || ''}${dateParts[0]?.slice(2) || ''}-${String(item.id_pesanan).padStart(3, '0')}`;
 
-                const bayarHTML = isSelesai
+                const bayarHTML = isSelesai || isLunas
                     ? `<div><span class="badge ${statusBayar.cls}">${statusBayar.label}</span></div>`
                     : `<div class="inline-editable" onclick="startInlineEditOffline(this, 'pembayaran', '${item.id}')">
                         <span class="badge ${statusBayar.cls}">${statusBayar.label}</span>

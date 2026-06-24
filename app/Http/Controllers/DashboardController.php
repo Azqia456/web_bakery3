@@ -52,7 +52,8 @@ class DashboardController extends Controller
         $onlineLunas = Pesanan::where('sumber_pesanan', 'online')
             ->where('status_pembayaran', 'lunas')
             ->count();
-        $pesananBelumLunas = $totalPemesanan - ($offlineKaryawanLunas + $offlinePelangganLunas);
+        $totalOffline = Pesanan::where('sumber_pesanan', 'offline')->count();
+        $pesananBelumLunas = $totalOffline - ($offlineKaryawanLunas + $offlinePelangganLunas);
 
         // Setoran Karyawan = offline karyawan yang sudah lunas (status_bayar)
         $setoranKaryawan = Pesanan::where('sumber_pesanan', 'offline')

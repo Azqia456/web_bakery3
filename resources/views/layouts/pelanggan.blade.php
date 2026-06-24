@@ -2282,13 +2282,13 @@
                     <div id="deliveryFields" style="display: none;">
                         <div class="form-group">
                             <label class="form-label">Kabupaten / Kota</label>
-                            <select class="form-input" id="kabupatenSelect" onchange="loadKecamatan()">
+                            <select class="form-input" id="kabupatenSelect" onchange="loadKecamatan()" required>
                                 <option value="">Pilih Kabupaten / Kota</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Kecamatan</label>
-                            <select class="form-input" id="kecamatanSelect" onchange="updateOngkir()">
+                            <select class="form-input" id="kecamatanSelect" onchange="updateOngkir()" required>
                                 <option value="">Pilih Kecamatan</option>
                             </select>
                         </div>
@@ -2297,11 +2297,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Alamat Detail (Jalan, No. Rumah, RT/RW)</label>
-                            <input class="form-input" type="text" id="alamatDetailInput" placeholder="Contoh: Jl. Merdeka No. 123, RT 01 RW 02">
+                            <input class="form-input" type="text" id="alamatDetailInput" placeholder="Contoh: Jl. Merdeka No. 123, RT 01 RW 02" value="{{ auth()->user()->alamat ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Tanggal Delivery</label>
-                            <input class="form-input" type="date" id="tglDeliveryInput">
+                            <input class="form-input" type="date" id="tglDeliveryInput" required>
                         </div>
                     </div>
 
@@ -2486,6 +2486,16 @@
                 updateCartOngkir(0);
                 updatePaymentModalTotal(0);
             }
+
+            // Toggle required attribute on delivery fields
+            const deliveryInputs = deliveryFields ? deliveryFields.querySelectorAll('input, select') : [];
+            deliveryInputs.forEach(el => {
+                if (isDelivery) {
+                    el.setAttribute('required', '');
+                } else {
+                    el.removeAttribute('required');
+                }
+            });
         }
 
         function setMinDates() {

@@ -347,6 +347,25 @@
                 return;
             }
 
+            if (metode === 'delivery') {
+                const kabSelect = document.getElementById('kabupatenSelect');
+                const kecSelect = document.getElementById('kecamatanSelect');
+                const alamatDetail = document.getElementById('alamatDetailInput')?.value.trim();
+
+                if (!kabSelect || !kabSelect.value) {
+                    showNotification('Silakan pilih Kabupaten / Kota.', 'error');
+                    return;
+                }
+                if (!kecSelect || !kecSelect.value) {
+                    showNotification('Silakan pilih Kecamatan.', 'error');
+                    return;
+                }
+                if (!alamatDetail) {
+                    showNotification('Silakan isi Alamat Detail.', 'error');
+                    return;
+                }
+            }
+
             const xenditBtn = document.getElementById('payWithXenditBtn');
             const originalBtnHtml = xenditBtn ? xenditBtn.innerHTML : '';
             if (xenditBtn) {

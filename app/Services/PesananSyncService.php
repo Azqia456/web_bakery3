@@ -92,6 +92,7 @@ class PesananSyncService
         } else {
             // Jika tidak ada, ambil karyawan pertama atau buat dummy
             $karyawan = Karyawan::first();
+            $karyawan->id_karyawan = null;
         }
 
         if (!$karyawan) {

@@ -22,7 +22,10 @@ class DashboardController extends Controller
         $endOfWeek = Carbon::now()->endOfWeek();
 
         // Summary cards
-        $totalPemesanan = Pesanan::count();
+        $totalPemesanan = Pesanan::where(function ($q) {
+                $q->where('sumber_pesanan', '!=', 'online')
+                  ->orWhere('status_pembayaran', 'lunas');
+            })->count();
 
         // Pendapatan Bulan Ini = offline (karyawan lunas + pelanggan lunas) + online (lunas)
         $offlineKaryawanBulanIni = Pesanan::where('sumber_pesanan', 'offline')
@@ -436,6 +439,10 @@ class DashboardController extends Controller
     public function riwayatTransaksi(Request $request)
     {
         $query = Pesanan::with(['pelanggan', 'karyawan', 'detailPesanans.produk'])
+            ->where(function ($q) {
+                $q->where('sumber_pesanan', '!=', 'online')
+                  ->orWhere('status_pembayaran', 'lunas');
+            })
             ->orderBy('created_at', 'desc');
 
         // Filter by tipe (pelanggan/karyawan)

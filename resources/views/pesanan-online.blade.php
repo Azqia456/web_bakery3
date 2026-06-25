@@ -1068,7 +1068,7 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Tgl ${data.metode_pengambilan === 'delivery' ? 'Delivery' : 'Ambil'}</div>
-                            <div class="detail-value">${data.metode_pengambilan === 'delivery' ? (data.tgl_delivery || '-') : (data.tgl_pickup || '-')}</div>
+                            <div class="detail-value">${(data.metode_pengambilan === 'delivery' ? (data.tgl_delivery || '') : (data.tgl_pickup || '')).substring(0, 10) || '-'}</div>
                         </div>
                         ${data.metode_pengambilan === 'delivery' ? `
                         <div class="detail-row">

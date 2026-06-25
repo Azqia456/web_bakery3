@@ -1556,8 +1556,11 @@
                     <td>${buktiHTML}</td>
                     <td>
                         <div class="time-info">
-                            <div class="time-date">${item.created_at ? item.created_at.substring(0, 10).split('-').reverse().join('/') : '-'}</div>
-                            <div class="time-hour">${item.created_at ? item.created_at.substring(11, 16) : '00:00'} WIB</div>
+                            <div class="time-date">${(() => {
+                                const d = item.metode_pengambilan === 'delivery' ? (item.tanggal_delivery || item.tgl_transaksi) : (item.tanggal_pickup || item.tgl_transaksi);
+                                return d ? d.split('-').reverse().join('/') : '-';
+                            })()}</div>
+                            <div class="time-hour">${item.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</div>
                         </div>
                     </td>
                     <td>

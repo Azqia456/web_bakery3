@@ -500,7 +500,10 @@ class DashboardController extends Controller
         };
 
         $stats = [
-            'total' => Pesanan::count(),
+            'total' => Pesanan::where(function ($q) {
+                $q->where('sumber_pesanan', '!=', 'online')
+                  ->orWhere('status_pembayaran', 'lunas');
+            })->count(),
             'pemasukan_hari_ini' => Pesanan::whereDate('created_at', $today)
                 ->where($lunasFilter)->sum('total_bayar') ?? 0,
             'transaksi_pelanggan' => Pesanan::whereNotNull('id_pelanggan')

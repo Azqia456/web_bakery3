@@ -1515,9 +1515,8 @@
                     (item.status_bayar === 'lunas' ? statusBayarMap['lunas'] : statusBayarMap['belum_bayar']);
                 const statusPesanan = statusPesananMap[item.status_pesanan] || statusPesananMap['menunggu_konfirmasi'];
 
-                const orderDate = item.tgl_transaksi || '';
-                const dateParts = orderDate.split('-');
-                const orderNo = `#OFF-${dateParts[2] || ''}${dateParts[1] || ''}${dateParts[0]?.slice(2) || ''}-${String(item.id_pesanan).padStart(3, '0')}`;
+                const createdDate = item.created_at ? item.created_at.substring(0, 10).replace(/-/g, '') : '';
+                const orderNo = `#OFF-${createdDate}-${String(item.id_pesanan).padStart(3, '0')}`;
 
                 const bayarHTML = isSelesai || isLunas
                     ? `<div><span class="badge ${statusBayar.cls}">${statusBayar.label}</span></div>`
@@ -1557,8 +1556,8 @@
                     <td>${buktiHTML}</td>
                     <td>
                         <div class="time-info">
-                            <div class="time-date">${orderDate.split('-').reverse().join('/')}</div>
-                            <div class="time-hour">${item.waktu || '00:00'} WIB</div>
+                            <div class="time-date">${item.created_at ? item.created_at.substring(0, 10).split('-').reverse().join('/') : '-'}</div>
+                            <div class="time-hour">${item.created_at ? item.created_at.substring(11, 16) : '00:00'} WIB</div>
                         </div>
                     </td>
                     <td>
@@ -2102,7 +2101,7 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Tanggal Transaksi</div>
-                            <div class="detail-value">${pesanan.tgl_transaksi || '-'}</div>
+                            <div class="detail-value">${pesanan.created_at || '-'}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Tanggal ${pesanan.metode_pengambilan === 'delivery' ? 'Delivery' : 'Pickup'}</div>

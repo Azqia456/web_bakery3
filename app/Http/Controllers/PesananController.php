@@ -192,6 +192,7 @@ class PesananController extends Controller
                 'status_bayar' => $p->status_bayar,
                 'status_pembayaran' => $p->status_pembayaran ?? 'belum_bayar',
                 'status_pesanan' => $p->status_pesanan ?? 'menunggu_konfirmasi',
+                'created_at' => $p->created_at->format('Y-m-d H:i:s'),
                 'tgl_transaksi' => $p->tgl_pesan->format('Y-m-d'),
                 'waktu' => $p->tgl_pesan->format('H:i'),
                 'metode_pengambilan' => $p->metode_pengambilan ?? 'pickup',

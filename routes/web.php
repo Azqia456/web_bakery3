@@ -320,7 +320,7 @@ Route::middleware('auth')->group(function () {
         exit;
     })->name('laporan-pembayaran.export');
     Route::get('/laporan-pesanan-offline', function (Request $request) {
-        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $startDate = $request->input('start_date', now()->subDays(6)->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
         $tipe = $request->input('tipe', 'semua');
 
@@ -332,14 +332,14 @@ Route::middleware('auth')->group(function () {
             ->where('sumber_pesanan', 'offline')
             ->whereNotNull('id_karyawan')
             ->where('status_bayar', 'lunas')
-            ->whereBetween('tgl_pesan', [$start, $end]);
+            ->whereBetween('created_at', [$start, $end]);
 
         // Pelanggan: offline, id_pelanggan NOT NULL, status_pembayaran = lunas
         $qPelanggan = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
             ->where('sumber_pesanan', 'offline')
             ->whereNotNull('id_pelanggan')
             ->where('status_pembayaran', 'lunas')
-            ->whereBetween('tgl_pesan', [$start, $end]);
+            ->whereBetween('created_at', [$start, $end]);
 
         // Stats: aggregate sebelum filter tipe
         $totalSetoran = (clone $qKaryawan)->sum('total_bayar') + (clone $qPelanggan)->sum('total_bayar');
@@ -398,7 +398,7 @@ Route::middleware('auth')->group(function () {
     })->name('laporan-pesanan-offline');
 
     Route::get('/laporan-pesanan-offline/export', function (Request $request) {
-        $startDate = $request->input('start_date', now()->subDays(30)->format('Y-m-d'));
+        $startDate = $request->input('start_date', now()->subDays(6)->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->format('Y-m-d'));
         $tipe = $request->input('tipe', 'semua');
 
@@ -409,13 +409,13 @@ Route::middleware('auth')->group(function () {
             ->where('sumber_pesanan', 'offline')
             ->whereNotNull('id_karyawan')
             ->where('status_bayar', 'lunas')
-            ->whereBetween('tgl_pesan', [$start, $end]);
+            ->whereBetween('created_at', [$start, $end]);
 
         $qPelanggan = Pesanan::with(['pelanggan', 'detailPesanans.produk'])
             ->where('sumber_pesanan', 'offline')
             ->whereNotNull('id_pelanggan')
             ->where('status_pembayaran', 'lunas')
-            ->whereBetween('tgl_pesan', [$start, $end]);
+            ->whereBetween('created_at', [$start, $end]);
 
         $mapFn = function ($p, $tipe) {
             $produk = $p->detailPesanans->pluck('produk.nama_produk')->filter()->implode(', ') ?: '-';

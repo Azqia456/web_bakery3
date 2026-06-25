@@ -841,7 +841,6 @@
                     <th>Produk</th>
                     <th>Total</th>
                     <th>Ongkir</th>
-                    <th>Tgl Ambil/Delivery</th>
                     <th>Pembayaran</th>
                     <th>Status</th>
                     <th>Waktu</th>
@@ -870,15 +869,6 @@
                     </td>
                     <td>
                         <span class="ongkir-badge">Rp {{ number_format($pesanan->ongkir ?? 0, 0, ',', '.') }}</span>
-                    </td>
-                    <td>
-                        @if($pesanan->metode_pengambilan === 'pickup' && $pesanan->tgl_pickup)
-                            <span style="font-size: 12px;">{{ \Carbon\Carbon::parse($pesanan->tgl_pickup)->format('d/m/Y') }}<br><small style="color: var(--dark-gray);">Pickup</small></span>
-                        @elseif($pesanan->metode_pengambilan === 'delivery' && $pesanan->tgl_delivery)
-                            <span style="font-size: 12px;">{{ \Carbon\Carbon::parse($pesanan->tgl_delivery)->format('d/m/Y') }}<br><small style="color: var(--dark-gray);">Delivery</small></span>
-                        @else
-                            <span style="color: var(--dark-gray); font-size: 13px;">-</span>
-                        @endif
                     </td>
                     <td>
                         @if($pesanan->status_pembayaran == 'lunas' || $pesanan->status_bayar == 'lunas')
@@ -930,8 +920,15 @@
                     </td>
                     <td>
                         <div class="time-info">
-                            <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('d/m/Y') }}</div>
-                            <div class="time-hour">{{ \Carbon\Carbon::parse($pesanan->created_at)->format('H:i') }} WIB</div>
+                            @if($pesanan->metode_pengambilan === 'pickup' && $pesanan->tgl_pickup)
+                                <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->tgl_pickup)->format('d/m/Y') }}</div>
+                                <div class="time-hour">Pickup</div>
+                            @elseif($pesanan->metode_pengambilan === 'delivery' && $pesanan->tgl_delivery)
+                                <div class="time-date">{{ \Carbon\Carbon::parse($pesanan->tgl_delivery)->format('d/m/Y') }}</div>
+                                <div class="time-hour">Delivery</div>
+                            @else
+                                <div class="time-date" style="color: var(--dark-gray);">-</div>
+                            @endif
                         </div>
                     </td>
                     <td>
@@ -945,7 +942,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10">
+                    <td colspan="9">
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <p>Belum ada pesanan online</p>

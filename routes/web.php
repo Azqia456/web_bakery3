@@ -254,7 +254,7 @@ Route::middleware('auth')->group(function () {
         $pembayaranData = (clone $queryLunas)->orderBy('created_at', 'desc')->get()->map(function ($p) {
             return [
                 'nama_pelanggan' => $p->pelanggan->nama ?? $p->karyawan->nama ?? '-',
-                'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
+                'metode_pembayaran' => $p->metode_pembayaran ?? '-',
                 'jumlah_pembayaran' => (float) $p->total_bayar,
                 'tanggal_pembayaran' => $p->created_at->format('Y-m-d'),
                 'status' => 'lunas',

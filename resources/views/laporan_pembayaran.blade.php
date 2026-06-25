@@ -136,10 +136,11 @@
                                 <td style="padding: 14px 12px; color: #333;">{{ $item['nama_pelanggan'] ?? 'Pelanggan' }}</td>
                                 <td style="padding: 14px 12px; text-align: center;">
                                     @php
-                                        $metode = $item['metode_pembayaran'] ?? 'cash';
+                                        $metode = $item['metode_pembayaran'] ?? '-';
                                         $metodeStyle = match($metode) {
                                             'transfer' => 'background: #cfe2ff; color: #084298;',
                                             'qris' => 'background: #e2e3e5; color: #383d41;',
+                                            'xendit' => 'background: #fef3c7; color: #92400e;',
                                             default => 'background: #e2e3e5; color: #383d41;'
                                         };
                                     @endphp
@@ -151,8 +152,15 @@
                                             @case('qris')
                                                 <i class="fas fa-qrcode"></i> QRIS
                                                 @break
+                                            @case('xendit')
+                                                <i class="fas fa-credit-card"></i> Xendit
+                                                @break
                                             @default
-                                                <i class="fas fa-money-bill"></i> Cash
+                                                @if($metode && $metode !== '-')
+                                                    <i class="fas fa-money-bill"></i> {{ ucfirst($metode) }}
+                                                @else
+                                                    <i class="fas fa-minus"></i> -
+                                                @endif
                                         @endswitch
                                     </span>
                                 </td>

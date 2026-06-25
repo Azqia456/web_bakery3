@@ -246,20 +246,18 @@ Route::middleware('auth')->group(function () {
         $query = Pesanan::with(['pelanggan', 'karyawan'])
             ->whereBetween('created_at', [$start, $end]);
 
-        $totalPembayaran = (clone $query)->where($lunasFilter)->sum('total_bayar') ?? 0;
-        $transaksiLunas = (clone $query)->where($lunasFilter)->count();
-        $totalCount = (clone $query)->count();
-        $pembayaranPending = $totalCount - $transaksiLunas;
+        $queryLunas = (clone $query)->where($lunasFilter);
+        $totalPembayaran = (clone $queryLunas)->sum('total_bayar') ?? 0;
+        $transaksiLunas = (clone $queryLunas)->count();
+        $pembayaranPending = 0;
 
-        $pembayaranData = (clone $query)->orderBy('created_at', 'desc')->get()->map(function ($p) {
-            $isLunas = ($p->sumber_pesanan === 'offline' && $p->id_karyawan && $p->status_bayar === 'lunas')
-                || ($p->status_pembayaran === 'lunas');
+        $pembayaranData = (clone $queryLunas)->orderBy('created_at', 'desc')->get()->map(function ($p) {
             return [
                 'nama_pelanggan' => $p->pelanggan->nama ?? $p->karyawan->nama ?? '-',
                 'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
                 'jumlah_pembayaran' => (float) $p->total_bayar,
                 'tanggal_pembayaran' => $p->created_at->format('Y-m-d'),
-                'status' => $isLunas ? 'lunas' : 'pending',
+                'status' => 'lunas',
             ];
         });
 
@@ -290,14 +288,12 @@ Route::middleware('auth')->group(function () {
             ->whereBetween('created_at', [$start, $end]);
 
         $pembayaranData = (clone $query)->where($lunasFilter)->orderBy('created_at', 'desc')->get()->map(function ($p) {
-            $isLunas = ($p->sumber_pesanan === 'offline' && $p->id_karyawan && $p->status_bayar === 'lunas')
-                || ($p->status_pembayaran === 'lunas');
             return [
                 'nama_pelanggan' => $p->pelanggan->nama ?? $p->karyawan->nama ?? '-',
                 'metode_pembayaran' => $p->metode_pembayaran ?? 'cash',
                 'jumlah_pembayaran' => (float) $p->total_bayar,
                 'tanggal_pembayaran' => $p->created_at->format('Y-m-d'),
-                'status' => $isLunas ? 'lunas' : 'pending',
+                'status' => 'lunas',
             ];
         });
 

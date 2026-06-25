@@ -1515,7 +1515,7 @@
                     (item.status_bayar === 'lunas' ? statusBayarMap['lunas'] : statusBayarMap['belum_bayar']);
                 const statusPesanan = statusPesananMap[item.status_pesanan] || statusPesananMap['menunggu_konfirmasi'];
 
-                const createdDate = item.created_at ? item.created_at.substring(0, 10).replace(/-/g, '') : '';
+                const createdDate = item.created_at ? item.created_at.substring(0, 10).split('-').reverse().join('') : '';
                 const orderNo = `#OFF-${createdDate}-${String(item.id_pesanan).padStart(3, '0')}`;
 
                 const bayarHTML = isSelesai || isLunas

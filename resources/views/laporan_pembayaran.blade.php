@@ -156,11 +156,7 @@
                                                 <i class="fas fa-credit-card"></i> Xendit
                                                 @break
                                             @default
-                                                @if($metode && $metode !== '-')
-                                                    <i class="fas fa-money-bill"></i> {{ ucfirst($metode) }}
-                                                @else
-                                                    <i class="fas fa-minus"></i> -
-                                                @endif
+                                            <i class="fas fa-money-bill"></i> Cash
                                         @endswitch
                                     </span>
                                 </td>
